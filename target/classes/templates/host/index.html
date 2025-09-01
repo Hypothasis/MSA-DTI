@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+	<link rel="icon" type="image/png" th:href="@{/image/icons/main_icon1.png}" />
+	<link rel="apple-touch-icon" type="image/png" th:href="@{/image/icons/main_icon1.png}">
+	    
+	<link rel="stylesheet" th:href="@{/stylesheets/application.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/pointGraphic.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/host.css}">
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
+    <title>HOST</title>
+</head>
+<body>
+    <header class="main-header">
+        <article>
+            <img th:src="@{/image/Logo_Unilab_horizontal_para_fundo_escuro.png}" alt="" height="120px">
+
+            <div>
+                <h1>Estados de Serviços</h1>
+
+                <ul>
+                    <li><p>Última atualização</p></li>
+                    <li><p id="lastUpdateTime">00:00:00</p></li> 
+                    <li><p>|</p></li>
+                    <li><p>Próxima atualização em</p></li>
+                    <li><p id="countDownTime">00s.</p></li>
+                </ul>
+            </div>
+        </article>    
+    </header>
+
+    <main>
+        <header>
+            <div class="dot green" id="hostStatusPoint"></div>
+            <section>
+                <div class="hostOutdoor">
+                    <h1 id="hostName">SIGAA</h1>
+                    <h1>está</h1>
+                    <h1 class="flag green" id="hostStatusFlag">Funcionando</h1>
+                </div>
+                <p>Checagem a cada minuto</p>
+            </section>
+        </header>
+
+        <article>
+            <ul>
+                <li>
+                    <div class="title">
+                        <h1>Disponibilidade</h1>
+                        <p>- últimas 48h</p>
+                    </div>
+                    <section>
+                        <div class="porcentPointGraphic">
+                            <p>99%</p>
+                            <p>de disponibilidade</p> 
+                        </div>
+                        <ol class="pointGraphic">
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
+                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
+                        </ol>
+                    </section>
+                </li>
+
+                <li>
+                    <div class="title">
+                        <h1>Disponibilidade Global</h1>
+                    </div>
+                    <section>
+                        <ol class="overallUptime">
+                            <li>
+                                <h3>100.00%</h3>
+                                <p>em 42h</p>
+                            </li>
+
+                            <li>
+                                <h3>100.00%</h3>
+                                <p>em 24h</p>
+                            </li>
+
+                            <li>
+                                <h3>100.00%</h3>
+                                <p>em 12h</p>
+                            </li>
+
+                            <li>
+                                <h3>100.00%</h3>
+                                <p>em 6h</p>
+                            </li>
+                        </ol>
+                    </section>
+                </li>
+
+                <li>
+                    <div class="title">
+                        <h1>Tempo de Resposta</h1>
+                        <p>- últimas 48h</p>
+                    </div>
+                    <section>
+                        <div id="responseTimeChart"></div>
+                    </section>
+                </li>
+
+                <li>
+                    <div class="title">
+                        <h1>Eventos Recentes</h1>
+                    </div>
+                    <section>
+                        <ol class="recentEvents">
+                            <li>
+                                <div class="imgEvent okay"></div>
+
+                                <div>
+                                    <h3 class="titleRecentEvents">Rodando com Sucesso</h3>
+                                    <p class="detailsRecentEvents"></p>
+                                    <p class="dateRecentEvents">16/08/2025 as 23:05</p>
+                                </div>
+
+                            </li>
+
+                            <li>
+                                <div class="imgEvent important"></div>
+
+                                <div>
+                                    <h3 class="titleRecentEvents">Rodando com Sucesso</h3>
+                                    <p class="detailsRecentEvents">Aplicação está com alto consumo de memória</p>
+                                    <p class="dateRecentEvents">16/08/2025 as 23:05</p>
+                                </div>
+
+                            </li>
+
+                            <li>
+                                <div class="imgEvent error"></div>
+
+                                <div>
+                                    <h3 class="titleRecentEvents">Aplicaçao parada</h3>
+                                    <p class="detailsRecentEvents"></p>
+                                    <p class="dateRecentEvents">16/08/2025 as 23:05</p>
+                                </div>
+
+                            </li>
+
+                            <li>
+                                <div class="imgEvent okay"></div>
+
+                                <div>
+                                    <h3 class="titleRecentEvents">Rodando com Sucesso</h3>
+                                    <p class="detailsRecentEvents"></p>
+                                    <p class="dateRecentEvents">16/08/2025 as 23:05</p>
+                                </div>
+
+                            </li>
+
+                            <li>
+                                <div class="imgEvent error"></div>
+
+                                <div>
+                                    <h3 class="titleRecentEvents">Aplicação parada</h3>
+                                    <p class="detailsRecentEvents">Aplicação está parada com error.</p>
+                                    <p class="dateRecentEvents">16/08/2025 as 23:05</p>
+                                </div>
+
+                            </li>
+                        </ol>
+                    </section>
+                </li>
+            </ul>
+        </article>
+    </main>
+
+    <footer>
+        <article>
+            <header>
+                <h1>DTI</h1>
+                <h4>Diretoria de Tecnologia da Informação</h4>
+                <p>Aplicação desenvolvida pela DTI © 2025</p>
+            </header>
+
+            <div>
+                <ul>
+                    <li>
+                        <button id="fullscreen-btn">  
+                            <img th:src="@{/image/icons/fullscreen_black.png}" alt="" height="20px">
+                            <p>Fullscreen mode</p>
+                        </button>
+                    </li>
+
+                    <li>
+                        <button id="alert-btn"> 
+                            <img th:src="@{/img/icons/mute_black.png}" alt="" height="20px">
+                            <p>Alert Sound</p>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </article>
+    </footer>
+
+    <script th:src="@{/javascript/component.js}"></script>
+    <script th:src="@{/javascript/hostRequest.js}"></script>
+    <script th:src="@{/javascript/host.js}"></script>
+</body>
+</html>

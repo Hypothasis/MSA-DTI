@@ -1,0 +1,252 @@
+/* ------------------------- */
+/* ---------- MAIN --------- */
+
+main{
+    width: 100vw;
+}
+
+main section{
+    background-color: transparent;
+    border-radius: 7px;
+    height: auto;
+    width: 1250px;
+    margin: -50px auto 0px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* ------------------------- */
+/* ----- MAIN > HEADER ----- */
+
+main section > header{
+    border-radius: 7px;
+    box-shadow: 2px 2px 7px grey;
+    background-color: white;
+    font-family: var(--font-roboto);
+    padding: 20px;
+    width: 100%;
+    height: 75px;
+
+    overflow: hidden;
+    transition: height 0.7s ease-in-out;
+}
+
+main section > header:hover{
+    height: 370px;
+}
+
+main section > header nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main section > header form{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+input[type="text"]{
+    border-radius: 7px;
+    padding-left: 5px;
+    font-family: var(--font-ubuntu);
+    width: 100%;
+}
+
+main section header form button{
+    position: relative;
+    border: 1px outset grey;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    background-color: transparent;
+    z-index: 1;  
+    overflow: hidden;
+}
+
+main section header form button::after{
+    border-radius: 5px;
+    position: absolute;
+    content: '';
+    top: 0;
+    bottom: 0;
+    height: 105%;
+    width: 0;
+    background-color: rgb(233, 233, 233);
+    
+    z-index: -1;
+    transition: width 0.4s ease-in-out;
+}
+
+main section header form button:hover{
+    border: 2px outset grey;
+    cursor: pointer;
+}
+
+main section header form button img{
+    transition: all 0.5s ease-in-out;
+}
+
+main section header form button:hover img{
+    transform: scale(1.1);
+}
+
+main section header form button:hover::after{
+    width: 105%;
+}
+
+main section header #outdoor-search {
+    border: 1px outset grey;
+    border-radius: 7px;
+    height: 200px;
+}
+
+/* ------------------------- */
+/* ----- MAIN > ARTICLE ---- */
+
+main section article {
+    border-radius: 7px;
+    box-shadow: 0px 2px 7px grey;
+    background-color: white;
+    padding: 20px;
+    height: auto;
+}
+
+main section article h1{
+    font-family: var(--font-roboto);
+}
+
+.services-outdoor{
+    border-radius: 7px;
+    margin-top: 20px;
+    max-height: 1000px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.services-outdoor > ul {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 10px;
+    height: 100%;
+}
+
+.services-outdoor ul > li{
+    border-bottom: 1px solid rgb(189, 189, 189);
+    border-radius: 7px;
+    box-shadow: 0px 1px 5px grey;
+    list-style: none;
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.services-outdoor ul li > header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    font-family: var(--font-roboto);
+    padding: 20px;
+    width: 100%;
+    height: 75px;
+    gap: 15px;
+}
+
+.services-outdoor ul li > header a{
+    font-family: var(--font-raleway);
+    font-size: 1.5rem;
+    color: black;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.services-outdoor ul li > header a:hover{
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.services-outdoor .app-info{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.porcent{
+    font-size: 1.3rem;
+}
+
+.porcent.green{
+    color: rgb(72, 228, 72);
+}
+
+.porcent.orange{
+    color: rgb(224, 123, 64);
+}
+
+.porcent.red{
+    color: rgb(224, 64, 64);
+}
+
+.dot.green {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: #69ffa8;
+  animation: 1.5s greenPulse infinite ease-in-out;
+}
+
+.dot.red {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: #ff2828;
+  animation: 1.5s redPulse infinite ease-in-out;
+}
+
+.app-status{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.flag.green{
+    font-family: var(--font-ubuntu);
+    font-weight: bold;
+    color: #69ffa8;
+}
+
+.flag.red{
+    font-weight: bold;
+    font-family: var(--font-ubuntu);
+    color: #ff2e2e;
+}
+
+/* ------------------------- */
+/* -------- ANIMATION ------ */
+
+@keyframes greenPulse {
+  0% {
+    box-shadow: 0 0 0 0 #69ffa8;
+  }
+
+  100% {
+    box-shadow: 0 0 0 14px #69ffa800;
+  }
+}
+
+@keyframes redPulse {
+  0% {
+    box-shadow: 0 0 0 0 #ff6969;
+  }
+
+  100% {
+    box-shadow: 0 0 0 14px #ff6969;
+  }
+}

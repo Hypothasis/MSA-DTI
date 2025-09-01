@@ -1,0 +1,47 @@
+FLAGS HOME
+
+MAIN
+
+app-status
+
+dot green: Ponto de status verde de sistema está rodando
+dot red: Ponto de status vermelho de sistema está parado
+
+flag green: Nome verde dizendo que sistema está rodando
+flag red: Nome vermelho dizendo que o sistema está parado
+
+pointGraphic
+
+(80% a 100%) li > point okay     (Cor Verde)          data-line1 (data) data-line2 (porcentagem)
+(60% a 80%)  li > point warning  (Cor Amarelo)        data-line1 (data) data-line2 (porcentagem)
+(40% a 60%)  li > point avarage  (Cor Laranja)        data-line1 (data) data-line2 (porcentagem)
+(20% a 40%)  li > point high     (Cor Laranja Escuro) data-line1 (data) data-line2 (porcentagem)
+(0% a 20%)   li > point disaster (Cor Vermelho)       data-line1 (data) data-line2 (porcentagem)
+
+###########################################################################################
+
+FLAGS HOST
+
+HEADER
+
+dot green: Ponto de status verde de sistema está rodando
+dot red: Ponto de status vermelho de sistema está parado
+
+flag green: Nome verde dizendo que sistema está rodando
+flag red: Nome vermelho dizendo que o sistema está parado
+
+ARTICLE
+
+pointGraphic
+
+(80% a 100%) li > point okay     (Cor Verde)          data-line1 (data) data-line2 (porcentagem)
+(60% a 80%)  li > point warning  (Cor Amarelo)        data-line1 (data) data-line2 (porcentagem)
+(40% a 60%)  li > point avarage  (Cor Laranja)        data-line1 (data) data-line2 (porcentagem)
+(20% a 40%)  li > point high     (Cor Laranja Escuro) data-line1 (data) data-line2 (porcentagem)
+(0% a 20%)   li > point disaster (Cor Vermelho)       data-line1 (data) data-line2 (porcentagem)
+
+recentEvents
+
+imgEvent okay      - Imagem de okay
+imgEvent important - Imagem de exclamação
+imgEvent Error     - Imagem de error
