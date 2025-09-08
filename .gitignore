@@ -1,0 +1,22 @@
+# Arquivos gerados pelo Build
+/target/
+
+# Arquivos de Log
+*.log
+*.log.*
+
+# Arquivos de configuração de IDEs
+.idea/
+*.iml
+.settings/
+.classpath
+.project
+.vscode/
+
+# Arquivos de ambiente local (com senhas e segredos)
+.env
+.env.*
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db

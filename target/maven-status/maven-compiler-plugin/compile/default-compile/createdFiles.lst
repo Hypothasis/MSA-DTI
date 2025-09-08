@@ -1,2 +1,5 @@
-br/com/dti/msa/controller/HomeController.class
 br/com/dti/msa/MsaApplication.class
+br/com/dti/msa/security/KeycloakRealmRoleConverter.class
+br/com/dti/msa/controller/HostController.class
+br/com/dti/msa/security/SecurityConfig.class
+br/com/dti/msa/controller/HomeController.class

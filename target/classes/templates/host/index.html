@@ -17,6 +17,9 @@
 </head>
 <body>
     <header class="main-header">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-danger">Sair</button>
+        </form>
         <article>
             <img th:src="@{/image/Logo_Unilab_horizontal_para_fundo_escuro.png}" alt="" height="120px">
 
