@@ -12,6 +12,7 @@ import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandlerImpl;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -38,8 +39,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/public/**", "/stylesheets/**", "/javascript/**", "/image/**").permitAll()
                 .requestMatchers("/").permitAll()
+                .requestMatchers("/error").permitAll() 
+                .requestMatchers("/host/**").permitAll()
                 .requestMatchers("debug/**").permitAll()
-                .requestMatchers("/host/**").hasAuthority("ADMIN")
+                .requestMatchers("/admin/**").hasAuthority("ADMIN")
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
@@ -49,7 +52,13 @@ public class SecurityConfig {
             .logout(logout -> logout
                 // Define o "manipulador" que sabe como fazer logout no Keycloak
                 .logoutSuccessHandler(oidcLogoutSuccessHandler())
-            );
+            )
+
+            .exceptionHandling(exceptions -> {
+                AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
+                accessDeniedHandler.setErrorPage("/error"); // Define a página de erro
+                exceptions.accessDeniedHandler(accessDeniedHandler); // Usa o handler que faz FORWARD
+            });
 
         return http.build();
     }

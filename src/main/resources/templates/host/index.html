@@ -17,10 +17,12 @@
 </head>
 <body>
     <header class="main-header">
-        <form th:action="@{/logout}" method="post">
-            <button type="submit" class="btn btn-danger">Sair</button>
-        </form>
+        <a href="/" id="linkHome">
+            <img src="/image/icons/seta_esquerda_branca.png" alt="" height="25px">
+            <p>Voltar</p>
+        </a>
         <article>
+            <a href="/admin" id="admin-btn">Portal Admin</a>
             <img th:src="@{/image/Logo_Unilab_horizontal_para_fundo_escuro.png}" alt="" height="120px">
 
             <div>
@@ -155,7 +157,7 @@
                         <ol class="overallUptime">
                             <li>
                                 <h3>100.00%</h3>
-                                <p>em 42h</p>
+                                <p>em 48h</p>
                             </li>
 
                             <li>

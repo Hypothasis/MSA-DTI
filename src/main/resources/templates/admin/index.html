@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+	<link rel="icon" type="image/png" th:href="@{/image/icons/main_icon1.png}" />
+    <link rel="apple-touch-icon" type="image/png" th:href="@{/image/icons/main_icon1.png}">
+    
+    <link rel="stylesheet" th:href="@{/stylesheets/application.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/pointGraphic.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/home.css}">
+    
+    <title>Admin</title>
+</head>
+<body>
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-danger">Sair</button>
+    </form>
+    <h1>Admin</h1>
+</body>
+</html>

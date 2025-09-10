@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" th:href="@{/image/icons/main_icon1.png}" />
+    <link rel="apple-touch-icon" type="image/png" th:href="@{/image/icons/main_icon1.png}">
+    <title>Error</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; }
+        .error-code { font-size: 72px; color: #dc3545; }
+        .error-message { font-size: 24px; }
+        .details { margin-top: 20px; color: #6c757d; }
+    </style>
+</head>
+<body>
+    <div class="error-code">500</div>
+    <div class="error-message">Ocorreu um erro inesperado no servidor. Tente novamente mais tarde.</div>
+
+    <div class="details" th:if="${message}">
+        <p>Detalhes: <span th:text="${message}"></span></p>
+    </div>
+    
+    <a href="/">Voltar para a página inicial</a>
+</body>
+</html>

@@ -16,6 +16,7 @@
 <body>
     <header class="main-header">
         <article>
+            <a href="/admin" id="admin-btn">Portal Admin</a>
 			<img th:src="@{/image/Logo_Unilab_horizontal_para_fundo_escuro.png}" alt="" height="120px">
             
 			<div>
@@ -38,7 +39,7 @@
                 <nav>
                     <h1>Buscar Serviços</h1>
                     <img th:src="@{/image/icons/down_black.png}"
-                         data-hover-src="@{/image/icons/up_black.png}" 
+                         th:data-hover-src="@{/image/icons/up_black.png}" 
                          alt="" 
                          height="30px" 
                          id="navbar-icon">

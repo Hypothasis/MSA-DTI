@@ -56,6 +56,7 @@ body{
 }
 
 .main-header article {
+    position: absolute;
     width: 1240px;
     display: flex;
     justify-content: space-between;
@@ -64,6 +65,42 @@ body{
     font-family: var(--font-poppins);
     font-size: 0.8rem;
 }
+
+#admin-btn{
+    text-decoration: none;
+    color: white;
+    position: absolute;
+    top: -10%;
+    right: 0%;
+    border: 1px solid white;
+    padding: 7px 20px 7px 20px;
+    border-radius: 7px;
+    font-family: var(--font-ubuntu);
+    overflow: hidden;
+    z-index: 1;
+}
+
+#admin-btn::before{
+    position: absolute;
+    content: '';
+    height: 100%;
+    width: 0;
+    top: 0;
+    left: -1%;
+    background-color: white;
+    z-index: -1;
+
+    transition: all 0.3s ease-in-out;
+}
+
+#admin-btn:hover::before {
+    width: 101%;
+}
+
+#admin-btn:hover {
+    color: black;
+}
+
 
 .main-header article div {
     display: flex;
