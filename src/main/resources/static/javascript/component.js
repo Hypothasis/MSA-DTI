@@ -39,10 +39,10 @@ document.addEventListener('DOMContentLoaded', function () {
             // Se sim muda o icone
             if (alert_icon) {
                 if (!alert_flag) {
-                    alert_icon.src = '../img/icons/sound_black.png'
+                    alert_icon.src = '/image/icons/sound_black.png'
                     alert_flag = true
                 } else {
-                    alert_icon.src = '../img/icons/mute_black.png'
+                    alert_icon.src = '/image/icons/mute_black.png'
                     alert_flag = false
                 }
             }

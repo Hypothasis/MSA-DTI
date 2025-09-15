@@ -21,4 +21,38 @@ document.addEventListener('DOMContentLoaded', function () {
             navbarIcon.src = srcOriginal;
         });
     }
+
+    //#######################################################################
+    //###                     FUNÇÕES PARA O FILTROS                      ###
+    //#######################################################################
+
+    const categoriaCheckboxes = document.querySelectorAll('li:nth-child(1) article input[type="checkbox"]');
+    const estadoCheckboxes = document.querySelectorAll('li:nth-child(2) article input[type="checkbox"]');
+
+    function handleSingleChoice(clickedCheckbox, checkboxGroup) {
+        // Se o usuário está desmarcando o checkbox, não fazemos nada.
+        if (!clickedCheckbox.checked) {
+            return;
+        }
+
+        checkboxGroup.forEach(checkbox => {
+            // Se o checkbox atual for DIFERENTE do que foi clicado...
+            if (checkbox !== clickedCheckbox) {
+                // ...desmarca ele.
+                checkbox.checked = false;
+            }
+        });
+    }
+
+    categoriaCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            handleSingleChoice(checkbox, categoriaCheckboxes);
+        });
+    });
+
+    estadoCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            handleSingleChoice(checkbox, estadoCheckboxes);
+        });
+    });
 })

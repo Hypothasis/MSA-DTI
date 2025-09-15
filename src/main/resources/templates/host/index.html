@@ -54,6 +54,8 @@
 
         <article>
             <ul>
+                <!-- Disponibilidade Global -->
+
                 <li>
                     <div class="title">
                         <h1>Disponibilidade</h1>
@@ -149,6 +151,8 @@
                     </section>
                 </li>
 
+                <!-- Disponibilidade por Seçao -->
+
                 <li>
                     <div class="title">
                         <h1>Disponibilidade Global</h1>
@@ -178,6 +182,8 @@
                     </section>
                 </li>
 
+                <!-- Grafico Line para Latencia em 48h -->
+
                 <li>
                     <div class="title">
                         <h1>Tempo de Resposta</h1>
@@ -187,6 +193,53 @@
                         <div id="responseTimeChart"></div>
                     </section>
                 </li>
+
+                <!-- Gráfico Angle Circle para Memoria -->
+                <li>
+                    <div class="title">
+                        <h1>Uso de Memória RAM</h1>
+                    </div>
+                    <section>
+                        <div id="memoriaChart"></div>
+                    </section>
+                </li>
+
+                <!-- Gráfico Line para CPU em 48h -->
+                <li>
+                    <div class="title">
+                        <h1>Uso de CPU</h1>
+                    </div>
+                    <section>
+                        <div id="cpuChart"></div>
+                    </section>
+                </li>
+
+                <!-- Gráfico Area Spline para Banda larga em 48h -->
+                <li>
+                    <div class="title">
+                        <h1>Banda larga de dados</h1>
+                    </div>
+                    <section>
+                        <div id="dadosChart"></div>
+                    </section>
+                </li>
+
+                <!-- Tempo de Servidor Ativo -->
+                <li>
+                    <div class="title">
+                        <h1>Tempo de servidor ativo</h1>
+                    </div>
+                    <section class="uptimeServer">
+                        <h1 id="diasUptime">0</h1>
+                        <h1>dias</h1>
+                        <h1 id="horasUptime">12</h1>
+                        <h1>horas</h1>
+                        <h1 id="minutosUptime">34</h1>
+                        <h1>minutos</h1>
+                    </section>
+                </li>
+
+                <!-- Eventos Recentes -->
 
                 <li>
                     <div class="title">
@@ -274,7 +327,7 @@
 
                     <li>
                         <button id="alert-btn"> 
-                            <img th:src="@{/img/icons/mute_black.png}" alt="" height="20px">
+                            <img th:src="@{/image/icons/mute_black.png}" alt="" height="20px">
                             <p>Alert Sound</p>
                         </button>
                     </li>

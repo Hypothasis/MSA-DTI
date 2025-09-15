@@ -57,9 +57,62 @@
             </header>
 
             <article>
-                <h1>Serviços e Aplicações</h1>
 
+                <aside>
+                    <h1>Filtros</h1>
+                    <ul>
+                        <li>
+                            <h3>Categoria</h3>
+                            <article>
+                                <div>
+                                    <input type="checkbox" name="categoria" id="cat-servicos">
+                                    <label for="servicos">Serviços/Aplicações</label>
+                                </div>
+
+                                <div>
+                                    <input type="checkbox" name="categoria" id="cat-servidores">
+                                    <label for="servidores">Servidores</label>
+                                </div>
+
+                                <div>
+                                    <input type="checkbox" name="categoria" id="cat-DB">
+                                    <label for="DB">Banco de Dados</label>
+                                </div>
+                            </article>
+                        </li>
+
+                        <li>
+                            <h3>Estados</h3>
+
+                            <article>
+                                <div>
+                                    <input type="checkbox" name="estado" id="funcional">
+                                    <label for="funcional">Funcionando</label>
+                                </div>
+
+                                <div>
+                                    <input type="checkbox" name="estado" id="parado">
+                                    <label for="parado">Parado</label>
+                                </div>
+                            </article>
+                        </li>
+
+                        <li>
+                            <h3>Disponibilidade</h3>
+
+                            <div>
+                                <p>0%</p>
+                                <input type="range" value="100" name="disponibilidade-range" id="disponibilidade-range">
+                                <p>100%</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <button id="filtros-btn">Aplicar</button>
+                </aside>
+                
                 <div class="services-outdoor">
+                    <h1>Serviços e Aplicações</h1>
+                    
                     <ul>
                         <li>
                             <header>

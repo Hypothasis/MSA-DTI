@@ -1,0 +1,59 @@
+Disponibilidade Global em 48h (checagem a cada minuto):
+#Combina a checagem do agent, da porta e do processo
+#Se todos forem validos, a disponibilidade é 1 (true) para esse minuto
+#Senao é 0 (false) para esse minuto
+
+Disponiblidade em 6h:
+
+Disponiblidade em 12h:
+
+Disponiblidade em 24h:
+
+Disponiblidade em 48h:
+
+
+PING em Segundos:
+- Nome: ICMP response time
+  Chave: icmppingsec
+  Último Valor: 0.0007233333333333333 s
+  
+  
+Memoria RAM TOTAL:
+- Nome: Available memory
+  Chave: vm.memory.size[available]
+  Último Valor: 23360073728 B (22 Gb)
+  
+Memoria RAM Utilizada:
+- Nome: Memory utilization
+  Chave: vm.memory.utilization
+  Último Valor: 30.612958000000006 %
+  
+Memoria RAM Disponivel:
+- Nome: Available memory in %
+  Chave: vm.memory.size[pavailable]
+  Último Valor: 69.387042 %
+
+CPU Utilization:
+- Nome: CPU utilization
+  Chave: system.cpu.util
+  Último Valor: 1.1400349999999975 %
+  
+Banda Larga Recebimento de Dados:
+- Nome: Interface eth0: Bits received
+  Chave: net.if.in["eth0"]
+  Último Valor: 1123032 bps
+
+Banda Larga de Envio de Dados:
+- Nome: Interface eth0: Bits sent
+  Chave: net.if.out["eth0"]
+  Último Valor: 598080 bps
+
+Tempo de Servidor ligado:
+- Nome: System uptime
+  Chave: system.uptime
+  Último Valor: 875281 uptime
+  
+Status Zabbix Agent: 
+- Nome: Zabbix agent availability
+  Chave: zabbix[host,agent,available]
+  Último Valor: 1

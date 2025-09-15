@@ -1,0 +1,30 @@
+application
+
+id: (Nome da aplicação)
+work_status: (Status se a aplicação esta rodando ou parada)
+
+disponibilidade (foreigy key)
+    (No total de 172800 dados em 48h, ou seja a cada 1 minuto faz requisição Zabbix)
+    date: (data da requisição)
+    hour: (horaio da requisição H/M/S)
+    status: (True ou False para se o sistema caiu ou nao)
+   
+disponibilidade_global (foreigy key)
+    (Ele obtem todos os dados da table disponibilidade, dividindo em 4 seções)
+    uptime_6h:  (obtém todos os dados das primeiras 6h, dividindo e obtendo a porcentagem)
+    uptime_12h: (obtém todos os dados das primeiras 12h, dividindo e obtendo a porcentagem)
+    uptime_24h: (obtém todos os dados das primeiras 24h, dividindo e obtendo a porcentagem)
+    uptime_48h: (obtém todos os dados das primeiras 48h, dividindo e obtendo a porcentagem)
+
+response_time (foreigy key)
+    (Ele obtem todos os dados do zabbix sobre latência e armazena)
+    lantency: (Latência em ms)
+    date:     (Data da requisição)
+    
+recent_events (foreigy key)
+    (Ele obtem os ultimos 5 eventos da aplicação vindo do zabbix sobre latência, disponibilidade, memoria e etc)
+    type:        (Tipo de evento (okay, important ou error))
+    title:       (Título do evento)
+    description: (Descrição do evento)
+    date:        (Data do evento DD/MM/YYYY)
+    time:        (Horário do evento)
