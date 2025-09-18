@@ -12,5 +12,15 @@ public class AdminController {
     public String index() {
         return "admin/index";
     }
+
+    @GetMapping({"search"})
+    public String search() {
+        return "admin/search";
+    }
+
+    @GetMapping({"create"})
+    public String create() {
+        return "admin/create";
+    }
     
 }

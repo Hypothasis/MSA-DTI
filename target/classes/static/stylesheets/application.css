@@ -11,7 +11,16 @@
     --primary-dark: #0B1623;
     --secondary-dark: #101415; 
 
-    --borda: 1px solid rgb(0, 0, 0) ;
+    --borda: 1px solid rgb(0, 0, 0);
+
+    --card-bg: #ffffff;
+    --text-primary: #1c1e21;
+    --text-secondary: #65676b;
+    --border-color: #e4e6eb;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --shadow-color: rgba(0, 0, 0, 0.1);
 
     /* Fontes */
     --font-poppins: "Poppins", serif;

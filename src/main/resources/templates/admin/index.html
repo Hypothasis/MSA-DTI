@@ -11,14 +11,106 @@
     
     <link rel="stylesheet" th:href="@{/stylesheets/application.css}">
     <link rel="stylesheet" th:href="@{/stylesheets/pointGraphic.css}">
-    <link rel="stylesheet" th:href="@{/stylesheets/home.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/aside.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/admin.css}">
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     
-    <title>Admin</title>
+    <title>Portal Admin</title>
 </head>
 <body>
-    <form th:action="@{/logout}" method="post">
-        <button type="submit" class="btn btn-danger">Sair</button>
-    </form>
-    <h1>Admin</h1>
+
+    <aside>
+        <div>
+            <button id="asideBtn">
+                <img src="/image/icons/hamburguer_black.png" alt="" height="30px">
+            </button>
+            <a href="/" class="title">MSA</a>
+        </div>
+
+        <ul>
+            <li>
+                <a href="/admin" id="homeBtn">
+                    <img src="/image/icons/home_black.png" alt="" height="33px">
+                    <span class="listTitle">Início</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="/admin/search" id="searchBtn">
+                    <img src="/image/icons/search_black.png" alt="" height="33px">
+                    <span class="listTitle">Pesquisar</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/create" id="createBtn">
+                    <img src="/image/icons/create_black.png" alt="" height="33px">
+                    <span class="listTitle">Criar Host</span>
+                </a>
+            </li> 
+        </ul>
+
+        <a href="/logout" id="logoutBtn">
+            <img src="/image/icons/logout_black.png" alt="" height="33px">
+            <p class="listTitle">Sair</p>
+        </a>
+    </aside>
+
+    <main id="home">
+        <h1 class="mainTitle">Início</h1>
+
+        <div class="dashboard-grid">
+
+            <div class="kpi-cards-container">
+                <div class="kpi-card">
+                    <p>Hosts Monitorados</p>
+                    <h2 id="kpi-total-hosts">99</h2>
+                </div>
+                <div class="kpi-card">
+                    <p>Hosts Ativos</p>
+                    <h2 id="kpi-active-hosts" class="text-success">--</h2>
+                </div>
+                <div class="kpi-card">
+                    <p>Hosts com Problemas</p>
+                    <h2 id="kpi-problem-hosts" class="text-danger">--</h2>
+                </div>
+                <div class="kpi-card">
+                    <p>Hosts Parados</p>
+                    <h2 id="kpi-unreachable-hosts" class="text-warning">--</h2>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <div class="dashboard-widget">
+                    <h3>Últimos Alertas Críticos</h3>
+
+                    <div id="alert-feed-container">
+                        <p>Carregando alertas...</p>
+                    </div>
+                </div>
+
+                <div class="dashboard-widget">
+                    <h3>Top 5 Hosts com Mais Problemas (48h)</h3>
+
+                    <div id="top-hosts-container">
+                        <p>Carregando dados...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-content">
+                <div class="dashboard-widget">
+                    <h3>Disponibilidade Média Geral (48h)</h3>
+                    <div id="disponMediaChart">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="/javascript/aside.js"></script>
+    <script src="/javascript/admin.js"></script>
+    <script src="/javascript/adminRequest.js"></script>
 </body>
 </html>

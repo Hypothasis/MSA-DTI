@@ -1,0 +1,203 @@
+/*############# CREATE #############*/
+
+#create {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    box-sizing: border-box;
+}
+
+/* --- Formulário Principal --- */
+#host-form {
+    height: 30%;
+    width: 100%;
+    background-color: var(--color-bg-light); /* Cor de fundo para o formulário */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px grey;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    height: 20%;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--color-text-dark);
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group textarea {
+    height: 60%;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 4px;
+    font-size: 1em;
+    box-sizing: border-box; /* Garante que padding e border não aumentem a largura */
+}
+
+.form-group textarea {
+    resize: vertical; /* Permite redimensionar apenas na vertical */
+    min-height: 70px;
+}
+
+/* --- Abas de Navegação (Tab Navigation) --- */
+.tabs-container {
+    height: 45%;
+    width: 100%;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px grey;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.tabs-nav {
+    display: flex;
+    justify-content: space-between; /* Espaço entre os botões */
+    border-bottom: 2px solid var(--color-border);
+    margin-bottom: 20px;
+}
+
+.tab-button {
+    flex-grow: 1; /* Faz com que os botões ocupem o espaço disponível */
+    padding: 15px 20px;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid transparent; /* Para o efeito de ativação */
+    color:  black;
+    font-family: var(--font-nunito);
+    font-size: 1em;
+    font-weight: 300;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.tab-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.tab-button.active {
+    border-bottom-color: var(--color-primary); /* Cor de destaque da aba ativa */
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* --- Conteúdo das Abas (Tab Content) --- */
+
+.tabs-content {
+    border: 1px solid rgb(161, 161, 161);
+    border-radius: 5px;
+    padding: 5px 10px 5px 10px;
+    height: 80%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+    padding: 10px 0;
+}
+
+/* --- Grupos de Gráficos (Checkboxes) --- */
+.chart-group {
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.chart-group h3 {
+    font-size: 1.5em;
+    color: black;
+    font-family: var(--font-roboto);
+    margin-bottom: 15px;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.checkbox-group label {
+    margin-bottom: 10px;
+    font-size: 1em;
+    color: black;
+    font-family: var(--font-raleway);
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+/* --- Botão de Envio --- */
+
+.gradient {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  border-radius: 4px;
+  margin-top: -0.25em;
+  background-image: linear-gradient(
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0),
+    rgba(0, 0, 0, 0.3)
+  );
+}
+
+.label {
+  position: relative;
+  top: -1px;
+}
+
+.transition {
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  transition-duration: 500ms;
+  background-color: rgba(16, 185, 129, 0.6);
+  border-radius: 100%;
+  width: 0;
+  height: 0;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#hostCreateBtn {
+    font-size: 0.9rem;
+    padding: 20px 30px;
+    font-weight: 500;
+    background: #3e4f68;
+    color: white;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#hostCreateBtn:hover .transition {
+  width: 14em;
+  height: 14em;
+}
+
+#hostCreateBtn:active  {
+  transform: scale(0.97);
+}

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+	<link rel="icon" type="image/png" th:href="@{/image/icons/main_icon1.png}" />
+    <link rel="apple-touch-icon" type="image/png" th:href="@{/image/icons/main_icon1.png}">
+    
+    <link rel="stylesheet" th:href="@{/stylesheets/application.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/pointGraphic.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/aside.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/create.css}">
+    
+    <title>Criar Host</title>
+</head>
+<body>
+
+    <aside>
+        <div>
+            <button id="asideBtn">
+                <img src="/image/icons/hamburguer_black.png" alt="" height="30px">
+            </button>
+            <a href="/" class="title">MSA</a>
+        </div>
+
+        <ul>
+            <li>
+                <a href="/admin" id="homeBtn">
+                    <img src="/image/icons/home_black.png" alt="" height="33px">
+                    <span class="listTitle">Início</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="/admin/search" id="searchBtn">
+                    <img src="/image/icons/search_black.png" alt="" height="33px">
+                    <span class="listTitle">Pesquisar</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/create" id="createBtn">
+                    <img src="/image/icons/create_black.png" alt="" height="33px">
+                    <span class="listTitle">Criar Host</span>
+                </a>
+            </li> 
+        </ul>
+
+        <a href="/logout" id="logoutBtn">
+            <img src="/image/icons/logout_black.png" alt="" height="33px">
+            <p class="listTitle">Sair</p>
+        </a>
+    </aside>
+
+    <main id="create">
+        <h1 class="mainTitle">Criar Host</h1>
+
+        <form id="host-form">
+            <div class="form-group">
+                <label for="host-name">Nome do Host</label>
+                <input type="text" id="host-name" name="host-name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="host-zabbix-id">ID do Host via Zabbix</label>
+                <input type="number" min="0" id="host-zabbix-id" name="host-zabbix-id" required>
+            </div>
+
+            <div class="form-group">
+                <label for="host-description">Descrição do Host</label>
+                <textarea id="host-description" name="host-description"></textarea>
+            </div>
+        </form>
+
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-button active" data-tab="aplicacao">Aplicação/Serviço</button>
+                <button class="tab-button" data-tab="servidores">Servidores</button>
+                <button class="tab-button" data-tab="banco-dados">Banco de Dados</button>
+            </div>
+
+            <div class="tabs-content">
+
+                <div id="tab-aplicacao" class="tab-pane active">
+                    <div class="chart-group">
+                        <h3>Disponibilidade</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="aplicacao-disponibilidade-global"> Disponibilidade Global (48h)</label>
+                            <label><input type="checkbox" name="aplicacao-disponibilidade-especifica"> Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Latência</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="aplicacao-latencia-tempo-resposta"> Tempo de resposta</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>CPU</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="aplicacao-cpu-uso"> Uso de CPU</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Memória</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="aplicacao-memoria-uso-ram"> Uso de memória RAM</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Armazenamento</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="aplicacao-armazenamento-uso"> Uso de armazenamento</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Dados</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="aplicacao-dados-banda-larga"> Banda Larga de Dados</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Outros</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="aplicacao-outros-tempo-ativo"> Tempo de Servidor Ativo</label>
+                            <label><input type="checkbox" name="aplicacao-outros-eventos-recentes"> Eventos Recentes</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-servidores" class="tab-pane">
+                    <div class="chart-group">
+                        <h3>Disponibilidade</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="servidores-disponibilidade-global"> Disponibilidade Global (48h)</label>
+                            <label><input type="checkbox" name="servidores-disponibilidade-especifica"> Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Sistema Operacional</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="servidores-so"> Sistema Operacional (SO e Arquitetura)</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>CPU</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="servidores-cpu-uso"> Uso de CPU</label>
+                            <label><input type="checkbox" name="servidores-cpu-processos"> Processos (Num MAX e atuais)</label>
+                            <label><input type="checkbox" name="servidores-cpu-troca-contextos"> Troca de Contextos</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Memória</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="servidores-memoria-uso-ram"> Uso de memória RAM</label>
+                            <label><input type="checkbox" name="servidores-memoria-uso-swap"> Uso de memória SWAP</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Armazenamento</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="servidores-armazenamento-uso"> Uso de armazenamento</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Dados</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="servidores-dados-banda-larga"> Banda Larga de Dados</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Outros</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="servidores-outros-tempo-ativo"> Tempo de Servidor Ativo</label>
+                            <label><input type="checkbox" name="servidores-outros-eventos-recentes"> Eventos Recentes</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-banco-dados" class="tab-pane">
+                    <div class="chart-group">
+                        <h3>Disponibilidade</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="bd-disponibilidade-global"> Disponibilidade Global (48h)</label>
+                            <label><input type="checkbox" name="bd-disponibilidade-especifica"> Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>CPU</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="bd-cpu-uso"> Uso de CPU</label>
+                            <label><input type="checkbox" name="bd-cpu-processos"> Processos (Num MAX e atuais)</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Memória</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="bd-memoria-uso-ram"> Uso de memória RAM</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Armazenamento</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="bd-armazenamento-uso"> Uso de armazenamento</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Dados</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="bd-dados-banda-larga"> Banda Larga de Dados</label>
+                        </div>
+                    </div>
+
+                    <div class="chart-group">
+                        <h3>Outros</h3>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="bd-outros-tempo-ativo"> Tempo de Servidor Ativo</label>
+                            <label><input type="checkbox" name="bd-outros-eventos-recentes"> Eventos Recentes</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <button type="submit" form="host-form" id="hostCreateBtn" class="btn-submit">
+            <span class="transition"></span>
+            <span class="gradient"></span>
+            <span class="label">Submeter</span>
+        </button>
+
+    </main>
+
+    <script src="/javascript/aside.js"></script>
+    <script src="/javascript/create.js"></script>
+    <script src="/javascript/createRequest.js"></script>
+
+</body>
+</html>

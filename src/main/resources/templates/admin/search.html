@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+	<link rel="icon" type="image/png" th:href="@{/image/icons/main_icon1.png}" />
+    <link rel="apple-touch-icon" type="image/png" th:href="@{/image/icons/main_icon1.png}">
+    
+    <link rel="stylesheet" th:href="@{/stylesheets/application.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/pointGraphic.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/aside.css}">
+    <link rel="stylesheet" th:href="@{/stylesheets/search.css}">
+    
+    <title>Pesquisar</title>
+</head>
+<body>
+    
+    <aside>
+        <div>
+            <button id="asideBtn">
+                <img src="/image/icons/hamburguer_black.png" alt="" height="30px">
+            </button>
+            <a href="/" class="title">MSA</a>
+        </div>
+
+        <ul>
+            <li>
+                <a href="/admin" id="homeBtn">
+                    <img src="/image/icons/home_black.png" alt="" height="33px">
+                    <span class="listTitle">Início</span>
+                </a>
+            </li>
+            
+            <li>
+                <a href="/admin/search" id="searchBtn">
+                    <img src="/image/icons/search_black.png" alt="" height="33px">
+                    <span class="listTitle">Pesquisar</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="/admin/create" id="createBtn">
+                    <img src="/image/icons/create_black.png" alt="" height="33px">
+                    <span class="listTitle">Criar Host</span>
+                </a>
+            </li> 
+        </ul>
+
+        <a href="/logout" id="logoutBtn">
+            <img src="/image/icons/logout_black.png" alt="" height="33px">
+            <p class="listTitle">Sair</p>
+        </a>
+    </aside>
+
+    <main id="search">
+        <h1 class="mainTitle">Pesquisar</h1>
+
+        <header>
+            <input type="text" name="" id="inputSearch">
+            <div>
+                <button id="filtrosBtn">
+                    <span class="transition"></span>
+                    <span class="gradient"></span>
+                    <span class="label">Filtros</span>
+                </button>
+                <ul id="filtrosCats">
+                    <li>
+                        <input type="checkbox" name="" id="cat-App">
+                        <label for="">Aplicações</label>
+                    </li>
+
+                    <li>
+                        <input type="checkbox" name="" id="cat-Server">
+                        <label for="">Servidores</label>
+                    </li>
+
+                    <li>
+                        <input type="checkbox" name="" id="cat-DB">
+                        <label for="">Banco de Dados</label>
+                    </li>
+                </ul>
+            </div>
+            <button id="searchBtn2">
+                <span class="transition"></span>
+                <span class="gradient"></span>
+                <span class="label">Pesquisar</span>
+            </button>
+        </header>
+
+        <article>
+            <ul>
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li>
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+            </ul>
+        </article>
+    </main>
+
+    <script src="/javascript/aside.js"></script>
+    <script src="/javascript/search.js"></script>
+    <script src="/javascript/searchRequest.js"></script>
+
+</body>
+</html>
