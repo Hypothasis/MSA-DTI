@@ -1,7 +1,7 @@
 /home/hypotasis/eclipse-workspace/MSA/src/main/java/br/com/dti/msa/MsaApplication.java
 /home/hypotasis/eclipse-workspace/MSA/src/main/java/br/com/dti/msa/controller/AdminController.java
+/home/hypotasis/eclipse-workspace/MSA/src/main/java/br/com/dti/msa/controller/CustomErrorController.java
 /home/hypotasis/eclipse-workspace/MSA/src/main/java/br/com/dti/msa/controller/DebugController.java
-/home/hypotasis/eclipse-workspace/MSA/src/main/java/br/com/dti/msa/controller/ForbiddenController.java
 /home/hypotasis/eclipse-workspace/MSA/src/main/java/br/com/dti/msa/controller/HomeController.java
 /home/hypotasis/eclipse-workspace/MSA/src/main/java/br/com/dti/msa/controller/HostController.java
 /home/hypotasis/eclipse-workspace/MSA/src/main/java/br/com/dti/msa/security/SecurityConfig.java

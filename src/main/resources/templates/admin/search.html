@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,21 +27,21 @@
         </div>
 
         <ul>
-            <li>
+            <li sec:authorize="hasAuthority('index_admin')">
                 <a href="/admin" id="homeBtn">
                     <img src="/image/icons/home_black.png" alt="" height="33px">
                     <span class="listTitle">Início</span>
                 </a>
             </li>
             
-            <li>
+            <li sec:authorize="hasAuthority('search_admin')">
                 <a href="/admin/search" id="searchBtn">
                     <img src="/image/icons/search_black.png" alt="" height="33px">
                     <span class="listTitle">Pesquisar</span>
                 </a>
             </li>
 
-            <li>
+            <li sec:authorize="hasAuthority('create_admin')">
                 <a href="/admin/create" id="createBtn">
                     <img src="/image/icons/create_black.png" alt="" height="33px">
                     <span class="listTitle">Criar Host</span>
@@ -99,15 +99,15 @@
                     </header>
 
                     <div>
-                        <button class="read">
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
                             <img src="/image/icons/read_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="update">
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
                             <img src="/image/icons/update_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="delete">
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
                             <img src="/image/icons/delete_white.png" alt="" height="25px">
                         </button>
                     </div>
@@ -120,15 +120,15 @@
                     </header>
 
                     <div>
-                        <button class="read">
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
                             <img src="/image/icons/read_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="update">
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
                             <img src="/image/icons/update_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="delete">
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
                             <img src="/image/icons/delete_white.png" alt="" height="25px">
                         </button>
                     </div>
@@ -141,15 +141,15 @@
                     </header>
 
                     <div>
-                        <button class="read">
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
                             <img src="/image/icons/read_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="update">
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
                             <img src="/image/icons/update_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="delete">
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
                             <img src="/image/icons/delete_white.png" alt="" height="25px">
                         </button>
                     </div>
@@ -162,15 +162,15 @@
                     </header>
 
                     <div>
-                        <button class="read">
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
                             <img src="/image/icons/read_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="update">
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
                             <img src="/image/icons/update_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="delete">
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
                             <img src="/image/icons/delete_white.png" alt="" height="25px">
                         </button>
                     </div>
@@ -183,15 +183,15 @@
                     </header>
 
                     <div>
-                        <button class="read">
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
                             <img src="/image/icons/read_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="update">
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
                             <img src="/image/icons/update_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="delete">
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
                             <img src="/image/icons/delete_white.png" alt="" height="25px">
                         </button>
                     </div>
@@ -204,15 +204,15 @@
                     </header>
 
                     <div>
-                        <button class="read">
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
                             <img src="/image/icons/read_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="update">
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
                             <img src="/image/icons/update_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="delete">
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
                             <img src="/image/icons/delete_white.png" alt="" height="25px">
                         </button>
                     </div>
@@ -225,78 +225,15 @@
                     </header>
 
                     <div>
-                        <button class="read">
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
                             <img src="/image/icons/read_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="update">
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
                             <img src="/image/icons/update_white.png" alt="" height="25px">
                         </button>
     
-                        <button class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li>
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li>
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li>
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button class="delete">
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
                             <img src="/image/icons/delete_white.png" alt="" height="25px">
                         </button>
                     </div>

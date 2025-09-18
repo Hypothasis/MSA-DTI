@@ -8,9 +8,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/host")
 public class HostController {
 
-    @GetMapping("/")
-    public String index() {
-        return "host/index";
+    @GetMapping("/app")
+    public String app() {
+        return "host/app";
+    }
+
+    @GetMapping("/server")
+    public String server() {
+        return "host/server";
+    }
+
+    @GetMapping("/db")
+    public String db() {
+        return "host/db";
     }
 
 }

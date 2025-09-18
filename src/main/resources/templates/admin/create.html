@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,21 +27,21 @@
         </div>
 
         <ul>
-            <li>
+            <li sec:authorize="hasAuthority('index_admin')">
                 <a href="/admin" id="homeBtn">
                     <img src="/image/icons/home_black.png" alt="" height="33px">
                     <span class="listTitle">Início</span>
                 </a>
             </li>
             
-            <li>
+            <li sec:authorize="hasAuthority('search_admin')">
                 <a href="/admin/search" id="searchBtn">
                     <img src="/image/icons/search_black.png" alt="" height="33px">
                     <span class="listTitle">Pesquisar</span>
                 </a>
             </li>
 
-            <li>
+            <li sec:authorize="hasAuthority('create_admin')">
                 <a href="/admin/create" id="createBtn">
                     <img src="/image/icons/create_black.png" alt="" height="33px">
                     <span class="listTitle">Criar Host</span>
@@ -55,7 +55,7 @@
         </a>
     </aside>
 
-    <main id="create">
+    <main sec:authorize="hasAuthority('ADMIN_CREATE')" id="create">
         <h1 class="mainTitle">Criar Host</h1>
 
         <form id="host-form">
@@ -249,6 +249,10 @@
             <span class="label">Submeter</span>
         </button>
 
+    </main>
+
+    <main sec:authorize="!hasAuthority('ADMIN_CREATE')" style="display: flex;justify-content: center;align-items: center;font-family: var(--font-nunito);">
+        <h1>Você não tem acesso para criar hosts!</h1>
     </main>
 
     <script src="/javascript/aside.js"></script>

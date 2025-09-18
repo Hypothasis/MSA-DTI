@@ -13,7 +13,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     
-    <title>HOST</title>
+    <title>SERVER</title>
 </head>
 <body>
     <header class="main-header">
@@ -30,7 +30,7 @@
 
                 <ul>
                     <li><p>Última atualização</p></li>
-                    <li><p id="lastUpdateTime">00:00:00</p></li> 
+                    <li><p id="lastUpdateTime">--:--:--</p></li> 
                     <li><p>|</p></li>
                     <li><p>Próxima atualização em</p></li>
                     <li><p id="countDownTime">00s.</p></li>
@@ -41,12 +41,12 @@
 
     <main>
         <header>
-            <div class="dot green" id="hostStatusPoint"></div>
+            <div class="dot yellow" id="hostStatusPoint"></div>
             <section>
                 <div class="hostOutdoor">
-                    <h1 id="hostName">SIGAA</h1>
+                    <h1 id="hostName">SEI-SIP-01</h1>
                     <h1>está</h1>
-                    <h1 class="flag green" id="hostStatusFlag">Funcionando</h1>
+                    <h1 class="flag yellow" id="hostStatusFlag">com Alerta!</h1>
                 </div>
                 <p>Checagem a cada minuto</p>
             </section>
@@ -182,15 +182,47 @@
                     </section>
                 </li>
 
-                <!-- Grafico Line para Latencia em 48h -->
+                <!-- Sistema Operacional -->
 
                 <li>
                     <div class="title">
-                        <h1>Tempo de Resposta</h1>
-                        <p>- últimas 48h</p>
+                        <h1>Sistema Operacional</h1>
                     </div>
                     <section>
-                        <div id="responseTimeChart"></div>
+                        <div class="os">
+                            <h1>Linux version 3.10.0-693.17.1.el7.x86_64</h1>
+                            <p>x86_64</p>
+                        </div>
+                    </section>
+                </li>
+
+                <!-- Gráfico Line para CPU em 48h -->
+                <li>
+                    <div class="title">
+                        <h1>Uso de CPU</h1>
+                    </div>
+                    <section>
+                        <div id="cpuChart"></div>
+                    </section>
+                </li>
+
+                <!-- Gráfico Area Spline para Processos CPU -->
+                <li>
+                    <div class="title">
+                        <h1>Processos do CPU</h1>
+                    </div>
+                    <section>
+                        <div id="cpuProcessosChart"></div>
+                    </section>
+                </li>
+
+                <!-- Gráfico Line para troca de contextos CPU em 48h -->
+                <li>
+                    <div class="title">
+                        <h1>Troca de contextos da CPU</h1>
+                    </div>
+                    <section>
+                        <div id="cpuContextosChart"></div>
                     </section>
                 </li>
 
@@ -204,15 +236,25 @@
                     </section>
                 </li>
 
-                <!-- Gráfico Line para CPU em 48h -->
+                <!-- Gráfico Angle Circle para SWAP -->
                 <li>
                     <div class="title">
-                        <h1>Uso de CPU</h1>
+                        <h1>Uso de Memória SWAP</h1>
                     </div>
                     <section>
-                        <div id="cpuChart"></div>
+                        <div id="swapChart"></div>
                     </section>
                 </li>
+
+                <!-- Gráfico Angle Circle para Armazenamento -->
+                <li>
+                    <div class="title">
+                        <h1>Uso de Armazenamento</h1>
+                    </div>
+                    <section>
+                        <div id="armazenamentoChart"></div>
+                    </section>
+                </li> 
 
                 <!-- Gráfico Area Spline para Banda larga em 48h -->
                 <li>
@@ -337,7 +379,6 @@
     </footer>
 
     <script th:src="@{/javascript/component.js}"></script>
-    <script th:src="@{/javascript/hostRequest.js}"></script>
-    <script th:src="@{/javascript/host.js}"></script>
+    <script th:src="@{/javascript/TemplateServerRequest.js}"></script>
 </body>
 </html>

@@ -42,7 +42,9 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll() 
                 .requestMatchers("/host/**").permitAll()
                 .requestMatchers("debug/**").permitAll()
-                .requestMatchers("/admin/**").hasAuthority("ADMIN")
+                .requestMatchers("/admin", "/admin/").hasAuthority("index_admin")
+                .requestMatchers("/admin/search", "/admin/search/").hasAuthority("search_admin")
+                .requestMatchers("/admin/create", "/admin/create/").hasAuthority("create_admin")
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2

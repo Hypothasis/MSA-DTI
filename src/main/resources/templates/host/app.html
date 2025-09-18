@@ -13,7 +13,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     
-    <title>HOST</title>
+    <title>APP</title>
 </head>
 <body>
     <header class="main-header">
@@ -30,7 +30,7 @@
 
                 <ul>
                     <li><p>Última atualização</p></li>
-                    <li><p id="lastUpdateTime">00:00:00</p></li> 
+                    <li><p id="lastUpdateTime">--:--:--</p></li> 
                     <li><p>|</p></li>
                     <li><p>Próxima atualização em</p></li>
                     <li><p id="countDownTime">00s.</p></li>
@@ -194,6 +194,16 @@
                     </section>
                 </li>
 
+                <!-- Gráfico Line para CPU em 48h -->
+                <li>
+                    <div class="title">
+                        <h1>Uso de CPU</h1>
+                    </div>
+                    <section>
+                        <div id="cpuChart"></div>
+                    </section>
+                </li>
+
                 <!-- Gráfico Angle Circle para Memoria -->
                 <li>
                     <div class="title">
@@ -204,13 +214,13 @@
                     </section>
                 </li>
 
-                <!-- Gráfico Line para CPU em 48h -->
+                <!-- Gráfico Angle Circle para Armazenamento -->
                 <li>
                     <div class="title">
-                        <h1>Uso de CPU</h1>
+                        <h1>Uso de Armazenamento</h1>
                     </div>
                     <section>
-                        <div id="cpuChart"></div>
+                        <div id="armazenamentoChart"></div>
                     </section>
                 </li>
 
@@ -337,7 +347,6 @@
     </footer>
 
     <script th:src="@{/javascript/component.js}"></script>
-    <script th:src="@{/javascript/hostRequest.js}"></script>
-    <script th:src="@{/javascript/host.js}"></script>
+    <script th:src="@{/javascript/TemplateAppRequest.js}"></script>
 </body>
 </html>

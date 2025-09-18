@@ -1,7 +1,7 @@
-br/com/dti/msa/MsaApplication.class
 br/com/dti/msa/controller/DebugController.class
 br/com/dti/msa/controller/HostController.class
-br/com/dti/msa/controller/AdminController.class
 br/com/dti/msa/security/SecurityConfig.class
+br/com/dti/msa/controller/CustomErrorController.class
+br/com/dti/msa/MsaApplication.class
+br/com/dti/msa/controller/AdminController.class
 br/com/dti/msa/controller/HomeController.class
-br/com/dti/msa/controller/ForbiddenController.class

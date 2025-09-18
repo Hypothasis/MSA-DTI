@@ -25,7 +25,7 @@ main > header{
     align-items: center;
     justify-content: center;
 
-    top: 22%;
+    top: 20%;
     left: 17.5%;
 
     text-decoration: none;
@@ -53,6 +53,11 @@ main > header{
     animation: 1.5s greenPulse infinite ease-in-out;
 }
 
+.dot.yellow{
+    background-color: #dbd94b;
+    animation: 1.5s yellowPulse infinite ease-in-out;
+}
+
 .dot.red{
     background-color: #e62f2f;
     animation: 1.5s redPulse infinite ease-in-out;
@@ -73,6 +78,11 @@ main > header > section{
 .flag.green{
     color: #4bdb87;
 }
+
+.flag.yellow{
+    color: #cacc38;
+}
+
 
 .flag.red{
     color: #e62f2f;
@@ -180,6 +190,15 @@ main > article > ul > li > section {
     font-family: var(--font-ubuntu);
 }
 
+.os{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-raleway);
+    gap: 15px;
+}
+
 .recentEvents{
     height: 100%;
     width: 100%;
@@ -258,6 +277,16 @@ main > article > ul > li > section {
 
   100% {
     box-shadow: 0 0 0 40px #69ffa800;
+  }
+}
+
+@keyframes yellowPulse {
+  0% {
+    box-shadow: 0 0 0 0 #e4e671;
+  }
+
+  100% {
+    box-shadow: 0 0 0 40px #fff56900;
   }
 }
 

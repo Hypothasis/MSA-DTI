@@ -73,6 +73,7 @@ body{
     color: white;
     font-family: var(--font-poppins);
     font-size: 0.8rem;
+    margin-bottom: 30px;
 }
 
 #admin-btn{

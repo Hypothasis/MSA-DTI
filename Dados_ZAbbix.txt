@@ -12,48 +12,92 @@ Disponiblidade em 24h:
 Disponiblidade em 48h:
 
 
-PING em Segundos:
+PING em Segundos: (app)
 - Nome: ICMP response time
   Chave: icmppingsec
   Último Valor: 0.0007233333333333333 s
+
+Sistema operacional: (server)
+- Nome: Operating system
+  Chave: system.sw.os
+  Último Valor: Linux version 3.10.0-693.17.1.el7.x86_64 (builder@kbuilder.dev.centos.org) (gcc version 4.8.5 20150623 (Red Hat 4.8.5-16) (GCC) ) #1 SMP Thu Jan 25 20:13:58 UTC 2018 
+
+Arquietura do Sistema Operacional: (server)
+- Nome: Operating system architecture
+  Chave: system.sw.arch
+  Último Valor: x86_64 
   
-  
-Memoria RAM TOTAL:
+Uso de CPU: (app, server, db)
+- Nome: CPU utilization
+  Chave: system.cpu.util
+  Último Valor: 1.1400349999999975 %
+
+Num MAX de processos: (server, db)
+- Nome: Maximum number of processes
+  Chave: kernel.maxproc
+  Último Valor: 32768 
+
+Num Atual de processos: (server, db)
+- Nome: Number of processes
+  Chave: proc.num
+  Último Valor: 163 
+
+Troca de contextos por segundos: (server)
+- Nome: Context switches per second
+  Chave: system.cpu.switches
+  Último Valor: 646.7735530765996 
+
+Memoria RAM TOTAL: (app, server, db)
 - Nome: Available memory
   Chave: vm.memory.size[available]
   Último Valor: 23360073728 B (22 Gb)
   
-Memoria RAM Utilizada:
+Memoria RAM Utilizada: (app, server, db)
 - Nome: Memory utilization
   Chave: vm.memory.utilization
   Último Valor: 30.612958000000006 %
   
-Memoria RAM Disponivel:
+Memoria RAM Disponivel: (app, server, db)
 - Nome: Available memory in %
   Chave: vm.memory.size[pavailable]
   Último Valor: 69.387042 %
 
-CPU Utilization:
-- Nome: CPU utilization
-  Chave: system.cpu.util
-  Último Valor: 1.1400349999999975 %
+Memoria SWAP total: (server)
+- Nome: Total swap space
+  Chave: system.swap.size[,total]
+  Último Valor: 2147479552 B
+
+Memoria SWAP livre: (server)
+- Nome: Free swap space
+  Chave: system.swap.size[,free]
+  Último Valor: 2147479552 B
+
+Armazenamento Total: (app, server, db)
+- Nome: /: Total space
+  Chave: vfs.fs.size[/,total]
+  Último Valor: 82655051776 B (GB = dado/(1024 * 1024 * 1024))
+
+Armazenamento Livre: (app, server, db)
+- Nome: /: Used space
+  Chave: vfs.fs.size[/,used]
+  Último Valor: 21198548992 B (GB = dado/(1024 * 1024 * 1024))
   
-Banda Larga Recebimento de Dados:
+Banda Larga Recebimento de Dados: (app, server, db)
 - Nome: Interface eth0: Bits received
   Chave: net.if.in["eth0"]
   Último Valor: 1123032 bps
 
-Banda Larga de Envio de Dados:
+Banda Larga de Envio de Dados: (app, server, db)
 - Nome: Interface eth0: Bits sent
   Chave: net.if.out["eth0"]
   Último Valor: 598080 bps
 
-Tempo de Servidor ligado:
+Tempo de Servidor ligado: (app, server, db)
 - Nome: System uptime
   Chave: system.uptime
   Último Valor: 875281 uptime
   
-Status Zabbix Agent: 
+Status Zabbix Agent: (app, server, db)
 - Nome: Zabbix agent availability
   Chave: zabbix[host,agent,available]
   Último Valor: 1
