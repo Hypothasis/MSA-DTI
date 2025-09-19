@@ -72,15 +72,23 @@ Memoria SWAP livre: (server)
   Chave: system.swap.size[,free]
   Último Valor: 2147479552 B
 
-Armazenamento Total: (app, server, db)
+Armazenamento: (app, server, db)
 - Nome: /: Total space
   Chave: vfs.fs.size[/,total]
-  Último Valor: 82655051776 B (GB = dado/(1024 * 1024 * 1024))
+  Último Valor: 82655051776 B
 
-Armazenamento Livre: (app, server, db)
 - Nome: /: Used space
   Chave: vfs.fs.size[/,used]
-  Último Valor: 21198548992 B (GB = dado/(1024 * 1024 * 1024))
+  Último Valor: 20821872640 B
+
+  - Nome: /boot: Total space
+  Chave: vfs.fs.size[/boot,total]
+  Último Valor: 1063256064 B
+
+- Nome: /boot: Used space
+  Chave: vfs.fs.size[/boot,used]
+  Último Valor: 240865280 B
+
   
 Banda Larga Recebimento de Dados: (app, server, db)
 - Nome: Interface eth0: Bits received

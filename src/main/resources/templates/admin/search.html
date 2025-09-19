@@ -92,7 +92,7 @@
 
         <article>
             <ul>
-                <li>
+                <li data-host-id="123">
                     <header>
                         <h6>Sigaa</h6>
                         <p>Aplicação SIGAA</p>
@@ -113,7 +113,7 @@
                     </div>
                 </li>
 
-                <li>
+                <li data-host-id="123">
                     <header>
                         <h6>Sigaa</h6>
                         <p>Aplicação SIGAA</p>
@@ -134,7 +134,7 @@
                     </div>
                 </li>
 
-                <li>
+                <li data-host-id="123">
                     <header>
                         <h6>Sigaa</h6>
                         <p>Aplicação SIGAA</p>
@@ -155,7 +155,7 @@
                     </div>
                 </li>
 
-                <li>
+                <li data-host-id="123">
                     <header>
                         <h6>Sigaa</h6>
                         <p>Aplicação SIGAA</p>
@@ -176,7 +176,7 @@
                     </div>
                 </li>
 
-                <li>
+                <li data-host-id="123">
                     <header>
                         <h6>Sigaa</h6>
                         <p>Aplicação SIGAA</p>
@@ -197,7 +197,7 @@
                     </div>
                 </li>
 
-                <li>
+                <li data-host-id="123">
                     <header>
                         <h6>Sigaa</h6>
                         <p>Aplicação SIGAA</p>
@@ -218,7 +218,91 @@
                     </div>
                 </li>
 
-                <li>
+                <li data-host-id="123">
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li data-host-id="123">
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li data-host-id="123">
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li data-host-id="123">
+                    <header>
+                        <h6>Sigaa</h6>
+                        <p>Aplicação SIGAA</p>
+                    </header>
+
+                    <div>
+                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
+                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
+                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                        </button>
+    
+                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
+                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                        </button>
+                    </div>
+                </li>
+
+                <li data-host-id="123">
                     <header>
                         <h6>Sigaa</h6>
                         <p>Aplicação SIGAA</p>
@@ -241,6 +325,487 @@
             </ul>
         </article>
     </main>
+
+    <div id="read-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modal-read-name">Nome do Host</h2>
+            <p><strong>Descrição:</strong> <span id="modal-read-description">Aplicação do SIGAA</span></p>
+            <p><strong>ID no Zabbix:</strong> <span id="modal-read-zabbix-id">10687</span></p>
+            <p><strong>ID no DB:</strong> <span id="modal-read-db-id">2</span></p>
+            <p><strong>Tipo:</strong> <span id="modal-read-type">Serviço/Aplicação</span></p>
+            <p><strong>Gráficos</strong></p>
+            <ul>
+                <li>Disponibilidade Global (48h)</li>
+                <li>Disponibilidade Específica (48h, 24h, 12h, 6h)</li>
+                <li>Tempo de resposta</li>
+                <li>Uso de CPU</li>
+                <li>Uso de memória RAM<</li>
+                <li>Uso de armazenamento</li>
+                <li>Banda Larga de Dados</li>
+                <li>Tempo de Servidor Ativo</li>
+                <li>Eventos Recentes</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="update-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Editar Host</h2>
+            <form id="update-host-form">
+                <input type="hidden" id="modal-update-id" name="hostId">
+                
+                <div class="form-group">
+                    <label for="modal-update-name">Nome do Host</label>
+                    <input type="text" id="modal-update-name" name="hostName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="modal-update-name">ID do Host via Zabbix</label>
+                    <input type="text" id="modal-update-zabbixID" name="zabbixID" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="modal-update-description">Descrição</label>
+                    <textarea id="modal-update-description" name="description"></textarea>
+                </div>
+
+                <div class="tabs-container">
+                    <div class="tabs-nav">
+                        <input type="radio" id="type-aplicacao" name="host-type" value="aplicacao" class="tab-radio" data-tab="aplicacao" checked>
+                        <label for="type-aplicacao" class="tab-button">Aplicação/Serviço</label>
+
+                        <input type="radio" id="type-servidores" name="host-type" value="servidores" class="tab-radio" data-tab="servidores">
+                        <label for="type-servidores" class="tab-button">Servidores</label>
+
+                        <input type="radio" id="type-banco-dados" name="host-type" value="banco-dados" class="tab-radio" data-tab="banco-dados">
+                        <label for="type-banco-dados" class="tab-button">Banco de Dados</label>
+                    </div>
+
+                    <div class="tabs-content">
+
+                        <div id="tab-aplicacao" class="tab-pane active">
+                            <div class="chart-group">
+                                <h3>Disponibilidade</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="aplicacao-disponibilidade-global"> Disponibilidade Global (48h)</label>
+                                                <label><input type="checkbox" name="aplicacao-disponibilidade-especifica"> Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>zabbix[host,agent,available]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Latência</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="aplicacao-latencia-tempo-resposta"> Tempo de resposta</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>icmppingsec</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>CPU</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="aplicacao-cpu-uso"> Uso de CPU</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>system.cpu.util</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Memória</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="aplicacao-memoria-uso-ram"> Uso de memória RAM</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>vm.memory.size[available]</strong></p>
+                                        <p>Chave Zabbix: <strong>vm.memory.utilization</strong></p>
+                                        <p>Chave Zabbix: <strong>vm.memory.size[pavailable]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Armazenamento</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="aplicacao-armazenamento-uso"> Uso de armazenamento</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/,total]</strong></p>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/,used]</strong></p>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/boot,total]</strong></p>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/boot,used]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Dados</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="aplicacao-dados-banda-larga"> Banda Larga de Dados</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>net.if.in["eth0"]</strong></p>
+                                        <p>Chave Zabbix: <strong>net.if.out["eth0"]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Outros</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="aplicacao-outros-tempo-ativo"> Tempo de Servidor Ativo</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>system.uptime</strong></p>
+                                    </details>
+                                    
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="aplicacao-outros-eventos-recentes"> Eventos Recentes</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Zabbix API: <strong>event.get</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-servidores" class="tab-pane">
+                            <div class="chart-group">
+                                <h3>Disponibilidade</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="aplicacao-disponibilidade-global"> Disponibilidade Global (48h)</label>
+                                                <label><input type="checkbox" name="aplicacao-disponibilidade-especifica"> Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>zabbix[host,agent,available]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Sistema Operacional</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-so"> Sistema Operacional (SO e Arquitetura)</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>system.sw.os</strong></p>
+                                        <p>Chave Zabbix: <strong>system.sw.arch</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>CPU</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-cpu-uso"> Uso de CPU</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>system.cpu.util</strong></p>
+                                    </details>
+
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-cpu-processos"> Processos (Num MAX e atuais)</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>kernel.maxproc</strong></p>
+                                        <p>Chave Zabbix: <strong>proc.num</strong></p>
+                                    </details>
+
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-cpu-troca-contextos"> Troca de Contextos</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>system.cpu.switches</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Memória</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-memoria-uso-ram"> Uso de memória RAM</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>vm.memory.size[available]</strong></p>
+                                        <p>Chave Zabbix: <strong>vm.memory.utilization</strong></p>
+                                        <p>Chave Zabbix: <strong>vm.memory.size[pavailable]</strong></p>
+                                    </details>
+
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-memoria-uso-swap"> Uso de memória SWAP</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>system.swap.size[,total]</strong></p>
+                                        <p>Chave Zabbix: <strong>system.swap.size[,free]</strong></p>
+                                    </details>
+                                    
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Armazenamento</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-armazenamento-uso"> Uso de armazenamento</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/,total]</strong></p>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/,used]</strong></p>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/boot,total]</strong></p>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/boot,used]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Dados</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-dados-banda-larga"> Banda Larga de Dados</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>net.if.in["eth0"]</strong></p>
+                                        <p>Chave Zabbix: <strong>net.if.out["eth0"]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Outros</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-outros-tempo-ativo"> Tempo de Servidor Ativo</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>system.uptime</strong></p>
+                                    </details>
+
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="servidores-outros-eventos-recentes"> Eventos Recentes</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Zabbix API: <strong>event.get</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-banco-dados" class="tab-pane">
+                            <div class="chart-group">
+                                <h3>Disponibilidade</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="bd-disponibilidade-global"> Disponibilidade Global (48h)</label>
+                                                <label><input type="checkbox" name="bd-disponibilidade-especifica"> Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>zabbix[host,agent,available]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>CPU</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="bd-cpu-uso"> Uso de CPU</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>system.cpu.util</strong></p>
+                                    </details>
+
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="bd-cpu-processos"> Processos (Num MAX e atuais)</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>kernel.maxproc</strong></p>
+                                        <p>Chave Zabbix: <strong>proc.num</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Memória</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="bd-memoria-uso-ram"> Uso de memória RAM</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>vm.memory.size[available]</strong></p>
+                                        <p>Chave Zabbix: <strong>vm.memory.utilization</strong></p>
+                                        <p>Chave Zabbix: <strong>vm.memory.size[pavailable]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Armazenamento</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="bd-armazenamento-uso"> Uso de armazenamento</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/,total]</strong></p>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/,used]</strong></p>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/boot,total]</strong></p>
+                                        <p>Chave Zabbix: <strong>vfs.fs.size[/boot,used]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Dados</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="bd-dados-banda-larga"> Banda Larga de Dados</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>net.if.in["eth0"]</strong></p>
+                                        <p>Chave Zabbix: <strong>net.if.out["eth0"]</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Outros</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="bd-outros-tempo-ativo"> Tempo de Servidor Ativo</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>system.uptime</strong></p>
+                                    </details>
+
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="bd-outros-eventos-recentes"> Eventos Recentes</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Zabbix API: <strong>event.get</strong></p>
+                                    </details>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Confirmar Exclusão</h2>
+            <p>Você tem certeza que deseja excluir o host <strong id="modal-delete-name"></strong>?</p>
+            <div class="modal-actions">
+                <button id="cancel-delete-btn" class="btn-secondary">Cancelar</button>
+                <button id="confirm-delete-btn" class="btn-danger">Confirmar Exclusão</button>
+            </div>
+        </div>
+    </div>
 
     <script src="/javascript/aside.js"></script>
     <script src="/javascript/search.js"></script>

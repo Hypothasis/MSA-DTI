@@ -1,27 +1,40 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // 1. Seleciona todos os botões de abas e os painéis de conteúdo
-    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabRadios = document.querySelectorAll('.tab-radio');
     const tabPanes = document.querySelectorAll('.tab-pane');
 
-    // 2. Adiciona um 'ouvinte de evento' para cada botão
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            
-            // 3. Remove a classe .active de todos os botões e painéis
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabPanes.forEach(pane => pane.classList.remove('active'));
+    function switchTab() {
+        const selectedRadio = document.querySelector('.tab-radio:checked');
+        if (!selectedRadio) return;
 
-            // 4. Adiciona a classe .active ao botão clicado
-            button.classList.add('active');
+        const targetId = selectedRadio.getAttribute('data-tab');
 
-            // 5. Usa o atributo 'data-tab' do botão para encontrar o painel correspondente
-            const targetId = button.getAttribute('data-tab');
-            const targetPane = document.getElementById(`tab-${targetId}`);
-            
-            // 6. Adiciona a classe .active ao painel de conteúdo correspondente
-            if (targetPane) {
-                targetPane.classList.add('active');
+        // Itera sobre todos os painéis
+        tabPanes.forEach(pane => {
+            const paneId = pane.id.replace('tab-', ''); // Extrai o 'id' do painel (ex: 'aplicacao')
+
+            if (paneId === targetId) {
+                // Se este é o painel que deve ser MOSTRADO, adiciona a classe 'active'
+                pane.classList.add('active');
+            } else {
+                // Se este é um painel que deve ser ESCONDIDO...
+                pane.classList.remove('active'); 
+                
+                // Encontra todos os checkboxes dentro deste painel escondido
+                const checkboxes = pane.querySelectorAll('input[type="checkbox"]');
+                
+                // Itera sobre eles e desmarca cada um
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
             }
         });
+    }
+
+    // 2. Adiciona um 'ouvinte de evento' para cada radio button
+    tabRadios.forEach(radio => {
+        radio.addEventListener('change', switchTab);
     });
-})
+
+    // 3. Garante que a aba correta seja exibida (e as outras limpas) ao carregar a página
+    switchTab(); 
+});

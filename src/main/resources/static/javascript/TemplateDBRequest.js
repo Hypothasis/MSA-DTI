@@ -325,17 +325,11 @@ document.addEventListener('DOMContentLoaded', function () {
  
     /* ARMAZENAMENTO */
 
-    // Dados de armazenamento em GB [Total, Em Uso, Livre]
-    const armazenamentoEmGb = [76.98, 19.74, 57.24]; 
+    // Dados de armazenamento em GB [Total ("/"), Em Uso ("/"), Total ("/boot"), Em Uso ("/boot")]
+    const armazenamentoEmGb = [76.97, 19.39, 0.99, 0.224323273]; 
 
-    const armazenamentoPorcents = [
-        100, 
-        parseFloat((armazenamentoEmGb[2] / armazenamentoEmGb[0] * 100).toFixed(0)),  // % em uso
-        parseFloat((armazenamentoEmGb[1] / armazenamentoEmGb[0] * 100).toFixed(0))   // % livre
-    ];
-
-    var options = {
-        series: armazenamentoPorcents,
+    var optionsArmazenamento = {
+        series: armazenamentoEmGb,
         chart: {
             height: 390,
             type: 'radialBar',
@@ -353,11 +347,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         },
-        // Cores para Total, Usado e Livre (pode ajustar se quiser)
-        colors: ['#673992ff', 'orange', 'green'], 
+        // Cores para Total ("/"), Em Uso ("/"), Total ("/boot"), Em Uso ("/boot")
+        colors: ['#4d097aff', 'orange', '#4d097aff','orange'], 
         
         // Novas legendas para o armazenamento
-        labels: ['Armazenamento Total', 'Armazenamento em Uso', 'Armazenamento Livre'],
+        labels: ['Armazenamento Total ("/")', 'Armazenamento Livre ("/")', 'Armazenamento em Uso ("/boot")', 'Armazenamento Livre ("/boot")'],
 
         tooltip: {
             enabled: true,
@@ -399,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }]
     };
 
-    var armazenamentoChart = new ApexCharts(document.querySelector("#armazenamentoChart"), options);
+    var armazenamentoChart = new ApexCharts(document.querySelector("#armazenamentoChart"), optionsArmazenamento);
     armazenamentoChart.render();
 
     /* Banda Larga de Dados */
