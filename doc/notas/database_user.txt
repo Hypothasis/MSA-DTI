@@ -1,0 +1,209 @@
+MSA {
+    total_hosts: (num de todos os hosts criados)
+    total_hosts_ativos: (num de todos os hosts criados)
+    total_hosts_alertas: (num de todos os hosts criados)
+    total_hosts_parados: (num de todos os hosts criados)
+    disponibilidade_media_geral: 
+    ultimos_alertas:
+
+    hosts_problematicos 
+        host: (Nome do host com problema)
+        data: (Data que foi considerado problematico)
+}
+
+Serviço/Aplicação {
+
+    host: (Nome do Host)
+    zabbix_id: (id vindo do Zabbix)
+    public_id: (Id publico para liberar acesso ao usuario)
+    estado_sistema: (Status se a aplicação esta rodando, parada alerta)
+
+    disponibilidade (foreigy key)
+        (No total de 2880 dados em 48h, ou seja a cada 1 minuto faz requisição Zabbix)
+        data: (data da requisição)
+        horario: (horaio da requisição H/M/S)
+        estado: (Rodando, parado ou alerta)
+    
+    disponibilidade_global (foreigy key)
+        (Ele obtem todos os dados da table disponibilidade, dividindo em 4 seções)
+        disponibilidade_6h:  (obtém todos os dados das primeiras 6h, dividindo e obtendo a porcentagem)
+        disponibilidade_12h: (obtém todos os dados das primeiras 12h, dividindo e obtendo a porcentagem)
+        disponibilidade_24h: (obtém todos os dados das primeiras 24h, dividindo e obtendo a porcentagem)
+        disponibilidade_48h: (obtém todos os dados das primeiras 48h, dividindo e obtendo a porcentagem)
+
+    latencia (foreigy key)
+        (Ele obtem todos os dados do zabbix sobre latência e armazena)
+        latencia: (Latência em ms)
+        data:     (Data da requisição no Zabbix)
+
+    uso_cpu
+        cpu: (unidade)
+        data: (Data da requisição no Zabbix)
+
+    uso_memoria_ram
+        memoria_total: (Gb)
+        memoria_em_uso: (Gb)
+        memoria_livre: (Gb)
+        data: (Data da requisição no Zabbix)
+
+    armazenamento
+        armazenamento_total_root: (Gb)
+        armazenamento_uso_root: (Gb)
+        armazenamento_total_boot: (Gb)
+        armazenamento_uso_boot: (Gb)
+        data: (Data da requisição no Zabbix)
+
+    uso_dados
+        upload: (Mbps)
+        download: (Mbps)
+        data: (Data da requisição no Zabbix)
+
+    tempo_ativo_servidor
+        dias:
+        hora:
+        minutos
+        
+    recent_events (foreigy key)
+        (Ele obtem os ultimos 5 eventos da aplicação vindo do zabbix sobre latência, disponibilidade, memoria e etc)
+        type:        (Tipo de evento (okay, important ou error))
+        title:       (Título do evento)
+        description: (Descrição do evento)
+        date:        (Data do evento DD/MM/YYYY)
+        time:        (Horário do evento)
+}
+
+Servidores {
+
+    host: (Nome do Host)
+    zabbix_id: (id vindo do Zabbix)
+    public_id: (Id publico para liberar acesso ao usuario)
+    estado_sistema: (Status se a aplicação esta rodando, parada alerta)
+
+    disponibilidade (foreigy key)
+        (No total de 2880 dados em 48h, ou seja a cada 1 minuto faz requisição Zabbix)
+        data: (data da requisição)
+        horario: (horaio da requisição H/M/S)
+        estado: (Rodando, parado ou alerta)
+    
+    disponibilidade_global (foreigy key)
+        (Ele obtem todos os dados da table disponibilidade, dividindo em 4 seções)
+        disponibilidade_6h:  (obtém todos os dados das primeiras 6h, dividindo e obtendo a porcentagem)
+        disponibilidade_12h: (obtém todos os dados das primeiras 12h, dividindo e obtendo a porcentagem)
+        disponibilidade_24h: (obtém todos os dados das primeiras 24h, dividindo e obtendo a porcentagem)
+        disponibilidade_48h: (obtém todos os dados das primeiras 48h, dividindo e obtendo a porcentagem)
+
+    sistema_operacional
+        so: (String)
+        arch: (String)
+
+    uso_cpu
+        cpu: (unidade)
+        data: (Data da requisição)
+
+    processos_cpu
+        num_max_processos: (Unidade)
+        num_atual_processos: (Unidade)
+        data: (Data da requisição no Zabbix)
+        
+    contextos_cpu
+        troca_contextos: (unidade)
+        data: (Data da requisição)
+
+    uso_memoria_ram
+        memoria_total: (Gb)
+        memoria_em_uso: (Gb)
+        memoria_livre: (Gb)
+        data: (Data da requisição no Zabbix)
+
+    uso_memoria_swap
+        memoria_total: (Gb)
+        memoria_em_uso: (Gb)
+        memoria_livre: (Gb)
+        data: (Data da requisição no Zabbix)
+
+    armazenamento
+        armazenamento_total_root: (Gb)
+        armazenamento_uso_root: (Gb)
+        armazenamento_total_boot: (Gb)
+        armazenamento_uso_boot: (Gb)
+        data: (Data da requisição)
+
+    uso_dados
+        upload: (Mbps)
+        download: (Mbps)
+        data: (Data da requisição)
+
+    tempo_ativo_servidor
+        dias:
+        hora:
+        minutos
+        
+    recent_events (foreigy key)
+        (Ele obtem os ultimos 5 eventos da aplicação vindo do zabbix sobre latência, disponibilidade, memoria e etc)
+        type:        (Tipo de evento (okay, important ou error))
+        title:       (Título do evento)
+        description: (Descrição do evento)
+        date:        (Data do evento DD/MM/YYYY)
+        time:        (Horário do evento)
+}
+
+Banco de Dados {
+
+    host: (Nome do Host)
+    zabbix_id: (id vindo do Zabbix)
+    public_id: (Id publico para liberar acesso ao usuario)
+    estado_sistema: (Status se a aplicação esta rodando, parada alerta)
+
+    disponibilidade (foreigy key)
+        (No total de 2880 dados em 48h, ou seja a cada 1 minuto faz requisição Zabbix)
+        data: (data da requisição)
+        horario: (horaio da requisição H/M/S)
+        estado: (Rodando, parado ou alerta)
+    
+    disponibilidade_global (foreigy key)
+        (Ele obtem todos os dados da table disponibilidade, dividindo em 4 seções)
+        disponibilidade_6h:  (obtém todos os dados das primeiras 6h, dividindo e obtendo a porcentagem)
+        disponibilidade_12h: (obtém todos os dados das primeiras 12h, dividindo e obtendo a porcentagem)
+        disponibilidade_24h: (obtém todos os dados das primeiras 24h, dividindo e obtendo a porcentagem)
+        disponibilidade_48h: (obtém todos os dados das primeiras 48h, dividindo e obtendo a porcentagem)
+
+    uso_cpu
+        cpu: (unidade)
+        data: (Data da requisição)
+
+    processos_cpu
+        num_max_processos: (Unidade)
+        num_atual_processos: (Unidade)
+        data: (Data da requisição no Zabbix)
+
+    uso_memoria_ram
+        memoria_total: (Gb)
+        memoria_em_uso: (Gb)
+        memoria_livre: (Gb)
+        data: (Data da requisição no Zabbix)
+
+    armazenamento
+        armazenamento_total_root: (Gb)
+        armazenamento_uso_root: (Gb)
+        armazenamento_total_boot: (Gb)
+        armazenamento_uso_boot: (Gb)
+        data: (Data da requisição)
+
+    uso_dados
+        upload: (Mbps)
+        download: (Mbps)
+        data: (Data da requisição)
+
+    tempo_ativo_servidor
+        dias:
+        hora:
+        minutos
+        
+    recent_events (foreigy key)
+        (Ele obtem os ultimos 5 eventos da aplicação vindo do zabbix sobre latência, disponibilidade, memoria e etc)
+        type:        (Tipo de evento (okay, important ou error))
+        title:       (Título do evento)
+        description: (Descrição do evento)
+        date:        (Data do evento DD/MM/YYYY)
+        time:        (Horário do evento)
+}

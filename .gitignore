@@ -1,22 +1,22 @@
 # Arquivos gerados pelo Build
-/target/
+src/aplicacao/target/
 
 # Arquivos de Log
-*.log
-*.log.*
+src/aplicacao/*.log
+src/aplicacao/*.log.*
 
 # Arquivos de configuração de IDEs
-.idea/
-*.iml
-.settings/
-.classpath
-.project
-.vscode/
+src/aplicacao/.idea/
+src/aplicacao/*.iml
+src/aplicacao/.settings/
+src/aplicacao/.classpath
+src/aplicacao/.project
+src/aplicacao/.vscode/
 
 # Arquivos de ambiente local (com senhas e segredos)
-.env
-.env.*
+src/aplicacao/.env
+src/aplicacao/.env.*
 
 # Arquivos do sistema operacional
-.DS_Store
-Thumbs.db
+src/aplicacao/.DS_Store
+src/aplicacao/Thumbs.db
