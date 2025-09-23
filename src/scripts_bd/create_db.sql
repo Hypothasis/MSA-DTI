@@ -1,17 +1,20 @@
--- Tabela principal para todos os hosts, unificando os tipos
+-- Garante que estamos usando o banco de dados correto
+USE msa;
+
+-- Tabela principal para todos os hosts
 CREATE TABLE hosts (
-    id SERIAL PRIMARY KEY,
-    public_id UUID NOT NULL UNIQUE DEFAULT gen_random_uuid(),
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    public_id CHAR(36) NOT NULL UNIQUE,
     zabbix_id BIGINT NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     host_type VARCHAR(50) NOT NULL CHECK (host_type IN ('APPLICATION', 'SERVER', 'DATABASE')),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
 );
 
 -- Catálogo de todas as métricas possíveis
 CREATE TABLE metrics (
-    id SERIAL PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     metric_key VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
     unit VARCHAR(20)
@@ -19,31 +22,35 @@ CREATE TABLE metrics (
 
 -- Tabela de ligação para definir quais métricas cada host monitora
 CREATE TABLE host_metric_config (
-    host_id INT NOT NULL REFERENCES hosts(id) ON DELETE CASCADE,
-    metric_id INT NOT NULL REFERENCES metrics(id) ON DELETE CASCADE,
-    PRIMARY KEY (host_id, metric_id) -- Chave primária composta
+    host_id INT NOT NULL,
+    metric_id INT NOT NULL,
+    PRIMARY KEY (host_id, metric_id),
+    FOREIGN KEY (host_id) REFERENCES hosts(id) ON DELETE CASCADE,
+    FOREIGN KEY (metric_id) REFERENCES metrics(id) ON DELETE CASCADE
 );
 
--- Tabela para guardar o histórico de valores numéricos de todas as métricas
+-- Tabela para guardar o histórico de valores de todas as métricas
 CREATE TABLE metric_history (
-    -- Esta tabela não precisa de um 'id' próprio, a combinação das colunas já é única
-    host_id INT NOT NULL REFERENCES hosts(id) ON DELETE CASCADE,
-    metric_id INT NOT NULL REFERENCES metrics(id) ON DELETE CASCADE,
-    "timestamp" TIMESTAMPTZ NOT NULL,
-    "value" DOUBLE PRECISION NOT NULL,
-    PRIMARY KEY (host_id, metric_id, "timestamp") -- Chave primária composta
+    host_id INT NOT NULL,
+    metric_id INT NOT NULL,
+    `timestamp` DATETIME(6) NOT NULL,
+    `value` DOUBLE PRECISION NOT NULL,
+    PRIMARY KEY (host_id, metric_id, `timestamp`),
+    FOREIGN KEY (host_id) REFERENCES hosts(id) ON DELETE CASCADE,
+    FOREIGN KEY (metric_id) REFERENCES metrics(id) ON DELETE CASCADE
 );
 
--- Tabela para guardar eventos/alertas (dados não-numéricos)
+-- Tabela para guardar eventos/alertas
 CREATE TABLE recent_events (
-    id BIGSERIAL PRIMARY KEY,
-    host_id INT NOT NULL REFERENCES hosts(id) ON DELETE CASCADE,
-    "timestamp" TIMESTAMPTZ NOT NULL,
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    host_id INT NOT NULL,
+    `timestamp` DATETIME(6) NOT NULL,
     severity VARCHAR(50),
     name TEXT NOT NULL,
-    details JSONB
+    details JSON,
+    FOREIGN KEY (host_id) REFERENCES hosts(id) ON DELETE CASCADE
 );
 
--- Índices para acelerar as consultas de séries temporais
-CREATE INDEX idx_metric_history_timestamp ON metric_history ("timestamp" DESC);
-CREATE INDEX idx_events_timestamp ON recent_events ("timestamp" DESC);
+-- Índices para acelerar as consultas
+CREATE INDEX idx_metric_history_timestamp ON metric_history (`timestamp` DESC);
+CREATE INDEX idx_events_timestamp ON recent_events (`timestamp` DESC);

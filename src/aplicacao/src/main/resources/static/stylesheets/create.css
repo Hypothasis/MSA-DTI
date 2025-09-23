@@ -12,7 +12,7 @@
 
 /* --- Formulário Principal --- */
 #host-form {
-    height: 30%;
+    height: 75%;
     width: 100%;
     background-color: var(--color-bg-light); /* Cor de fundo para o formulário */
     padding: 20px;
@@ -22,7 +22,7 @@
 }
 
 .form-group {
-    height: 20%;
+    height: 7%;
     margin-bottom: 20px;
 }
 
@@ -44,6 +44,8 @@
     border-radius: 4px;
     font-size: 1em;
     box-sizing: border-box; /* Garante que padding e border não aumentem a largura */
+    font-family: var(--font-nunito);
+    font-weight: 300;
 }
 
 .form-group textarea {
@@ -53,13 +55,13 @@
 
 /* --- Abas de Navegação (Tab Navigation) --- */
 .tabs-container {
-    height: 45%;
+    height: 60%;
     width: 100%;
     background-color: white;
     border-radius: 8px;
     box-shadow: 0 4px 6px grey;
     padding: 20px;
-    margin-bottom: 20px;
+    margin-top: 80px;
 }
 
 .tabs-nav {
@@ -153,20 +155,19 @@
 details {
   border: 1px solid #aaaaaa;
   border-radius: 4px;
-  padding: 0.5em 0.5em 0;
   display: flex;
   flex-direction: column;
-  justify-content: start;
-  align-items: center;
-  gap: 5px;
+  justify-content: center;
+  align-items: start;
   font-family: var(--font-nunito);
   font-weight: 300;
 }
 
 summary {
+  border-radius: 4px;
   font-weight: bold;
-  margin: -0.5em -0.5em 0;
   padding: 0.5em;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -35,16 +35,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf((csrf) -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/public/**", "/stylesheets/**", "/javascript/**", "/image/**").permitAll()
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/error").permitAll() 
                 .requestMatchers("/host/**").permitAll()
                 .requestMatchers("debug/**").permitAll()
+                
+                // Roles para Rotas Admin
                 .requestMatchers("/admin", "/admin/").hasAuthority("index_admin")
                 .requestMatchers("/admin/search", "/admin/search/").hasAuthority("search_admin")
                 .requestMatchers("/admin/create", "/admin/create/").hasAuthority("create_admin")
+
+                // Roles para Permissões de CRUD
+                .requestMatchers("admin/create/host").hasAuthority("ADMIN_CREATE")
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
