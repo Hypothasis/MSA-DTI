@@ -18,6 +18,13 @@
     gap: 20px;
 }
 
+#search > header form{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
 #inputSearch{
     height: 30px;
     width: 65%;
@@ -54,7 +61,7 @@
     display: none;
     flex-direction: column;
     
-    top: 130%;
+    top: 18%;
 }
 
 #filtrosCats.actived{
@@ -290,6 +297,9 @@
 
 .form-group > input[type="text"], .form-group > textarea{
     width: 60%;
+    font-family: var(--font-nunito);
+    padding: 5px;
+    font-size: 1rem;
 }
 
 /* Botão de fechar (X) */
@@ -428,11 +438,11 @@ details p{
 
 summary {
   font-weight: bold;
-  margin: -0.5em -0.5em 0;
   padding: 0.5em;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
 }
 
 summary div{

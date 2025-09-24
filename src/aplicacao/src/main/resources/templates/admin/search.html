@@ -59,270 +59,81 @@
         <h1 class="mainTitle">Pesquisar</h1>
 
         <header>
-            <input type="text" name="" id="inputSearch">
-            <div>
-                <button id="filtrosBtn">
+            <form method="post" th:action="@{/admin/search/host}" name="search-form" id="search-form">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <input type="text" name="inputSearch" id="inputSearch" required>
+                <div>
+                    <button type="button" id="filtrosBtn">
+                        <span class="transition"></span>
+                        <span class="gradient"></span>
+                        <span class="label">Filtros</span>
+                    </button>
+                    <ul id="filtrosCats">
+                        <li>
+                            <input type="checkbox" name="app" value="app" id="cat-App">
+                            <label for="">Aplicações</label>
+                        </li>
+    
+                        <li>
+                            <input type="checkbox" name="server" value="server" id="cat-Server">
+                            <label for="">Servidores</label>
+                        </li>
+    
+                        <li>
+                            <input type="checkbox" name="db" value="db" id="cat-DB">
+                            <label for="">Banco de Dados</label>
+                        </li>
+                    </ul>
+                </div>
+                <button id="searchBtn2" type="submit" for="search-form">
                     <span class="transition"></span>
                     <span class="gradient"></span>
-                    <span class="label">Filtros</span>
+                    <span class="label">Pesquisar</span>
                 </button>
-                <ul id="filtrosCats">
-                    <li>
-                        <input type="checkbox" name="" id="cat-App">
-                        <label for="">Aplicações</label>
-                    </li>
-
-                    <li>
-                        <input type="checkbox" name="" id="cat-Server">
-                        <label for="">Servidores</label>
-                    </li>
-
-                    <li>
-                        <input type="checkbox" name="" id="cat-DB">
-                        <label for="">Banco de Dados</label>
-                    </li>
-                </ul>
-            </div>
-            <button id="searchBtn2">
-                <span class="transition"></span>
-                <span class="gradient"></span>
-                <span class="label">Pesquisar</span>
-            </button>
+            </form>
         </header>
 
         <article>
-            <ul>
-                <li data-host-id="123">
+            <ul th:if="${!listaHosts.isEmpty()}">
+
+                <li th:each="host : ${listaHosts}" 
+                    th:attr="
+                        data-host-id=${host.id},
+                        data-host-public-id=${host.publicId},
+                        data-host-zabbix-id=${host.zabbixId},
+                        data-host-name=${host.name},
+                        data-host-description=${host.description},
+                        data-host-type=${host.type},
+                        data-host-metrics=${#strings.listJoin(host.metrics.![name], ', ')}
+                    " 
+                    sec:authorize="hasAuthority('ADMIN_READ')">
+                        
                     <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
+                        <h6 th:text="${host.name}">Nome do Host</h6>
+                        <p th:text="${host.description}">Descrição do Host</p>
                     </header>
 
                     <div>
                         <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
                             <img src="/image/icons/read_white.png" alt="" height="25px">
                         </button>
-    
+
                         <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
                             <img src="/image/icons/update_white.png" alt="" height="25px">
                         </button>
-    
+
                         <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
                             <img src="/image/icons/delete_white.png" alt="" height="25px">
                         </button>
                     </div>
                 </li>
 
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
-
-                <li data-host-id="123">
-                    <header>
-                        <h6>Sigaa</h6>
-                        <p>Aplicação SIGAA</p>
-                    </header>
-
-                    <div>
-                        <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
-                        </button>
-    
-                        <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
-                        </button>
-                    </div>
-                </li>
             </ul>
+
+            <div th:if="${listaHosts.isEmpty()}">
+                <p>Nenhum host encontrado.</p>
+            </div>
+
         </article>
     </main>
 
@@ -330,22 +141,14 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2 id="modal-read-name">Nome do Host</h2>
-            <p><strong>Descrição:</strong> <span id="modal-read-description">Aplicação do SIGAA</span></p>
-            <p><strong>ID no Zabbix:</strong> <span id="modal-read-zabbix-id">10687</span></p>
-            <p><strong>ID no DB:</strong> <span id="modal-read-db-id">2</span></p>
-            <p><strong>Tipo:</strong> <span id="modal-read-type">Serviço/Aplicação</span></p>
+            <p><strong>Descrição:</strong> <span id="modal-read-description"></span></p>
+            <p><strong>ID no Zabbix:</strong> <span id="modal-read-zabbix-id"></span></p>
+            <p><strong>ID Pública:</strong> <span id="modal-read-public-id"></span></p>
+            <p><strong>ID no DB:</strong> <span id="modal-read-db-id"></span></p>
+            <p><strong>Tipo:</strong> <span id="modal-read-type"></span></p>
             <p><strong>Gráficos</strong></p>
             <ul>
-                <li>Disponibilidade Global (48h)</li>
-                <li>Disponibilidade Específica (48h, 24h, 12h, 6h)</li>
-                <li>Tempo de resposta</li>
-                <li>Uso de CPU</li>
-                <li>Uso de memória RAM<</li>
-                <li>Uso de armazenamento</li>
-                <li>Banda Larga de Dados</li>
-                <li>Tempo de Servidor Ativo</li>
-                <li>Eventos Recentes</li>
-            </ul>
+                <li></li>
         </div>
     </div>
 

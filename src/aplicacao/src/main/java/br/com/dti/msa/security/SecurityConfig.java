@@ -48,7 +48,10 @@ public class SecurityConfig {
                 .requestMatchers("/admin/create", "/admin/create/").hasAuthority("create_admin")
 
                 // Roles para Permissões de CRUD
-                .requestMatchers("admin/create/host").hasAuthority("ADMIN_CREATE")
+                .requestMatchers("/admin/create/host").hasAuthority("ADMIN_CREATE")
+                .requestMatchers("/admin/search/host").hasAuthority("ADMIN_READ")
+                .requestMatchers("/admin/read/host").hasAuthority("ADMIN_UPDATE")
+                .requestMatchers("/admin/delete/host").hasAuthority("ADMIN_DELETE")
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
