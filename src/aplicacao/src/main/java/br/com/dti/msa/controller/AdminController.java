@@ -3,23 +3,47 @@ package br.com.dti.msa.controller;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import br.com.dti.msa.model.Host;
 import br.com.dti.msa.model.Metric;
+import br.com.dti.msa.dto.UpdateHostDTO;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
+    private static final List<Metric> sigaaMetrics = List.of(
+        new Metric(1L, "aplicacao-cpu-uso", "Uso de CPU", "%"),
+        new Metric(2L, "aplicacao-memoria-uso-ram", "Uso de Memória", "%")
+    );
+
+    private static final List<Metric> seiSipMetrics = List.of(
+        new Metric(3L, "servidores-cpu-uso", "Uso de CPU", "%"),
+        new Metric(4L, "servidores-memoria-uso-ram", "Uso de Memória RAM", "%"),
+        new Metric(5L, "servidores-armazenamento-uso", "Uso de Armazenamento", "%")
+    );
+
+    private static final List<Host> mockHostDatabase = List.of(
+        new Host(123L, "10675awdsa", 10675, "Sigaa", "Aplicação SIGAA", "app", sigaaMetrics),
+        new Host(124L, "10676qweqw", 10676, "SEI-SIP-01", "Aplicação SEI-SIP-01", "server", seiSipMetrics),
+        new Host(125L, "10677asdas", 10677, "BD_SIGAA", "Banco de Dados do SIGAA", "db", new ArrayList<>())
+    );
     
     @GetMapping({"","/"})
     public String index() {
@@ -73,29 +97,35 @@ public class AdminController {
         
         return "redirect:/admin/search";
     }
-    
 
     @GetMapping({"create"})
     public String indexCreate() {
         return "admin/create";
     }
 
-    @PostMapping("create/host")
+    // --- API Restful ---
+    
+    /**
+     * Cria um novo host.
+     * Rota: POST /admin/api/hosts
+     */
+    @PostMapping("api/host")
     public String createHost(
-        @RequestParam("host-name") String hostName,
-        @RequestParam("host-zabbix-id") Long zabbixId,
-        @RequestParam("host-description") String description,
-        @RequestParam("host-type") String hostType,
+        @RequestParam("hostName") String hostName,
+        @RequestParam("hostZabbixID") Long zabbixId,
+        @RequestParam("hostDescription") String description,
+        @RequestParam("hostType") String hostType,
         // Usamos um Map para pegar todos os outros parâmetros (os checkboxes)
         @RequestParam Map<String, String> allParams
     ) {
         
         // Filtra o mapa para pegar apenas os checkboxes (que não são os campos principais)
         List<String> enabledMetrics = allParams.keySet().stream()
-            .filter(key -> !key.equals("host-name") && 
-                        !key.equals("host-zabbix-id") &&
-                        !key.equals("host-description") &&
-                        !key.equals("host-type"))
+            .filter(key -> !key.equals("_csrf") && 
+                        !key.equals("hostName") && 
+                        !key.equals("hostZabbixID") &&
+                        !key.equals("hostDescription") &&
+                        !key.equals("hostType"))
             .collect(Collectors.toList());
 
         System.out.println("Nome do Host: " + hostName);
@@ -107,6 +137,62 @@ public class AdminController {
 
         return "redirect:/admin/create";
     }
+
+    /**
+     * Busca um host específico por ID (usado para popular o modal de update).
+     * Rota: GET /admin/api/hosts/{id}
+     */
+    @GetMapping("/api/hosts/{id}")
+    @ResponseBody
+    public ResponseEntity<Host> getHostById(@PathVariable Long id) {
+        System.out.println("Buscando host com ID (mock): " + id);
+
+        // 3. Simula a busca no banco de dados (procurando na nossa lista estática)
+        Optional<Host> hostEncontrado = mockHostDatabase.stream()
+                .filter(host -> host.getId().equals(id))
+                .findFirst();
+
+        // 4. Retorna o host se encontrado, ou um erro 404 (Not Found) se não encontrado
+        if (hostEncontrado.isPresent()) {
+            // Retorna HTTP 200 OK com o objeto host no corpo da resposta
+            return ResponseEntity.ok(hostEncontrado.get());
+        } else {
+            // Retorna HTTP 404 Not Found, que é a resposta correta quando o recurso não existe
+            return ResponseEntity.notFound().build();
+        }
+    }
     
     
+    /**
+     * Atualiza um host existente.
+     * Rota: PUT /admin/api/hosts/{id}
+     */
+    @PutMapping("/api/hosts/{hostId}")
+    public ResponseEntity<Void> updateHost(
+        @PathVariable Long hostId, 
+        @RequestBody UpdateHostDTO updateData
+    ) {
+        System.out.println("--- ATUALIZANDO HOST ---");
+        System.out.println("Host ID (da URL): " + hostId);
+        System.out.println("Novo Nome: " + updateData.getHostName());
+        System.out.println("Novo Zabbix ID: " + updateData.getHostZabbixID());
+        System.out.println("Novo Tipo: " + updateData.getHostType());
+        System.out.println("Novas Métricas: " + updateData.getEnabledMetrics());
+        
+        // LÓGICA PARA ATUALIZAR NO BANCO...
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * Deleta um host.
+     * Rota: DELETE /admin/api/hosts/{id}
+     */
+    @DeleteMapping("/api/hosts/{hostId}")
+    public ResponseEntity<Void> deleteHost(@PathVariable Long hostId) {
+        System.out.println("--- DELETANDO HOST ---");
+        System.out.println("Host ID para deletar: " + hostId);
+        
+        // LÓGICA PARA DELETAR DO BANCO...
+        return ResponseEntity.ok().build();
+    }
 }

@@ -58,34 +58,34 @@
     <main sec:authorize="hasAuthority('ADMIN_CREATE')" id="create">
         <h1 class="mainTitle">Criar Host</h1>
 
-        <form id="host-form" th:action="@{/admin/create/host}" method="post">
+        <form id="host-form" th:action="@{/admin/api/host}" method="post">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
             <div class="form-group">
                 <label for="host-name">Nome do Host</label>
-                <input type="text" id="host-name" name="host-name" required>
+                <input type="text" id="host-name" name="hostName" required>
             </div>
 
             <div class="form-group">
                 <label for="host-zabbix-id">ID do Host via Zabbix</label>
-                <input type="number" min="0" id="host-zabbix-id" name="host-zabbix-id" required>
+                <input type="number" min="0" id="host-zabbix-id" name="hostZabbixID" required>
             </div>
 
             <div class="form-group">
                 <label for="host-description">Descrição do Host</label>
-                <textarea id="host-description" name="host-description"></textarea>
+                <textarea id="host-description" name="hostDescription"></textarea>
             </div>
         
 
             <div class="tabs-container">
                 <div class="tabs-nav">
-                    <input type="radio" id="type-aplicacao" name="host-type" value="app" class="tab-radio" data-tab="app" checked>
+                    <input type="radio" id="type-aplicacao" name="hostType" value="app" class="tab-radio" data-tab="app" checked>
                     <label for="type-aplicacao" class="tab-button">Aplicação/Serviço</label>
 
-                    <input type="radio" id="type-servidores" name="host-type" value="server" class="tab-radio" data-tab="server">
+                    <input type="radio" id="type-servidores" name="hostType" value="server" class="tab-radio" data-tab="server">
                     <label for="type-servidores" class="tab-button">Servidores</label>
 
-                    <input type="radio" id="type-banco-dados" name="host-type" value="DB" class="tab-radio" data-tab="DB">
+                    <input type="radio" id="type-banco-dados" name="hostType" value="db" class="tab-radio" data-tab="db">
                     <label for="type-banco-dados" class="tab-button">Banco de Dados</label>
                 </div>
 
@@ -373,7 +373,7 @@
                         </div>
                     </div>
 
-                    <div id="tab-DB" class="tab-pane">
+                    <div id="tab-db" class="tab-pane">
                         <div class="chart-group">
                             <h3>Disponibilidade</h3>
                             <div class="checkbox-group">

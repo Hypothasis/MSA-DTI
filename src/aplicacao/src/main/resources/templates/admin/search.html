@@ -13,6 +13,9 @@
     <link rel="stylesheet" th:href="@{/stylesheets/pointGraphic.css}">
     <link rel="stylesheet" th:href="@{/stylesheets/aside.css}">
     <link rel="stylesheet" th:href="@{/stylesheets/search.css}">
+
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
     
     <title>Pesquisar</title>
 </head>
@@ -149,6 +152,7 @@
             <p><strong>Gráficos</strong></p>
             <ul>
                 <li></li>
+            </ul>
         </div>
     </div>
 
@@ -156,8 +160,8 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2>Editar Host</h2>
-            <form id="update-host-form">
-                <input type="hidden" id="modal-update-id" name="hostId">
+            <form  method="put" th:action="@{/admin/host/update}" id="update-host-form">
+                <input type="number" name="hostID" id="modal-update-id" hidden>
                 
                 <div class="form-group">
                     <label for="modal-update-name">Nome do Host</label>
@@ -166,29 +170,29 @@
 
                 <div class="form-group">
                     <label for="modal-update-name">ID do Host via Zabbix</label>
-                    <input type="text" id="modal-update-zabbixID" name="zabbixID" required>
+                    <input type="text" id="modal-update-zabbixID" name="hostZabbixID" required>
                 </div>
 
                 <div class="form-group">
                     <label for="modal-update-description">Descrição</label>
-                    <textarea id="modal-update-description" name="description"></textarea>
+                    <textarea id="modal-update-description" name="hostDescription"></textarea>
                 </div>
 
                 <div class="tabs-container">
                     <div class="tabs-nav">
-                        <input type="radio" id="type-aplicacao" name="host-type" value="aplicacao" class="tab-radio" data-tab="aplicacao" checked>
+                        <input type="radio" id="type-aplicacao" name="hostType" value="app" class="tab-radio" data-tab="app" checked>
                         <label for="type-aplicacao" class="tab-button">Aplicação/Serviço</label>
 
-                        <input type="radio" id="type-servidores" name="host-type" value="servidores" class="tab-radio" data-tab="servidores">
+                        <input type="radio" id="type-servidores" name="hostType" value="server" class="tab-radio" data-tab="server">
                         <label for="type-servidores" class="tab-button">Servidores</label>
 
-                        <input type="radio" id="type-banco-dados" name="host-type" value="banco-dados" class="tab-radio" data-tab="banco-dados">
+                        <input type="radio" id="type-banco-dados" name="hostType" value="db" class="tab-radio" data-tab="db">
                         <label for="type-banco-dados" class="tab-button">Banco de Dados</label>
                     </div>
 
                     <div class="tabs-content">
 
-                        <div id="tab-aplicacao" class="tab-pane active">
+                        <div id="tab-app" class="tab-pane active">
                             <div class="chart-group">
                                 <h3>Disponibilidade</h3>
                                 <div class="checkbox-group">
@@ -312,7 +316,7 @@
                             </div>
                         </div>
 
-                        <div id="tab-servidores" class="tab-pane">
+                        <div id="tab-server" class="tab-pane">
                             <div class="chart-group">
                                 <h3>Disponibilidade</h3>
                                 <div class="checkbox-group">
@@ -470,7 +474,7 @@
                             </div>
                         </div>
 
-                        <div id="tab-banco-dados" class="tab-pane">
+                        <div id="tab-db" class="tab-pane">
                             <div class="chart-group">
                                 <h3>Disponibilidade</h3>
                                 <div class="checkbox-group">
@@ -604,15 +608,16 @@
             <h2>Confirmar Exclusão</h2>
             <p>Você tem certeza que deseja excluir o host <strong id="modal-delete-name"></strong>?</p>
             <div class="modal-actions">
-                <button id="cancel-delete-btn" class="btn-secondary">Cancelar</button>
-                <button id="confirm-delete-btn" class="btn-danger">Confirmar Exclusão</button>
+                <button id="cancel-delete-btn" class="btn-secondary" type="button">Cancelar</button>
+                
+                <button id="confirm-delete-btn" class="btn-danger" type="button">Confirmar Exclusão</button>
             </div>
         </div>
     </div>
 
-    <script src="/javascript/aside.js"></script>
-    <script src="/javascript/search.js"></script>
-    <script src="/javascript/searchRequest.js"></script>
+    <script th:src="@{/javascript/aside.js}"></script>
+    <script th:src="@{/javascript/search.js}"></script>
+    <script th:src="@{/javascript/searchRequest.js}"></script>
 
 </body>
 </html>

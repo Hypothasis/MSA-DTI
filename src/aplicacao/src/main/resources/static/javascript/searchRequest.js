@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Seleciona os modais
     const readModal = document.getElementById('read-modal');
     const updateModal = document.getElementById('update-modal');
+    const updateForm = document.getElementById('update-host-form');
     const deleteModal = document.getElementById('delete-modal');
     const allModals = document.querySelectorAll('.modal');
 
@@ -66,32 +67,149 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- AÇÃO DE ATUALIZAR (UPDATE) ---
     async function openUpdateModal(hostData) {
-        // Para o update, vamos usar os dados dos atributos data-* para um pré-preenchimento.
-        // A lógica mais complexa (com checkboxes) precisaria de uma chamada à API.
-        const updateForm = document.getElementById('update-host-form');
-        
-        updateForm.querySelector('#modal-update-id').value = hostData.hostId;
-        updateForm.querySelector('#modal-update-name').value = hostData.hostName;
-        updateForm.querySelector('#modal-update-zabbixID').value = hostData.hostZabbixId;
-        updateForm.querySelector('#modal-update-description').value = hostData.hostDescription;
-        
-        // A lógica de carregar os checkboxes marcados idealmente viria de uma chamada à API,
-        // pois a string no data-host-metrics não tem os 'names' dos inputs.
-        // Mas a parte de preencher os campos básicos está feita.
-        
-        updateModal.classList.add('show');
+        try {
+            // 1. Busca os dados completos do host na sua API
+            console.log(hostData)
+            const response = await fetch(`/admin/api/hosts/${hostId}`);
+            if (!response.ok) throw new Error('Host não encontrado.');
+            const hostData = await response.json();
+
+            // 2. Preenche os campos básicos do formulário
+            updateForm.querySelector('#modal-update-id').value = hostData.id;
+            updateForm.querySelector('#modal-update-name').value = hostData.name;
+            updateForm.querySelector('#modal-update-zabbixID').value = hostData.zabbixId;
+            updateForm.querySelector('#modal-update-description').value = hostData.description;
+
+            // 3. Seleciona a aba (radio button) correta
+            const radioToSelect = updateForm.querySelector(`input[name="hostType"][value="${hostData.type}"]`);
+            if (radioToSelect) {
+                radioToSelect.checked = true;
+                // Dispara o evento 'change' para que a lógica de troca de abas (que deve estar em outro script) seja executada
+                radioToSelect.dispatchEvent(new Event('change'));
+            }
+            
+            // 4. Limpa todos os checkboxes do formulário antes de marcar os corretos
+            updateForm.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+            // 5. Marca os checkboxes que vieram da API como habilitados
+            if (hostData.enabledMetrics) {
+                hostData.enabledMetrics.forEach(metricName => {
+                    const checkbox = updateForm.querySelector(`input[name="${metricName}"]`);
+                    if (checkbox) {
+                        checkbox.checked = true;
+                    }
+                });
+            }
+
+            // 6. Finalmente, mostra o modal
+            updateModal.classList.add('show');
+
+        } catch (error) {
+            console.error('Falha ao carregar dados para edição:', error);
+            alert(error.message);
+        }
+    }
+
+    // --- LÓGICA DE ENVIO DA REQUISIÇÃO PUT ---
+    if (updateForm) {
+        updateForm.addEventListener('submit', async function(event) {
+            event.preventDefault(); // Previne o recarregamento da página
+
+            const hostId = document.getElementById('modal-update-id').value;
+            const csrfToken = document.querySelector('input[name="_csrf"]').value;
+            const csrfHeaderName = document.querySelector('input[name="_csrf"]').name;
+            
+            // Coleta todos os dados do formulário
+            const formData = new FormData(updateForm);
+            const enabledMetrics = [];
+            updateForm.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+                enabledMetrics.push(cb.name);
+            });
+
+            const dataToSend = {
+                hostName: formData.get('hostName'),
+                hostZabbixID: formData.get('hostZabbixID'),
+                hostDescription: formData.get('hostDescription'),
+                hostType: formData.get('hostType'),
+                enabledMetrics: enabledMetrics
+            };
+
+            try {
+                // Envia os dados para a API RESTful usando FETCH e o método PUT
+                const response = await fetch(`/admin/api/hosts/${hostId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [csrfHeaderName]: csrfToken
+                    },
+                    body: JSON.stringify(dataToSend)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Falha ao salvar as alterações. Status: ' + response.status);
+                }
+
+                alert('Host atualizado com sucesso!');
+                window.location.reload(); // Recarrega a página para ver as mudanças
+
+            } catch (error) {
+                console.error('Erro ao atualizar host:', error);
+                alert(error.message);
+            }
+        });
     }
     
     // --- AÇÃO DE DELETAR (DELETE) ---
     function openDeleteModal(hostData) {
-        // Preenche o nome do host no modal de confirmação
-        document.getElementById('modal-delete-name').textContent = hostData.hostName;
+        const deleteModal = document.getElementById('delete-modal');
         
-        // Guarda o ID no botão de confirmação para ser usado depois
-        document.getElementById('confirm-delete-btn').dataset.hostId = hostData.hostId;
+        // CORRIGIDO: Preenche o nome do host na mensagem de confirmação
+        deleteModal.querySelector('#modal-delete-name').textContent = hostData.hostName;
+        
+        // CORRIGIDO: Guarda o ID do host no PRÓPRIO botão de confirmação usando dataset
+        deleteModal.querySelector('#confirm-delete-btn').dataset.hostId = hostData.hostId;
 
         // Mostra o modal de confirmação
         deleteModal.classList.add('show');
+    }
+
+    // --- LÓGICA DE ENVIO DA REQUISIÇÃO DELETE ---
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', async function() {
+            const hostId = this.dataset.hostId;
+            
+            // ===================================================================
+            // CORREÇÃO: Pegar o token e o nome do header do HTML
+            // ===================================================================
+             const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+             const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+            // ===================================================================
+
+            try {
+                const response = await fetch(`/admin/api/hosts/${hostId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        [csrfHeaderName]: csrfToken
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Falha ao excluir o host. Verifique as permissões.');
+                }
+
+                alert('Host excluído com sucesso!');
+                
+                const itemToRemove = document.querySelector(`li[data-host-id='${hostId}']`);
+                if (itemToRemove) itemToRemove.remove();
+                
+                closeModal(); // Função que fecha o modal
+
+            } catch (error) {
+                console.error('Erro ao excluir host:', error);
+                alert(error.message);
+            }
+        });
     }
 
 

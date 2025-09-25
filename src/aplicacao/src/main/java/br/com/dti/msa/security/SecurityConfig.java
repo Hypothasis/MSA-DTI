@@ -2,6 +2,7 @@ package br.com.dti.msa.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -44,14 +45,15 @@ public class SecurityConfig {
                 
                 // Roles para Rotas Admin
                 .requestMatchers("/admin", "/admin/").hasAuthority("index_admin")
-                .requestMatchers("/admin/search", "/admin/search/").hasAuthority("search_admin")
-                .requestMatchers("/admin/create", "/admin/create/").hasAuthority("create_admin")
+                .requestMatchers("/admin/search", "/admin/search/**").hasAuthority("search_admin")
+                .requestMatchers("/admin/create", "/admin/create/**").hasAuthority("create_admin")
 
                 // Roles para Permissões de CRUD
-                .requestMatchers("/admin/create/host").hasAuthority("ADMIN_CREATE")
-                .requestMatchers("/admin/search/host").hasAuthority("ADMIN_READ")
-                .requestMatchers("/admin/read/host").hasAuthority("ADMIN_UPDATE")
-                .requestMatchers("/admin/delete/host").hasAuthority("ADMIN_DELETE")
+                .requestMatchers(HttpMethod.POST, "/admin/api/host").hasAuthority("ADMIN_CREATE")
+                .requestMatchers(HttpMethod.GET, "/admin/api/host/{hostId}").hasAuthority("ADMIN_READ")
+                .requestMatchers(HttpMethod.PUT, "/admin/api/host/{hostId}").hasAuthority("ADMIN_UPDATE")
+                .requestMatchers(HttpMethod.DELETE, "/admin/api/host/{hostId}").hasAuthority("ADMIN_DELETE")
+                
                 .anyRequest().authenticated()
             )
             .oauth2Login(oauth2 -> oauth2
