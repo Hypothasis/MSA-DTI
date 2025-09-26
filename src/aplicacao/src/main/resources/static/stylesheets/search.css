@@ -154,6 +154,17 @@
 
 }
 
+#search > article > div {
+    position: absolute;
+    top: 50%;
+    right: 50%;
+    transform: translateX(50%);
+    font-size: 1.2rem;
+    text-align: center;
+    white-space: nowrap;
+    font-family: var(--font-nunito);
+}
+
 #search > article > ul {
     list-style: none;
     display: flex;

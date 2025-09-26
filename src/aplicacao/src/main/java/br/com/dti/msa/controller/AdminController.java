@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -29,20 +30,27 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/admin")
 public class AdminController {
     private static final List<Metric> sigaaMetrics = List.of(
-        new Metric(1L, "aplicacao-cpu-uso", "Uso de CPU", "%"),
-        new Metric(2L, "aplicacao-memoria-uso-ram", "Uso de Memória", "%")
+        new Metric(1L, "system.cpu.util", "Uso de CPU", "%"),
+        new Metric(2L, "vm.memory.utilization", "Uso de Memória", "%")
     );
 
     private static final List<Metric> seiSipMetrics = List.of(
-        new Metric(3L, "servidores-cpu-uso", "Uso de CPU", "%"),
-        new Metric(4L, "servidores-memoria-uso-ram", "Uso de Memória RAM", "%"),
-        new Metric(5L, "servidores-armazenamento-uso", "Uso de Armazenamento", "%")
+        new Metric(3L, "system.cpu.util", "Uso de CPU", "%"),
+        new Metric(4L, "svm.memory.utilization", "Uso de Memória RAM", "%"),
+        new Metric(5L, "vfs.fs.size[/,total]", "Uso de Armazenamento", "%")
+    );
+
+    private static final List<Metric> sigaaBDMetrics = List.of(
+        new Metric(3L, "system.cpu.util", "Uso de CPU", "%"),
+        new Metric(4L, "vm.memory.utilization", "Uso de Memória RAM", "%"),
+        new Metric(5L, "vfs.fs.size[/,total]", "Uso de Armazenamento", "%"),
+        new Metric(6L, "net.if.in['eth0']", "Banda Larga Recebimento de Dados", "")
     );
 
     private static final List<Host> mockHostDatabase = List.of(
         new Host(123L, "10675awdsa", 10675, "Sigaa", "Aplicação SIGAA", "app", sigaaMetrics),
         new Host(124L, "10676qweqw", 10676, "SEI-SIP-01", "Aplicação SEI-SIP-01", "server", seiSipMetrics),
-        new Host(125L, "10677asdas", 10677, "BD_SIGAA", "Banco de Dados do SIGAA", "db", new ArrayList<>())
+        new Host(125L, "10677asdas", 10677, "BD_SIGAA", "Banco de Dados do SIGAA", "db", sigaaBDMetrics)
     );
     
     @GetMapping({"","/"})
@@ -53,49 +61,52 @@ public class AdminController {
     @GetMapping({"search"})
     public String indexSearch( Model model) {
 
-        // --- Métricas para o primeiro host ---
-        List<Metric> sigaaMetrics = new ArrayList<>();
-        sigaaMetrics.add(new Metric(1L, "system.cpu.util", "Uso de CPU", "%"));
-        sigaaMetrics.add(new Metric(2L, "vm.memory.utilization", "Uso de Memória", "%"));
+        // Hosts Mockados
+        model.addAttribute("listaHosts", new ArrayList<Host>());
 
-        List<Metric> seisipMetrics = new ArrayList<>();
-        seisipMetrics.add(new Metric(3L, "system.cpu.util", "Uso de CPU", "%"));
-        seisipMetrics.add(new Metric(4L, "vm.memory.utilization", "Uso de Memória", "%"));
-
-        List<Metric> sigaaBDMetrics = new ArrayList<>();
-        sigaaBDMetrics.add(new Metric(5L, "system.cpu.util", "Uso de CPU", "%"));
-        sigaaBDMetrics.add(new Metric(6L, "vm.memory.utilization", "Uso de Memória", "%"));
-
-        
-        // 1. Crie uma lista de hosts falsos (mock data)
-        List<Host> hostsFalsos = new ArrayList<>();
-        hostsFalsos.add(new Host(123L, "10675awdsa", 10675, "Sigaa", "Aplicação SIGAA", "app", sigaaMetrics));
-        hostsFalsos.add(new Host(124L, "10676qweqw", 10676 ,"SEI-SIP-01", "Aplicação SEI-SIP-01", "server", seisipMetrics));
-        hostsFalsos.add(new Host(125L, "10677asdas", 10677, "BD_SIGAA", "Banco de Dados do SIGAA", "db", sigaaBDMetrics));
-        
-        // 2. Adicione a lista ao Model
-        // "listaHosts" é o nome da variável que o Thymeleaf usará
-        model.addAttribute("listaHosts", hostsFalsos);
+        model.addAttribute("initialLoad", true);
 
         return "admin/search";
     }
 
-    @PostMapping("search/host")
-    public String searchHost(
-        @RequestParam("inputSearch") String inputSearch,
-        @RequestParam Map<String, String> allParams
+     @PostMapping("/search/host")
+    public String processSearch(
+        @RequestParam(value = "inputSearch", required = false) String searchTerm,
+        @RequestParam(value = "app", required = false) String typeApp,
+        @RequestParam(value = "server", required = false) String typeServer,
+        @RequestParam(value = "db", required = false) String typeDb,
+        Model model
     ) {
+        // 1. Cria uma stream a partir da nossa base de dados mockada
+        Stream<Host> hostStream = mockHostDatabase.stream();
 
-        // Filtra o mapa para pegar apenas os checkboxes do filtro (que não seja input)
-        List<String> enabledFilters = allParams.keySet().stream()
-            .filter(key ->  !key.equals("inputSearch") &&
-                            !key.equals("_csrf"))
-            .collect(Collectors.toList());
+        // 2. Filtra pelo termo de busca (se não for nulo ou vazio)
+        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+            hostStream = hostStream.filter(host -> 
+                host.getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
+                host.getDescription().toLowerCase().contains(searchTerm.toLowerCase())
+            );
+        }
 
-        System.out.println("Input: " + inputSearch);
-        System.out.println("Filtro: " + enabledFilters);
-        
-        return "redirect:/admin/search";
+        // 3. Monta uma lista com os tipos selecionados
+        List<String> selectedTypes = new ArrayList<>();
+        if (typeApp != null) selectedTypes.add(typeApp);
+        if (typeServer != null) selectedTypes.add(typeServer);
+        if (typeDb != null) selectedTypes.add(typeDb);
+
+        // 4. Filtra pelos tipos (se algum foi selecionado)
+        if (!selectedTypes.isEmpty()) {
+            hostStream = hostStream.filter(host -> selectedTypes.contains(host.getType()));
+        }
+
+        // 5. Coleta os resultados
+        List<Host> filteredHosts = hostStream.collect(Collectors.toList());
+
+        // 6. Envia a lista FILTRADA de volta para o template
+        model.addAttribute("listaHosts", filteredHosts);
+
+        // 7. Renderiza a MESMA página, mas agora com os dados filtrados
+        return "admin/search";
     }
 
     @GetMapping({"create"})

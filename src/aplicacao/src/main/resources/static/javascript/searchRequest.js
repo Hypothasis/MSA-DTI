@@ -11,6 +11,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteModal = document.getElementById('delete-modal');
     const allModals = document.querySelectorAll('.modal');
 
+    // Pega o token CSRF das meta tags no <head>
+    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
+
+
     // ===================================================================
     // 2. LÓGICA PARA FECHAR OS MODAIS
     // ===================================================================
@@ -32,100 +37,120 @@ document.addEventListener('DOMContentLoaded', function () {
         cancelDeleteBtn.addEventListener('click', closeModal);
     }
 
+    // ===================================================================
+    // 3. LÓGICA DAS ABAS (TABS)
+    // ===================================================================
+    function setActiveTab(formElement, hostType) {
+        const tabPanes = formElement.querySelectorAll('.tab-pane');
+        
+        tabPanes.forEach(pane => {
+            // O ID do painel é algo como "tab-app" ou "tab-update-app"
+            const paneType = pane.id.split('-').pop(); // Pega a última parte do ID
+            
+            if (paneType === hostType) {
+                pane.classList.add('active');
+            } else {
+                pane.classList.remove('active');
+            }
+        });
+    }
+
 
     // ===================================================================
-    // 3. FUNÇÕES DINÂMICAS PARA ABRIR E PREENCHER CADA MODAL
+    // 4. FUNÇÕES DINÂMICAS PARA ABRIR E PREENCHER CADA MODAL
     // ===================================================================
 
     // --- AÇÃO DE LER (READ) ---
-    function openReadModal(hostData) {
-        // Preenche o modal de leitura com os dados do dataset
-        document.getElementById('modal-read-name').textContent = hostData.hostName || 'N/A';
-        document.getElementById('modal-read-description').textContent = hostData.hostDescription || 'N/A';
-        document.getElementById('modal-read-zabbix-id').textContent = hostData.hostZabbixId || 'N/A';
-        document.getElementById('modal-read-public-id').textContent = hostData.hostPublicId || 'N/A';
-        document.getElementById('modal-read-db-id').textContent = hostData.hostId || 'N/A';
-        document.getElementById('modal-read-type').textContent = hostData.hostType || 'N/A';
-
-        // Preenche a lista de métricas dinamicamente
-        const metricsList = readModal.querySelector('ul');
-        metricsList.innerHTML = ''; // Limpa a lista antiga
-        if (hostData.hostMetrics && hostData.hostMetrics.trim()) {
-            const metrics = hostData.hostMetrics.trim().split(', ');
-            metrics.forEach(metricName => {
-                const li = document.createElement('li');
-                li.textContent = metricName;
-                metricsList.appendChild(li);
-            });
-        } else {
-            metricsList.innerHTML = '<li>Nenhuma métrica configurada.</li>';
-        }
-        
-        // Mostra o modal
-        readModal.classList.add('show');
-    }
-
-    // --- AÇÃO DE ATUALIZAR (UPDATE) ---
-    async function openUpdateModal(hostData) {
+    async function openReadModal(hostId) {
         try {
-            // 1. Busca os dados completos do host na sua API
-            console.log(hostData)
             const response = await fetch(`/admin/api/hosts/${hostId}`);
             if (!response.ok) throw new Error('Host não encontrado.');
             const hostData = await response.json();
 
-            // 2. Preenche os campos básicos do formulário
+            // Preenche o modal de leitura com os dados da API
+            readModal.querySelector('#modal-read-name').textContent = hostData.name || 'N/A';
+            readModal.querySelector('#modal-read-description').textContent = hostData.description || 'N/A';
+            readModal.querySelector('#modal-read-zabbix-id').textContent = hostData.zabbixId || 'N/A';
+            readModal.querySelector('#modal-read-public-id').textContent = hostData.publicId || 'N/A';
+            readModal.querySelector('#modal-read-db-id').textContent = hostData.id || 'N/A';
+            readModal.querySelector('#modal-read-type').textContent = hostData.type || 'N/A';
+
+            const metricsList = readModal.querySelector('ul');
+            metricsList.innerHTML = '';
+            if (hostData.metrics && hostData.metrics.length > 0) {
+                hostData.metrics.forEach(metric => {
+                    const li = document.createElement('li');
+                    li.textContent = metric.name; // Usa o nome da métrica do objeto
+                    metricsList.appendChild(li);
+                });
+            } else {
+                metricsList.innerHTML = '<li>Nenhuma métrica configurada.</li>';
+            }
+            
+            readModal.classList.add('show');
+        } catch (error) {
+            console.error('Falha ao carregar dados do host:', error);
+            alert(error.message);
+        }
+    }
+
+    // --- AÇÃO DE ATUALIZAR (UPDATE) ---
+    async function openUpdateModal(hostId) {
+        try {
+            const response = await fetch(`/admin/api/hosts/${hostId}`);
+            if (!response.ok) throw new Error('Host não encontrado.');
+            const hostData = await response.json();
+            
+            // Preenche os campos básicos do formulário de update
             updateForm.querySelector('#modal-update-id').value = hostData.id;
             updateForm.querySelector('#modal-update-name').value = hostData.name;
             updateForm.querySelector('#modal-update-zabbixID').value = hostData.zabbixId;
             updateForm.querySelector('#modal-update-description').value = hostData.description;
 
-            // 3. Seleciona a aba (radio button) correta
+            // Seleciona a aba (radio button) correta
             const radioToSelect = updateForm.querySelector(`input[name="hostType"][value="${hostData.type}"]`);
-            if (radioToSelect) {
-                radioToSelect.checked = true;
-                // Dispara o evento 'change' para que a lógica de troca de abas (que deve estar em outro script) seja executada
-                radioToSelect.dispatchEvent(new Event('change'));
-            }
+            if (radioToSelect) radioToSelect.checked = true;
             
-            // 4. Limpa todos os checkboxes do formulário antes de marcar os corretos
-            updateForm.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            // Chama a função para ativar a aba visualmente
+            setActiveTab(updateForm, hostData.type);
 
-            // 5. Marca os checkboxes que vieram da API como habilitados
-            if (hostData.enabledMetrics) {
-                hostData.enabledMetrics.forEach(metricName => {
-                    const checkbox = updateForm.querySelector(`input[name="${metricName}"]`);
-                    if (checkbox) {
-                        checkbox.checked = true;
-                    }
+            // Limpa todos os checkboxes e marca os corretos
+            updateForm.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            if (hostData.metrics) {
+                hostData.metrics.forEach(metric => {
+                    // Assume que o 'name' do checkbox é o 'metricKey' da métrica
+                    const checkbox = updateForm.querySelector(`input[name="${metric.metricKey}"]`);
+                    if (checkbox) checkbox.checked = true;
                 });
             }
 
-            // 6. Finalmente, mostra o modal
             updateModal.classList.add('show');
-
         } catch (error) {
             console.error('Falha ao carregar dados para edição:', error);
             alert(error.message);
         }
     }
+    
+    // --- AÇÃO DE DELETAR (DELETE) ---
+    function openDeleteModal(hostId, hostName) {
+        deleteModal.querySelector('#modal-delete-name').textContent = hostName;
+        deleteModal.querySelector('#confirm-delete-btn').dataset.hostId = hostId;
+        deleteModal.classList.add('show');
+    }
 
-    // --- LÓGICA DE ENVIO DA REQUISIÇÃO PUT ---
+    // ===================================================================
+    // 5. LISTENERS DE EVENTOS (ACESSO API RESTFUL)
+    // ===================================================================
+
+    // Listener para submissão do formulário de UPDATE
     if (updateForm) {
         updateForm.addEventListener('submit', async function(event) {
-            event.preventDefault(); // Previne o recarregamento da página
-
+            event.preventDefault();
             const hostId = document.getElementById('modal-update-id').value;
-            const csrfToken = document.querySelector('input[name="_csrf"]').value;
-            const csrfHeaderName = document.querySelector('input[name="_csrf"]').name;
             
-            // Coleta todos os dados do formulário
             const formData = new FormData(updateForm);
-            const enabledMetrics = [];
-            updateForm.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-                enabledMetrics.push(cb.name);
-            });
-
+            const enabledMetrics = Array.from(updateForm.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.name);
+            
             const dataToSend = {
                 hostName: formData.get('hostName'),
                 hostZabbixID: formData.get('hostZabbixID'),
@@ -135,78 +160,36 @@ document.addEventListener('DOMContentLoaded', function () {
             };
 
             try {
-                // Envia os dados para a API RESTful usando FETCH e o método PUT
                 const response = await fetch(`/admin/api/hosts/${hostId}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        [csrfHeaderName]: csrfToken
-                    },
+                    headers: { 'Content-Type': 'application/json', [csrfHeaderName]: csrfToken },
                     body: JSON.stringify(dataToSend)
                 });
-
-                if (!response.ok) {
-                    throw new Error('Falha ao salvar as alterações. Status: ' + response.status);
-                }
-
+                if (!response.ok) throw new Error('Falha ao salvar as alterações.');
                 alert('Host atualizado com sucesso!');
-                window.location.reload(); // Recarrega a página para ver as mudanças
-
+                window.location.reload();
             } catch (error) {
-                console.error('Erro ao atualizar host:', error);
                 alert(error.message);
             }
         });
     }
-    
-    // --- AÇÃO DE DELETAR (DELETE) ---
-    function openDeleteModal(hostData) {
-        const deleteModal = document.getElementById('delete-modal');
-        
-        // CORRIGIDO: Preenche o nome do host na mensagem de confirmação
-        deleteModal.querySelector('#modal-delete-name').textContent = hostData.hostName;
-        
-        // CORRIGIDO: Guarda o ID do host no PRÓPRIO botão de confirmação usando dataset
-        deleteModal.querySelector('#confirm-delete-btn').dataset.hostId = hostData.hostId;
 
-        // Mostra o modal de confirmação
-        deleteModal.classList.add('show');
-    }
-
-    // --- LÓGICA DE ENVIO DA REQUISIÇÃO DELETE ---
+    // Listener para o botão de confirmação de DELETE
     const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
     if (confirmDeleteBtn) {
         confirmDeleteBtn.addEventListener('click', async function() {
             const hostId = this.dataset.hostId;
-            
-            // ===================================================================
-            // CORREÇÃO: Pegar o token e o nome do header do HTML
-            // ===================================================================
-             const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-             const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-            // ===================================================================
-
             try {
                 const response = await fetch(`/admin/api/hosts/${hostId}`, {
                     method: 'DELETE',
-                    headers: {
-                        [csrfHeaderName]: csrfToken
-                    }
+                    headers: { [csrfHeaderName]: csrfToken }
                 });
-
-                if (!response.ok) {
-                    throw new Error('Falha ao excluir o host. Verifique as permissões.');
-                }
-
+                if (!response.ok) throw new Error('Falha ao excluir o host.');
                 alert('Host excluído com sucesso!');
-                
-                const itemToRemove = document.querySelector(`li[data-host-id='${hostId}']`);
-                if (itemToRemove) itemToRemove.remove();
-                
-                closeModal(); // Função que fecha o modal
-
+                document.querySelector(`li[data-host-id='${hostId}']`)?.remove();
+                closeModal();
+                window.location.reload();
             } catch (error) {
-                console.error('Erro ao excluir host:', error);
                 alert(error.message);
             }
         });
@@ -214,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // ===================================================================
-    // 4. LISTENER PRINCIPAL (DELEGAÇÃO DE EVENTOS)
+    // 6. LISTENER PRINCIPAL (OPEN MODAL)
     // ===================================================================
     if (hostListContainer) {
         hostListContainer.addEventListener('click', function (event) {
@@ -226,17 +209,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // O objeto dataset contém todos os atributos data-* do elemento
             const hostData = hostItem.dataset;
+            const hostID = hostData.hostId;
+            const hostName = hostData.hostName;
 
             if (button.classList.contains('read')) {
-                openReadModal(hostData);
+                openReadModal(hostID);
             }
             
             if (button.classList.contains('update')) {
-                openUpdateModal(hostData);
+                openUpdateModal(hostID);
             }
             
             if (button.classList.contains('delete')) {
-                openDeleteModal(hostData);
+                openDeleteModal(hostID, hostName);
             }
         });
     }
