@@ -1,13 +1,22 @@
 package br.com.dti.msa.model;
 
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
-@AllArgsConstructor
+@Entity
+@Table(name = "metrics")
 public class Metric {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String metricKey; // A chave do Zabbix, ex: "system.cpu.util"
-    private String name;      // O nome amigável, ex: "Uso de CPU"
-    private String unit;      // A unidade de medida, ex: "%"
+
+    @Column(name = "metric_key", nullable = false, unique = true)
+    private String metricKey;
+
+    @Column(nullable = false)
+    private String name;
+
+    private String unit;
 }

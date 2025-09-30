@@ -1,209 +1,136 @@
 package br.com.dti.msa.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import br.com.dti.msa.dto.CreateHostDTO;
+import br.com.dti.msa.dto.UpdateHostDTO;
+import br.com.dti.msa.exception.ZabbixValidationException;
+import br.com.dti.msa.model.Host;
+import br.com.dti.msa.service.HostService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import br.com.dti.msa.model.Host;
-import br.com.dti.msa.model.Metric;
-import br.com.dti.msa.dto.UpdateHostDTO;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private static final List<Metric> sigaaMetrics = List.of(
-        new Metric(1L, "system.cpu.util", "Uso de CPU", "%"),
-        new Metric(2L, "vm.memory.utilization", "Uso de Memória", "%")
-    );
 
-    private static final List<Metric> seiSipMetrics = List.of(
-        new Metric(3L, "system.cpu.util", "Uso de CPU", "%"),
-        new Metric(4L, "svm.memory.utilization", "Uso de Memória RAM", "%"),
-        new Metric(5L, "vfs.fs.size[/,total]", "Uso de Armazenamento", "%")
-    );
-
-    private static final List<Metric> sigaaBDMetrics = List.of(
-        new Metric(3L, "system.cpu.util", "Uso de CPU", "%"),
-        new Metric(4L, "vm.memory.utilization", "Uso de Memória RAM", "%"),
-        new Metric(5L, "vfs.fs.size[/,total]", "Uso de Armazenamento", "%"),
-        new Metric(6L, "net.if.in['eth0']", "Banda Larga Recebimento de Dados", "")
-    );
-
-    private static final List<Host> mockHostDatabase = List.of(
-        new Host(123L, "10675awdsa", 10675, "Sigaa", "Aplicação SIGAA", "app", sigaaMetrics),
-        new Host(124L, "10676qweqw", 10676, "SEI-SIP-01", "Aplicação SEI-SIP-01", "server", seiSipMetrics),
-        new Host(125L, "10677asdas", 10677, "BD_SIGAA", "Banco de Dados do SIGAA", "db", sigaaBDMetrics)
-    );
+    @Autowired
+    private HostService hostService;
     
-    @GetMapping({"","/"})
-    public String index() {
+    // --- MÉTODOS PARA RENDERIZAR AS PÁGINAS HTML (VIEWS) ---
+
+    @GetMapping({"", "/"})
+    public String showAdminIndex() {
         return "admin/index";
     }
 
-    @GetMapping({"search"})
-    public String indexSearch( Model model) {
-
-        // Hosts Mockados
+    @GetMapping("/search")
+    public String showSearchPage(Model model) {
+        // Carrega a página de busca inicialmente com uma lista vazia.
         model.addAttribute("listaHosts", new ArrayList<Host>());
-
-        model.addAttribute("initialLoad", true);
-
+        model.addAttribute("initialLoadMessage", "Use a barra de busca para encontrar hosts.");
         return "admin/search";
     }
 
-     @PostMapping("/search/host")
+    @PostMapping("/search/host")
     public String processSearch(
         @RequestParam(value = "inputSearch", required = false) String searchTerm,
-        @RequestParam(value = "app", required = false) String typeApp,
-        @RequestParam(value = "server", required = false) String typeServer,
-        @RequestParam(value = "db", required = false) String typeDb,
+        @RequestParam Map<String, String> allParams,
         Model model
     ) {
-        // 1. Cria uma stream a partir da nossa base de dados mockada
-        Stream<Host> hostStream = mockHostDatabase.stream();
-
-        // 2. Filtra pelo termo de busca (se não for nulo ou vazio)
-        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
-            hostStream = hostStream.filter(host -> 
-                host.getName().toLowerCase().contains(searchTerm.toLowerCase()) ||
-                host.getDescription().toLowerCase().contains(searchTerm.toLowerCase())
-            );
-        }
-
-        // 3. Monta uma lista com os tipos selecionados
-        List<String> selectedTypes = new ArrayList<>();
-        if (typeApp != null) selectedTypes.add(typeApp);
-        if (typeServer != null) selectedTypes.add(typeServer);
-        if (typeDb != null) selectedTypes.add(typeDb);
-
-        // 4. Filtra pelos tipos (se algum foi selecionado)
-        if (!selectedTypes.isEmpty()) {
-            hostStream = hostStream.filter(host -> selectedTypes.contains(host.getType()));
-        }
-
-        // 5. Coleta os resultados
-        List<Host> filteredHosts = hostStream.collect(Collectors.toList());
-
-        // 6. Envia a lista FILTRADA de volta para o template
+        // Filtra os parâmetros para pegar apenas os tipos de host selecionados no formulário
+        List<String> selectedTypes = allParams.keySet().stream()
+            .filter(key -> key.equals("app") || key.equals("server") || key.equals("db"))
+            .collect(Collectors.toList());
+        
+        // Chama o SERVICE para fazer a busca real no banco de dados
+        List<Host> filteredHosts = hostService.searchHosts(searchTerm, selectedTypes);
+        
+        // Adiciona os resultados ao model para o Thymeleaf renderizar
         model.addAttribute("listaHosts", filteredHosts);
-
-        // 7. Renderiza a MESMA página, mas agora com os dados filtrados
+        
+        // Retorna a mesma view, mas agora com os dados da busca
         return "admin/search";
     }
 
-    @GetMapping({"create"})
-    public String indexCreate() {
+    @GetMapping("/create")
+    public String showCreatePage(Model model) {
+        model.addAttribute("createHostDTO", new CreateHostDTO());
         return "admin/create";
     }
 
-    // --- API Restful ---
-    
+    // --- ENDPOINTS DA API RESTful PARA OPERAÇÕES CRUD ---
+
     /**
-     * Cria um novo host.
-     * Rota: POST /admin/api/hosts
+     * Endpoint para criar um novo host.
+     * Recebe dados de um formulário web padrão.
      */
-    @PostMapping("api/host")
-    public String createHost(
-        @RequestParam("hostName") String hostName,
-        @RequestParam("hostZabbixID") Long zabbixId,
-        @RequestParam("hostDescription") String description,
-        @RequestParam("hostType") String hostType,
-        // Usamos um Map para pegar todos os outros parâmetros (os checkboxes)
-        @RequestParam Map<String, String> allParams
-    ) {
-        
-        // Filtra o mapa para pegar apenas os checkboxes (que não são os campos principais)
-        List<String> enabledMetrics = allParams.keySet().stream()
-            .filter(key -> !key.equals("_csrf") && 
-                        !key.equals("hostName") && 
-                        !key.equals("hostZabbixID") &&
-                        !key.equals("hostDescription") &&
-                        !key.equals("hostType"))
-            .collect(Collectors.toList());
-
-        System.out.println("Nome do Host: " + hostName);
-        System.out.println("Zabbix ID: " + zabbixId);
-        System.out.println("Descrição: " + description);
-        System.out.println("Tipo do Host: " + hostType);
-        System.out.println("Métricas Selecionadas: " + enabledMetrics);
-
-
-        return "redirect:/admin/create";
+    @PostMapping("api/hosts") // Rota corresponde ao th:action do formulário de criação
+    public String createHost(CreateHostDTO createDto, RedirectAttributes redirectAttributes) {
+        try {
+            hostService.createAndValidateHost(createDto);
+            redirectAttributes.addFlashAttribute("successMessage", "Host '" + createDto.getHostName() + "' criado com sucesso!");
+            return "admin/create";  // Redireciona para a busca para ver o novo host
+        } catch (ZabbixValidationException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "admin/create";  // Volta para a criação com a mensagem de erro
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Ocorreu um erro inesperado: " + e.getMessage());
+            return "admin/create"; 
+        }
     }
 
     /**
-     * Busca um host específico por ID (usado para popular o modal de update).
-     * Rota: GET /admin/api/hosts/{id}
+     * Endpoint para buscar os dados completos de um host por ID.
+     * Usado pelo JavaScript para popular os modais de Read e Update.
      */
     @GetMapping("/api/hosts/{id}")
-    @ResponseBody
+    @ResponseBody // Indica que o retorno é um corpo de resposta (JSON), não o nome de uma view
     public ResponseEntity<Host> getHostById(@PathVariable Long id) {
-        System.out.println("Buscando host com ID (mock): " + id);
-
-        // 3. Simula a busca no banco de dados (procurando na nossa lista estática)
-        Optional<Host> hostEncontrado = mockHostDatabase.stream()
-                .filter(host -> host.getId().equals(id))
-                .findFirst();
-
-        // 4. Retorna o host se encontrado, ou um erro 404 (Not Found) se não encontrado
-        if (hostEncontrado.isPresent()) {
-            // Retorna HTTP 200 OK com o objeto host no corpo da resposta
-            return ResponseEntity.ok(hostEncontrado.get());
-        } else {
-            // Retorna HTTP 404 Not Found, que é a resposta correta quando o recurso não existe
+        try {
+            Host host = hostService.findById(id);
+            return ResponseEntity.ok(host);
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
     
-    
     /**
-     * Atualiza um host existente.
-     * Rota: PUT /admin/api/hosts/{id}
+     * Endpoint para atualizar um host existente.
+     * Recebe dados JSON via JavaScript (fetch).
      */
     @PutMapping("/api/hosts/{hostId}")
-    public ResponseEntity<Void> updateHost(
-        @PathVariable Long hostId, 
-        @RequestBody UpdateHostDTO updateData
-    ) {
-        System.out.println("--- ATUALIZANDO HOST ---");
-        System.out.println("Host ID (da URL): " + hostId);
-        System.out.println("Novo Nome: " + updateData.getHostName());
-        System.out.println("Novo Zabbix ID: " + updateData.getHostZabbixID());
-        System.out.println("Novo Tipo: " + updateData.getHostType());
-        System.out.println("Novas Métricas: " + updateData.getEnabledMetrics());
-        
-        // LÓGICA PARA ATUALIZAR NO BANCO...
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Void> updateHost(@PathVariable Long hostId, @RequestBody UpdateHostDTO updateData) {
+        try {
+            hostService.updateHost(hostId, updateData);
+            return ResponseEntity.ok().build(); // Retorna 200 OK
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build(); // Retorna 404 Not Found
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build(); // Retorna 500 Internal Server Error
+        }
     }
 
     /**
-     * Deleta um host.
-     * Rota: DELETE /admin/api/hosts/{id}
+     * Endpoint para deletar um host.
+     * Chamado via JavaScript (fetch).
      */
     @DeleteMapping("/api/hosts/{hostId}")
     public ResponseEntity<Void> deleteHost(@PathVariable Long hostId) {
-        System.out.println("--- DELETANDO HOST ---");
-        System.out.println("Host ID para deletar: " + hostId);
-        
-        // LÓGICA PARA DELETAR DO BANCO...
-        return ResponseEntity.ok().build();
+        try {
+            hostService.deleteHost(hostId);
+            return ResponseEntity.ok().build(); // Retorna 200 OK
+        } catch (Exception e) {
+            // Pode ser um EntityNotFoundException ou outro erro
+            return ResponseEntity.internalServerError().build(); // Retorna 500
+        }
     }
 }

@@ -1,5 +1,6 @@
 package br.com.dti.msa.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 
@@ -9,5 +10,5 @@ public class CreateHostDTO {
     private Long hostZabbixID;
     private String hostDescription;
     private String hostType;
-    private List<String> enabledMetrics;
+    private List<String> enabledMetrics = new ArrayList<>();
 }

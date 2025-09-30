@@ -49,10 +49,10 @@ public class SecurityConfig {
                 .requestMatchers("/admin/create", "/admin/create/**").hasAuthority("create_admin")
 
                 // Roles para Permissões de CRUD
-                .requestMatchers(HttpMethod.POST, "/admin/api/host").hasAuthority("ADMIN_CREATE")
-                .requestMatchers(HttpMethod.GET, "/admin/api/host/{hostId}").hasAuthority("ADMIN_READ")
-                .requestMatchers(HttpMethod.PUT, "/admin/api/host/{hostId}").hasAuthority("ADMIN_UPDATE")
-                .requestMatchers(HttpMethod.DELETE, "/admin/api/host/{hostId}").hasAuthority("ADMIN_DELETE")
+                .requestMatchers(HttpMethod.POST, "/admin/api/hosts").hasAuthority("ADMIN_CREATE")
+                .requestMatchers(HttpMethod.GET, "/admin/api/hosts/{hostId}").hasAuthority("ADMIN_READ")
+                .requestMatchers(HttpMethod.PUT, "/admin/api/hosts/{hostId}").hasAuthority("ADMIN_UPDATE")
+                .requestMatchers(HttpMethod.DELETE, "/admin/api/hosts/{hostId}").hasAuthority("ADMIN_DELETE")
                 
                 .anyRequest().authenticated()
             )
