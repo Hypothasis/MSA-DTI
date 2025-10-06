@@ -437,7 +437,6 @@ details {
   display: flex;
   flex-direction: column;
   justify-content: start;
-  align-items: center;
   gap: 5px;
   font-family: var(--font-nunito);
   font-weight: 300;
@@ -445,6 +444,7 @@ details {
 
 details p{
     font-size: 0.7rem;
+    margin-left: 10px;
 }
 
 summary {

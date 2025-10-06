@@ -63,6 +63,11 @@ public class HostService {
         // 2. VALIDAÇÃO DAS MÉTRICAS NO ZABBIX
         for (String metricNameFromForm : dto.getEnabledMetrics()) {
             List<String> zabbixKeys = metricCatalog.getZabbixKeysFor(metricNameFromForm);
+
+            if (metricNameFromForm.equals("eventos-recentes")) {
+                continue; // 'continue' ignora o resto do código e vai para o próximo item da lista
+            }
+
             if (zabbixKeys.isEmpty()) {
                 throw new ZabbixValidationException("Métrica '" + metricNameFromForm + "' não é reconhecida pelo sistema MSA.");
             }
@@ -73,9 +78,18 @@ public class HostService {
             }
         }
         
+        System.out.println("Salvando o host no banco de dados...");
+
         // 3. PERSISTÊNCIA NO BANCO DE DADOS
         List<Metric> selectedMetrics = metricRepository.findByMetricKeyIn(dto.getEnabledMetrics());
         
+
+        // --- LOG DE DEPURAÇÃO 2: O que foi encontrado no banco? ---
+        System.out.println("Número de métricas encontradas no banco: " + selectedMetrics.size());
+        if(selectedMetrics.isEmpty() && !dto.getEnabledMetrics().isEmpty()) {
+            System.err.println("ALERTA: Nenhuma métrica foi encontrada no banco de dados para as chaves fornecidas!");
+        }
+
         Host newHost = new Host();
         newHost.setName(dto.getHostName());
         newHost.setZabbixId(dto.getHostZabbixID().intValue());
@@ -83,6 +97,8 @@ public class HostService {
         newHost.setType(dto.getHostType());
         newHost.setPublicId(UUID.randomUUID().toString());
         newHost.setMetrics(selectedMetrics);
+
+        System.out.println(">>> VALOR A SER SALVO EM host_type: '" + newHost.getType() + "'");
         
         return hostRepository.save(newHost);
     }

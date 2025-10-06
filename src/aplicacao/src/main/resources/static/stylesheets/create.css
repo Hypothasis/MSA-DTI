@@ -164,26 +164,37 @@ details {
 }
 
 summary {
+  position: relative;
   border-radius: 4px;
   font-weight: bold;
   padding: 0.5em;
   width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-summary div{
-  display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
   align-items: start;
-  gap: 5px;
 }
 
 summary:hover{
   cursor: pointer;
   background-color: rgb(250, 250, 250);
+}
+
+summary div{
+  display: flex;
+  justify-content: center;
+  align-items: start;
+  gap: 5px;
+}
+
+summary img{
+  position: absolute;
+  right: 1.2%;
+  top: 28%;
+}
+
+details p {
+  margin-left: 9px;
 }
 
 details[open] {

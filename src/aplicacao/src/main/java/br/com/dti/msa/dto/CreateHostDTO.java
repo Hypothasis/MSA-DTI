@@ -9,6 +9,6 @@ public class CreateHostDTO {
     private String hostName;
     private Long hostZabbixID;
     private String hostDescription;
-    private String hostType;
+    private String hostType = "APPLICATION"; // Padrão como APPLICATION
     private List<String> enabledMetrics = new ArrayList<>();
 }

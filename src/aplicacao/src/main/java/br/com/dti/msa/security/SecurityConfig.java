@@ -42,6 +42,7 @@ public class SecurityConfig {
                 .requestMatchers("/error").permitAll() 
                 .requestMatchers("/host/**").permitAll()
                 .requestMatchers("debug/**").permitAll()
+                .requestMatchers("/token").permitAll()
                 
                 // Roles para Rotas Admin
                 .requestMatchers("/admin", "/admin/").hasAuthority("index_admin")
@@ -115,7 +116,7 @@ public class SecurityConfig {
         };
     }
 
-    // 3. Cria o bean do manipulador de logout
+    //Cria o bean do manipulador de logout
     private LogoutSuccessHandler oidcLogoutSuccessHandler() {
         OidcClientInitiatedLogoutSuccessHandler successHandler = 
                 new OidcClientInitiatedLogoutSuccessHandler(this.clientRegistrationRepository);

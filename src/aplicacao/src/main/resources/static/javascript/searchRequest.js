@@ -108,20 +108,28 @@ document.addEventListener('DOMContentLoaded', function () {
             updateForm.querySelector('#modal-update-description').value = hostData.description;
 
             // Seleciona a aba (radio button) correta
-            const radioToSelect = updateForm.querySelector(`input[name="hostType"][value="${hostData.type}"]`);
+            const hostType = hostData.type;
+            const radioToSelect = updateForm.querySelector(`input[name="hostType"][value="${hostType}"]`);
             if (radioToSelect) radioToSelect.checked = true;
             
             // Chama a função para ativar a aba visualmente
-            setActiveTab(updateForm, hostData.type);
+            setActiveTab(updateForm, hostType);
 
-            // Limpa todos os checkboxes e marca os corretos
-            updateForm.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-            if (hostData.metrics) {
-                hostData.metrics.forEach(metric => {
-                    // Assume que o 'name' do checkbox é o 'metricKey' da métrica
-                    const checkbox = updateForm.querySelector(`input[name="${metric.metricKey}"]`);
-                    if (checkbox) checkbox.checked = true;
-                });
+            // Encontra o painel da aba que ACABOU de ser ativada
+            const activeTabPane = updateForm.querySelector(`#tab-${hostType.toUpperCase()}`);
+
+            if (activeTabPane) {
+                // Limpa todos os checkboxes do formulário e marca os corretos APENAS DENTRO DA ABA ATIVA
+                updateForm.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+                if (hostData.metrics) {
+                    hostData.metrics.forEach(metric => {
+                        // Procura o checkbox SOMENTE dentro do painel da aba ativa
+                        const checkbox = activeTabPane.querySelector(`input[name="${metric.metricKey}"]`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                        }
+                    });
+                }
             }
 
             updateModal.classList.add('show');

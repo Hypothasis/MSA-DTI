@@ -43,21 +43,25 @@ public class AdminController {
     @PostMapping("/search/host")
     public String processSearch(
         @RequestParam(value = "inputSearch", required = false) String searchTerm,
-        @RequestParam Map<String, String> allParams,
+        @RequestParam(value = "APPLICATION", required = false) String typeApp,
+        @RequestParam(value = "SERVER", required = false) String typeServer,
+        @RequestParam(value = "DATABASE", required = false) String typeDb,
         Model model
     ) {
-        // Filtra os parâmetros para pegar apenas os tipos de host selecionados no formulário
-        List<String> selectedTypes = allParams.keySet().stream()
-            .filter(key -> key.equals("app") || key.equals("server") || key.equals("db"))
-            .collect(Collectors.toList());
+        // Monta uma lista apenas com os tipos que foram selecionados
+        List<String> selectedTypes = new ArrayList<>();
+        if (typeApp != null) selectedTypes.add("APPLICATION");
+        if (typeServer != null) selectedTypes.add("SERVER");
+        if (typeDb != null) selectedTypes.add("DATABASE");
+
+        System.out.println("Termo de busca: " + searchTerm);
+        System.out.println("Tipos selecionados: " + selectedTypes);
         
-        // Chama o SERVICE para fazer a busca real no banco de dados
+        // Chama o SERVICE para fazer a busca
         List<Host> filteredHosts = hostService.searchHosts(searchTerm, selectedTypes);
         
-        // Adiciona os resultados ao model para o Thymeleaf renderizar
         model.addAttribute("listaHosts", filteredHosts);
         
-        // Retorna a mesma view, mas agora com os dados da busca
         return "admin/search";
     }
 
@@ -73,18 +77,23 @@ public class AdminController {
      * Endpoint para criar um novo host.
      * Recebe dados de um formulário web padrão.
      */
-    @PostMapping("api/hosts") // Rota corresponde ao th:action do formulário de criação
+    @PostMapping("/api/hosts")
     public String createHost(CreateHostDTO createDto, RedirectAttributes redirectAttributes) {
         try {
             hostService.createAndValidateHost(createDto);
             redirectAttributes.addFlashAttribute("successMessage", "Host '" + createDto.getHostName() + "' criado com sucesso!");
-            return "admin/create";  // Redireciona para a busca para ver o novo host
+            // Em caso de sucesso, o ideal é redirecionar para a busca
+            return "redirect:/admin/create";
+            
         } catch (ZabbixValidationException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "admin/create";  // Volta para a criação com a mensagem de erro
+            // CORREÇÃO: Adicione a barra "/" inicial
+            return "redirect:/admin/create";
+            
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Ocorreu um erro inesperado: " + e.getMessage());
-            return "admin/create"; 
+            // CORREÇÃO: Adicione a barra "/" inicial
+            return "redirect:/admin/create";
         }
     }
 
