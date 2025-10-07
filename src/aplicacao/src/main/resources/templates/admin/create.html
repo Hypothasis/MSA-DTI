@@ -16,6 +16,11 @@
 </head>
 <body>
 
+    <div id="flash-message" class="flash-message hidden">
+        <p id="flash-message-text"></p>
+        <button class="close-flash" id="btn-flash-message">×</button>
+    </div>
+
     <aside>
         <div>
             <button id="asideBtn">
@@ -63,34 +68,33 @@
         </div>
         <h1 class="mainTitle">Criar Host</h1>
 
-        <form id="host-form" th:action="@{/admin/api/hosts}" method="post" th:object="${createHostDTO}">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <form id="host-form">
 
             <div class="form-group">
                 <label for="hostName">Nome do Host</label>
-                <input type="text" th:field="*{hostName}" required>
+                <input type="text" id="hostName" name="hostName" required>
             </div>
 
             <div class="form-group">
                 <label for="hostZabbixID">ID do Host via Zabbix</label>
-                <input type="number" min="0" th:field="*{hostZabbixID}" required>
+                <input type="number" min="0" id="hostZabbixID" name="hostZabbixID" required>
             </div>
 
             <div class="form-group">
                 <label for="hostDescription">Descrição do Host</label>
-                <textarea th:field="*{hostDescription}"></textarea>
+                <textarea id="hostDescription" name="hostDescription"></textarea>
             </div>
         
 
             <div class="tabs-container">
                 <div class="tabs-nav">
-                    <input type="radio" id="type-aplicacao" th:field="*{hostType}" value="APPLICATION" class="tab-radio" data-tab="APPLICATION" checked>
+                    <input type="radio" id="type-aplicacao" name="hostType" value="APPLICATION" class="tab-radio" data-tab="APPLICATION" checked>
                     <label for="type-aplicacao" class="tab-button">Aplicação/Serviço</label>
 
-                    <input type="radio" id="type-servidores" th:field="*{hostType}" value="SERVER" class="tab-radio" data-tab="SERVER">
+                    <input type="radio" id="type-servidores" name="hostType" value="SERVER" class="tab-radio" data-tab="SERVER">
                     <label for="type-servidores" class="tab-button">Servidores</label>
 
-                    <input type="radio" id="type-banco-dados" th:field="*{hostType}" value="DATABASE" class="tab-radio" data-tab="DATABASE">
+                    <input type="radio" id="type-banco-dados" name="hostType" value="DATABASE" class="tab-radio" data-tab="DATABASE">
                     <label for="type-banco-dados" class="tab-button">Banco de Dados</label>
                 </div>
 
@@ -103,12 +107,12 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="disponibilidade-global"> 
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Disponibilidade Global (48h)</label>
+                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-global" id="disponibilidade-global" > 
+                                            <label for="disponibilidade-global">Disponibilidade Global (48h)</label>
                                         </div>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="disponibilidade-especifica"> 
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-especifica" id="disponibilidade-especifica"> 
+                                            <label for="disponibilidade-especifica">Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -123,8 +127,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="latencia-tempo-resposta"> 
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Tempo de resposta</label>
+                                            <input type="checkbox" name="enabledMetrics" value="latencia-tempo-resposta" id="latencia-tempo-resposta"> 
+                                            <label for="latencia-tempo-resposta">Tempo de resposta</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -139,8 +143,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="cpu-uso"> 
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de CPU</label>
+                                            <input type="checkbox" name="enabledMetrics" value="cpu-uso" id="cpu-uso"> 
+                                            <label for="cpu-uso">Uso de CPU</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -155,8 +159,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="memoria-ram"> 
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de memória RAM</label>
+                                            <input type="checkbox" name="enabledMetrics" value="memoria-ram" id="memoria-ram"> 
+                                            <label for="memoria-ram">Uso de memória RAM</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -172,8 +176,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="armazenamento"> 
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de armazenamento</label>
+                                            <input type="checkbox" name="enabledMetrics" value="armazenamento" id="armazenamento"> 
+                                            <label for="armazenamento">Uso de armazenamento</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -189,8 +193,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="dados-banda-larga"> 
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Banda Larga de Dados</label>
+                                            <input type="checkbox" name="enabledMetrics" value="dados-banda-larga" id="dados-banda-larga"> 
+                                            <label for="dados-banda-larga">Banda Larga de Dados</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -206,8 +210,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="tempo-ativo"> 
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Tempo de Servidor Ativo</label>
+                                            <input type="checkbox" name="enabledMetrics" value="tempo-ativo" id="tempo-ativo"> 
+                                            <label for="tempo-ativo">Tempo de Servidor Ativo</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -217,8 +221,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="eventos-recentes"> 
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Eventos Recentes</label>
+                                            <input type="checkbox" name="enabledMetrics" value="eventos-recentes" id="eventos-recentes"> 
+                                            <label for="eventos-recentes">Eventos Recentes</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -235,12 +239,12 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="disponibilidade-global">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Disponibilidade Global (48h)</label>
+                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-global" id="server-disponibilidade-global">
+                                            <label for="server-disponibilidade-global">Disponibilidade Global (48h)</label>
                                         </div>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="disponibilidade-especifica">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-especifica" id="server-disponibilidade-especifica">
+                                            <label for="server-disponibilidade-especifica">Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -255,8 +259,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="sistema-operacional">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Sistema Operacional (SO e Arquitetura)</label>
+                                            <input type="checkbox" name="enabledMetrics" value="sistema-operacional" id="server-sistema-operacional">
+                                            <label for="server-sistema-operacional">Sistema Operacional (SO e Arquitetura)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -272,8 +276,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="cpu-uso">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de CPU</label>
+                                            <input type="checkbox" name="enabledMetrics" value="cpu-uso" id="server-cpu-uso">
+                                            <label for="server-cpu-uso">Uso de CPU</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -282,8 +286,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="cpu-processos">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Processos (Num MAX e atuais)</label>
+                                            <input type="checkbox" name="enabledMetrics" value="cpu-processos" id="server-cpu-processos">
+                                            <label for="server-cpu-processos">Processos (Num MAX e atuais)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -293,8 +297,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="cpu-troca-contextos">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Troca de Contextos</label>
+                                            <input type="checkbox" name="enabledMetrics" value="cpu-troca-contextos" id="server-cpu-troca-contextos">
+                                            <label for="server-cpu-troca-contextos">Troca de Contextos</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -309,8 +313,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="memoria-ram">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de memória RAM</label>
+                                            <input type="checkbox" name="enabledMetrics" value="memoria-ram" id="server-memoria-ram">
+                                            <label for="server-memoria-ram">Uso de memória RAM</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -320,8 +324,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="memoria-swap">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de memória SWAP</label>
+                                            <input type="checkbox" name="enabledMetrics" value="memoria-swap" id="server-memoria-swap">
+                                            <label for="server-memoria-swap">Uso de memória SWAP</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -337,8 +341,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="armazenamento">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de armazenamento</label>
+                                            <input type="checkbox" name="enabledMetrics" value="armazenamento" id="server-armazenamento">
+                                            <label for="server-armazenamento">Uso de armazenamento</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -354,8 +358,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="dados-banda-larga">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Banda Larga de Dados</label>
+                                            <input type="checkbox" name="enabledMetrics" value="dados-banda-larga" id="server-dados-banda-larga">
+                                            <label for="server-dados-banda-larga">Banda Larga de Dados</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -371,8 +375,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="tempo-ativo">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Tempo de Servidor Ativo</label>
+                                            <input type="checkbox" name="enabledMetrics" value="tempo-ativo" id="server-tempo-ativo">
+                                            <label for="server-tempo-ativo">Tempo de Servidor Ativo</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -381,8 +385,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="eventos-recentes">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Eventos Recentes</label>
+                                            <input type="checkbox" name="enabledMetrics" value="eventos-recentes" id="server-eventos-recentes">
+                                            <label for="server-eventos-recentes">Eventos Recentes</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -399,12 +403,12 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="disponibilidade-global">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Disponibilidade Global (48h)</label>
+                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-global" id="database-disponibilidade-global" > 
+                                            <label for="database-disponibilidade-global">Disponibilidade Global (48h)</label>
                                         </div>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="disponibilidade-especifica">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-especifica" id="database-disponibilidade-especifica"> 
+                                            <label for="database-disponibilidade-especifica">Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -419,8 +423,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="cpu-uso">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de CPU</label>
+                                            <input type="checkbox" name="enabledMetrics" value="cpu-uso" id="database-cpu-uso">
+                                            <label for="database-cpu-uso">Uso de CPU</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -429,8 +433,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="cpu-processos">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Processos (Num MAX e atuais)</label>
+                                            <input type="checkbox" name="enabledMetrics" value="cpu-processos" id="database-cpu-processos">
+                                            <label for="database-cpu-processos">Processos (Num MAX e atuais)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -446,8 +450,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="memoria-ram">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de memória RAM</label>
+                                            <input type="checkbox" name="enabledMetrics" value="memoria-ram" id="database-memoria-ram">
+                                            <label for="database-memoria-ram">Uso de memória RAM</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -463,8 +467,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="armazenamento">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Uso de armazenamento</label>
+                                            <input type="checkbox" name="enabledMetrics" value="armazenamento" id="database-armazenamento">
+                                            <label for="database-armazenamento">Uso de armazenamento</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -480,8 +484,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="dados-banda-larga">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Banda Larga de Dados</label>
+                                            <input type="checkbox" name="enabledMetrics" value="dados-banda-larga" id="database-dados-banda-larga">
+                                            <label for="database-dados-banda-larga">Banda Larga de Dados</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -497,8 +501,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="tempo-ativo">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Tempo de Servidor Ativo</label>
+                                            <input type="checkbox" name="enabledMetrics" value="tempo-ativo" id="database-tempo-ativo">
+                                            <label for="database-tempo-ativo">Tempo de Servidor Ativo</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -507,8 +511,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" th:field="*{enabledMetrics}" value="eventos-recentes">
-                                            <label th:for="${#ids.prev('enabledMetrics')}">Eventos Recentes</label>
+                                            <input type="checkbox" name="enabledMetrics" value="eventos-recentes" id="database-eventos-recentes">
+                                            <label for="database-eventos-recentes">Eventos Recentes</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>

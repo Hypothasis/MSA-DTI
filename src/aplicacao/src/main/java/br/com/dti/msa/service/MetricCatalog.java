@@ -17,7 +17,7 @@ public class MetricCatalog {
         Map.entry("cpu-processos", List.of("proc.num", "kernel.maxproc")),
         Map.entry("cpu-troca-contextos", List.of("system.cpu.switches")),
         Map.entry("memoria-ram", List.of("vm.memory.size[available]", "vm.memory.utilization")),
-        Map.entry("memoria-swap", List.of("vm.memory.size[swap]", "vm.memory.size[swpfree]")),
+        Map.entry("memoria-swap", List.of("system.swap.size[,total]", "system.swap.size[,free]")),
         Map.entry("armazenamento", List.of("vfs.fs.size[/,total]", "vfs.fs.size[/,used]", "vfs.fs.size[/boot,total]", "vfs.fs.size[/boot,used]")),
         Map.entry("dados-banda-larga", List.of("net.if.in[\"eth0\"]", "net.if.out[\"eth0\"]")),
         Map.entry("tempo-ativo", List.of("system.uptime"))

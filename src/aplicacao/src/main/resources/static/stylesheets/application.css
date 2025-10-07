@@ -1,6 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Lexend+Giga:wght@100..900&family=Lobster&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Oswald&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
 
 :root {
+
+    --main-navy-color: #040716;
+    --main-blue-color: #25a881;
+    --main-red-color: #da4444;
+    --main-light-red-color: #FFA77F;
+
     /* Principais Cores */
 
     --primary-color: #5b050a; 
@@ -54,11 +60,52 @@ body{
     width: 100vw;
 }
 
-/* --------- FLASHES -------- */
+/* --------- Flash Message -------- */
 
-.alert {  margin-top: 15px; position: absolute; padding: 15px; margin-bottom: 20px; border: 1px solid transparent;}
-.alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
-.alert-danger { color: #721c24; background-color: #f8d7da; border-color: #f5c6cb; }
+.flash-message {
+    position: fixed; 
+    top: 20px;
+    left: 50%; 
+    transform: translateX(-50%); 
+    background-color: var(--main-red-color); 
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000; 
+    opacity: 1;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    display: flex; 
+    align-items: center;
+    gap: 15px;
+}
+
+.flash-message.success {
+    background-color: var(--main-blue-color); /* Cor para sucesso, se precisar */
+}
+
+.flash-message.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-50px); /* Move para cima ao esconder */
+    pointer-events: none; /* Impede cliques quando invisível */
+}
+
+.flash-message p {
+    margin: 0;
+    font-family: var(--font-poppins);
+    font-size: 0.95em;
+    font-weight: 500;
+}
+
+.flash-message .close-flash {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1; /* Alinha o 'x' verticalmente */
+}
 
 /* -------- HEADER -------- */
 

@@ -11,11 +11,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const deleteModal = document.getElementById('delete-modal');
     const allModals = document.querySelectorAll('.modal');
 
-    // Pega o token CSRF das meta tags no <head>
-    const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
-    const csrfHeaderName = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
-
-
     // ===================================================================
     // 2. LÓGICA PARA FECHAR OS MODAIS
     // ===================================================================
@@ -40,6 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // ===================================================================
     // 3. LÓGICA DAS ABAS (TABS)
     // ===================================================================
+
     function setActiveTab(formElement, hostType) {
         const tabPanes = formElement.querySelectorAll('.tab-pane');
         
@@ -54,7 +50,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
-
 
     // ===================================================================
     // 4. FUNÇÕES DINÂMICAS PARA ABRIR E PREENCHER CADA MODAL
@@ -170,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const response = await fetch(`/admin/api/hosts/${hostId}`, {
                     method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', [csrfHeaderName]: csrfToken },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(dataToSend)
                 });
                 if (!response.ok) throw new Error('Falha ao salvar as alterações.');
@@ -190,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
             try {
                 const response = await fetch(`/admin/api/hosts/${hostId}`, {
                     method: 'DELETE',
-                    headers: { [csrfHeaderName]: csrfToken }
+                    headers: { 'Content-Type': 'application/json' }
                 });
                 if (!response.ok) throw new Error('Falha ao excluir o host.');
                 alert('Host excluído com sucesso!');

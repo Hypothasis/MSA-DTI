@@ -7,16 +7,16 @@ import br.com.dti.msa.model.Host;
 import br.com.dti.msa.service.HostService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/admin")
@@ -75,28 +75,34 @@ public class AdminController {
 
     /**
      * Endpoint para criar um novo host.
-     * Recebe dados de um formulário web padrão.
+     * Usado pelo JavaScript via fetch.
      */
     @PostMapping("/api/hosts")
-    public String createHost(CreateHostDTO createDto, RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public ResponseEntity<?> createHost(@RequestBody CreateHostDTO createDto) {
         try {
-            hostService.createAndValidateHost(createDto);
-            redirectAttributes.addFlashAttribute("successMessage", "Host '" + createDto.getHostName() + "' criado com sucesso!");
-            // Em caso de sucesso, o ideal é redirecionar para a busca
-            return "redirect:/admin/create";
-            
+            Host novoHost = hostService.createAndValidateHost(createDto);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoHost);
+
         } catch (ZabbixValidationException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            // CORREÇÃO: Adicione a barra "/" inicial
-            return "redirect:/admin/create";
-            
+            // Erro de validação customizado (ex: host não encontrado no Zabbix)
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+
+        } catch (DataIntegrityViolationException e) {
+            // NOVO CATCH: Captura o erro de duplicidade do banco de dados
+            String errorMessage = "Erro de integridade dos dados.";
+            if (e.getMessage().contains("hosts.zabbix_id")) {
+                errorMessage = "Já existe um host cadastrado com este Zabbix ID.";
+            }
+            // Retorna HTTP 409 Conflict, que é o status ideal para duplicidade
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", errorMessage));
+
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Ocorreu um erro inesperado: " + e.getMessage());
-            // CORREÇÃO: Adicione a barra "/" inicial
-            return "redirect:/admin/create";
+            // Erro genérico para qualquer outra falha
+            return ResponseEntity.internalServerError().body(Map.of("error", "Ocorreu um erro inesperado."));
         }
     }
-
+    
     /**
      * Endpoint para buscar os dados completos de um host por ID.
      * Usado pelo JavaScript para popular os modais de Read e Update.
