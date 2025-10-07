@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function () {
     // Função para mostrar a flash message (pode estar em um arquivo JS separado)
-    function showFlashMessage(message, type = 'error') {
+    function showFlashMessage(message, type = 'error', duration = 8000) {
         const container = document.getElementById('flash-message');
         const textElement = document.getElementById('flash-message-text');
         
@@ -10,6 +10,15 @@ document.addEventListener('DOMContentLoaded', function () {
         container.className = 'flash-message'; // Reseta as classes
         container.classList.add(type); // Adiciona 'success' ou 'error'
         container.classList.remove('hidden');
+
+        setTimeout(() => {
+            hideFlashMessage();
+        }, duration);
+    }
+
+    function hideFlashMessage() {
+        const flashMessage = document.getElementById('flash-message');
+        flashMessage.classList.add('hidden');
     }
     
     // Botão de fechar

@@ -107,12 +107,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-global" id="disponibilidade-global" > 
-                                            <label for="disponibilidade-global">Disponibilidade Global (48h)</label>
-                                        </div>
-                                        <div>
-                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-especifica" id="disponibilidade-especifica"> 
-                                            <label for="disponibilidade-especifica">Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                                            <label><input type="checkbox" name="disponibilidade-global" value="disponibilidade-global"> Disponibilidade Global (48h)</label>
+                                            <label><input type="checkbox" name="disponibilidade-especifica" value="disponibilidade-especifica"> Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -127,8 +123,7 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="latencia-tempo-resposta" id="latencia-tempo-resposta"> 
-                                            <label for="latencia-tempo-resposta">Tempo de resposta</label>
+                                            <label><input type="checkbox" name="latencia-tempo-resposta" value="latencia-tempo-resposta"> Tempo de resposta</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -143,8 +138,7 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="cpu-uso" id="cpu-uso"> 
-                                            <label for="cpu-uso">Uso de CPU</label>
+                                            <label><input type="checkbox" name="cpu-uso" value="cpu-uso"> Uso de CPU</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -159,13 +153,13 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="memoria-ram" id="memoria-ram"> 
-                                            <label for="memoria-ram">Uso de memória RAM</label>
+                                            <label><input type="checkbox" name="memoria-ram" value="memoria-ram"> Uso de memória RAM</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>vm.memory.size[available]</strong></p>
                                     <p>Chave Zabbix: <strong>vm.memory.utilization</strong></p>
+                                    <p>Chave Zabbix: <strong>vm.memory.size[pavailable]</strong></p>
                                 </details>
                             </div>
                         </div>
@@ -176,13 +170,14 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="armazenamento" id="armazenamento"> 
-                                            <label for="armazenamento">Uso de armazenamento</label>
+                                            <label><input type="checkbox" name="armazenamento" value="armazenamento"> Uso de armazenamento</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>vfs.fs.size[/,total]</strong></p>
                                     <p>Chave Zabbix: <strong>vfs.fs.size[/,used]</strong></p>
+                                    <p>Chave Zabbix: <strong>vfs.fs.size[/boot,total]</strong></p>
+                                    <p>Chave Zabbix: <strong>vfs.fs.size[/boot,used]</strong></p>
                                 </details>
                             </div>
                         </div>
@@ -193,8 +188,7 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="dados-banda-larga" id="dados-banda-larga"> 
-                                            <label for="dados-banda-larga">Banda Larga de Dados</label>
+                                            <label><input type="checkbox" name="dados-banda-larga" value="dados-banda-larga"> Banda Larga de Dados</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -210,8 +204,7 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="tempo-ativo" id="tempo-ativo"> 
-                                            <label for="tempo-ativo">Tempo de Servidor Ativo</label>
+                                            <label><input type="checkbox" name="tempo-ativo" value="tempo-ativo"> Tempo de Servidor Ativo</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -221,8 +214,7 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="eventos-recentes" id="eventos-recentes"> 
-                                            <label for="eventos-recentes">Eventos Recentes</label>
+                                            <label><input type="checkbox" name="eventos-recentes" value="eventos-recentes"> Eventos Recentes</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -239,12 +231,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-global" id="server-disponibilidade-global">
-                                            <label for="server-disponibilidade-global">Disponibilidade Global (48h)</label>
-                                        </div>
-                                        <div>
-                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-especifica" id="server-disponibilidade-especifica">
-                                            <label for="server-disponibilidade-especifica">Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                                            <label><input type="checkbox" name="disponibilidade-global" value="disponibilidade-global"> Disponibilidade Global (48h)</label>
+                                            <label><input type="checkbox" name="disponibilidade-especifica" value="disponibilidade-especifica"> Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -259,8 +247,7 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="sistema-operacional" id="server-sistema-operacional">
-                                            <label for="server-sistema-operacional">Sistema Operacional (SO e Arquitetura)</label>
+                                            <label><input type="checkbox" name="sistema-operacional" value="sistema-operacional"> Sistema Operacional (SO e Arquitetura)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -276,29 +263,28 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="cpu-uso" id="server-cpu-uso">
-                                            <label for="server-cpu-uso">Uso de CPU</label>
+                                            <label><input type="checkbox" name="cpu-uso" value="cpu-uso"> Uso de CPU</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>system.cpu.util</strong></p>
                                 </details>
+
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="cpu-processos" id="server-cpu-processos">
-                                            <label for="server-cpu-processos">Processos (Num MAX e atuais)</label>
+                                            <label><input type="checkbox" name="cpu-processos" value="cpu-processos"> Processos (Num MAX e atuais)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>kernel.maxproc</strong></p>
                                     <p>Chave Zabbix: <strong>proc.num</strong></p>
                                 </details>
+
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="cpu-troca-contextos" id="server-cpu-troca-contextos">
-                                            <label for="server-cpu-troca-contextos">Troca de Contextos</label>
+                                            <label><input type="checkbox" name="cpu-troca-contextos" value="cpu-troca-contextos"> Troca de Contextos</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -313,25 +299,26 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="memoria-ram" id="server-memoria-ram">
-                                            <label for="server-memoria-ram">Uso de memória RAM</label>
+                                            <label><input type="checkbox" name="memoria-ram" value="memoria-ram"> Uso de memória RAM</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>vm.memory.size[available]</strong></p>
                                     <p>Chave Zabbix: <strong>vm.memory.utilization</strong></p>
+                                    <p>Chave Zabbix: <strong>vm.memory.size[pavailable]</strong></p>
                                 </details>
+
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="memoria-swap" id="server-memoria-swap">
-                                            <label for="server-memoria-swap">Uso de memória SWAP</label>
+                                            <label><input type="checkbox" name="memoria-swap" value="memoria-swap"> Uso de memória SWAP</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>system.swap.size[,total]</strong></p>
                                     <p>Chave Zabbix: <strong>system.swap.size[,free]</strong></p>
                                 </details>
+                                
                             </div>
                         </div>
 
@@ -341,13 +328,14 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="armazenamento" id="server-armazenamento">
-                                            <label for="server-armazenamento">Uso de armazenamento</label>
+                                            <label><input type="checkbox" name="armazenamento" value="armazenamento"> Uso de armazenamento</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>vfs.fs.size[/,total]</strong></p>
                                     <p>Chave Zabbix: <strong>vfs.fs.size[/,used]</strong></p>
+                                    <p>Chave Zabbix: <strong>vfs.fs.size[/boot,total]</strong></p>
+                                    <p>Chave Zabbix: <strong>vfs.fs.size[/boot,used]</strong></p>
                                 </details>
                             </div>
                         </div>
@@ -358,8 +346,7 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="dados-banda-larga" id="server-dados-banda-larga">
-                                            <label for="server-dados-banda-larga">Banda Larga de Dados</label>
+                                            <label><input type="checkbox" name="dados-banda-larga" value="dados-banda-larga"> Banda Larga de Dados</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -375,18 +362,17 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="tempo-ativo" id="server-tempo-ativo">
-                                            <label for="server-tempo-ativo">Tempo de Servidor Ativo</label>
+                                            <label><input type="checkbox" name="tempo-ativo" value="tempo-ativo"> Tempo de Servidor Ativo</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>system.uptime</strong></p>
                                 </details>
+
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="eventos-recentes" id="server-eventos-recentes">
-                                            <label for="server-eventos-recentes">Eventos Recentes</label>
+                                            <label><input type="checkbox" name="eventos-recentes" value="eventos-recentes"> Eventos Recentes</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -403,12 +389,8 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-global" id="database-disponibilidade-global" > 
-                                            <label for="database-disponibilidade-global">Disponibilidade Global (48h)</label>
-                                        </div>
-                                        <div>
-                                            <input type="checkbox" name="enabledMetrics" value="disponibilidade-especifica" id="database-disponibilidade-especifica"> 
-                                            <label for="database-disponibilidade-especifica">Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
+                                            <label><input type="checkbox" name="disponibilidade-global" value="disponibilidade-global"> Disponibilidade Global (48h)</label>
+                                            <label><input type="checkbox" name="disponibilidade-especifica" value="disponibilidade-especifica"> Disponibilidade Específica (48h, 24h, 12h, 6h)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -423,18 +405,17 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="cpu-uso" id="database-cpu-uso">
-                                            <label for="database-cpu-uso">Uso de CPU</label>
+                                            <label><input type="checkbox" name="cpu-uso" value="cpu-uso"> Uso de CPU</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>system.cpu.util</strong></p>
                                 </details>
+
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="cpu-processos" id="database-cpu-processos">
-                                            <label for="database-cpu-processos">Processos (Num MAX e atuais)</label>
+                                            <label><input type="checkbox" name="cpu-processos" value="cpu-processos"> Processos (Num MAX e atuais)</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -450,13 +431,13 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="memoria-ram" id="database-memoria-ram">
-                                            <label for="database-memoria-ram">Uso de memória RAM</label>
+                                            <label><input type="checkbox" name="memoria-ram" value="memoria-ram"> Uso de memória RAM</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>vm.memory.size[available]</strong></p>
                                     <p>Chave Zabbix: <strong>vm.memory.utilization</strong></p>
+                                    <p>Chave Zabbix: <strong>vm.memory.size[pavailable]</strong></p>
                                 </details>
                             </div>
                         </div>
@@ -467,13 +448,14 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="armazenamento" id="database-armazenamento">
-                                            <label for="database-armazenamento">Uso de armazenamento</label>
+                                            <label><input type="checkbox" name="armazenamento" value="armazenamento"> Uso de armazenamento</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>vfs.fs.size[/,total]</strong></p>
                                     <p>Chave Zabbix: <strong>vfs.fs.size[/,used]</strong></p>
+                                    <p>Chave Zabbix: <strong>vfs.fs.size[/boot,total]</strong></p>
+                                    <p>Chave Zabbix: <strong>vfs.fs.size[/boot,used]</strong></p>
                                 </details>
                             </div>
                         </div>
@@ -484,8 +466,7 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="dados-banda-larga" id="database-dados-banda-larga">
-                                            <label for="database-dados-banda-larga">Banda Larga de Dados</label>
+                                            <label><input type="checkbox" name="dados-banda-larga" value="dados-banda-larga"> Banda Larga de Dados</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -501,18 +482,17 @@
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="tempo-ativo" id="database-tempo-ativo">
-                                            <label for="database-tempo-ativo">Tempo de Servidor Ativo</label>
+                                            <label><input type="checkbox" name="tempo-ativo" value="tempo-ativo"> Tempo de Servidor Ativo</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
                                     <p>Chave Zabbix: <strong>system.uptime</strong></p>
                                 </details>
+
                                 <details>
                                     <summary>
                                         <div>
-                                            <input type="checkbox" name="enabledMetrics" value="eventos-recentes" id="database-eventos-recentes">
-                                            <label for="database-eventos-recentes">Eventos Recentes</label>
+                                            <label><input type="checkbox" name="eventos-recentes" value="eventos-recentes"> Eventos Recentes</label>
                                         </div>
                                         <img src="/image/icons/down_black.png" alt="" height="20px">
                                     </summary>
@@ -520,7 +500,7 @@
                                 </details>
                             </div>
                         </div>
-                    </div>                   
+                    </div>               
 
                 </div>
             </div>

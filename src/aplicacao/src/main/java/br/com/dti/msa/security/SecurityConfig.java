@@ -1,77 +1,84 @@
 package br.com.dti.msa.security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.oidc.user.DefaultOidcUser;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandlerImpl;
-import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-
+import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Configuration
 public class SecurityConfig {
 
-    // 1. Injeta o repositório de clientes OAuth2
+    // Injeta o repositório de clientes OAuth2
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     public SecurityConfig(ClientRegistrationRepository clientRegistrationRepository) {
         this.clientRegistrationRepository = clientRegistrationRepository;
     }
 
+    // Injeta o client-id do seu application.properties
+    @Value("${keycloak.client-id}")
+    private String keycloakClientId;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
+            // 1. Configura o CSRF para ser ignorado apenas nas rotas de API
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/token", "/admin/api/**")
+            )
+            // 2. Configura as regras de autorização
             .authorizeHttpRequests(auth -> auth
+                // Rotas públicas
                 .requestMatchers("/public/**", "/stylesheets/**", "/javascript/**", "/image/**").permitAll()
-                .requestMatchers("/").permitAll()
-                .requestMatchers("/error").permitAll() 
-                .requestMatchers("/host/**").permitAll()
-                .requestMatchers("debug/**").permitAll()
-                .requestMatchers("/token").permitAll()
+                .requestMatchers("/", "/error").permitAll()
+                .requestMatchers(HttpMethod.POST, "/token").permitAll()
                 
-                // Roles para Rotas Admin
-                .requestMatchers("/admin", "/admin/").hasAuthority("index_admin")
-                .requestMatchers("/admin/search", "/admin/search/**").hasAuthority("search_admin")
-                .requestMatchers("/admin/create", "/admin/create/**").hasAuthority("create_admin")
+                // Rotas da aplicação web (páginas)
+                .requestMatchers("/admin/search/**").hasAuthority("search_admin")
+                .requestMatchers("/admin/create/**").hasAuthority("create_admin")
+                .requestMatchers("/admin/**").hasAuthority("index_admin")
 
-                // Roles para Permissões de CRUD
+                // Regras da API RESTful
                 .requestMatchers(HttpMethod.POST, "/admin/api/hosts").hasAuthority("ADMIN_CREATE")
-                .requestMatchers(HttpMethod.GET, "/admin/api/hosts/{hostId}").hasAuthority("ADMIN_READ")
-                .requestMatchers(HttpMethod.PUT, "/admin/api/hosts/{hostId}").hasAuthority("ADMIN_UPDATE")
-                .requestMatchers(HttpMethod.DELETE, "/admin/api/hosts/{hostId}").hasAuthority("ADMIN_DELETE")
+                .requestMatchers(HttpMethod.GET, "/admin/api/hosts",  "/admin/api/hosts/**").hasAuthority("ADMIN_READ")
+                .requestMatchers(HttpMethod.PUT, "/admin/api/hosts/**").hasAuthority("ADMIN_UPDATE")
+                .requestMatchers(HttpMethod.DELETE, "/admin/api/hosts/**").hasAuthority("ADMIN_DELETE")
                 
+                // Qualquer outra requisição precisa de autenticação
                 .anyRequest().authenticated()
             )
+            // 3. Habilita o login via navegador
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcUserService()))
             )
-            // 2. ADICIONA A CONFIGURAÇÃO DE LOGOUT
+            // 4. Habilita a validação de Bearer Token
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt
+                .jwtAuthenticationConverter(new KeycloakJwtAuthenticationConverter(keycloakClientId))
+            ))
+            // 5. Configura o logout
             .logout(logout -> logout
-                // Define o "manipulador" que sabe como fazer logout no Keycloak
                 .logoutSuccessHandler(oidcLogoutSuccessHandler())
-            )
-
-            .exceptionHandling(exceptions -> {
-                AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
-                accessDeniedHandler.setErrorPage("/error"); // Define a página de erro
-                exceptions.accessDeniedHandler(accessDeniedHandler); // Usa o handler que faz FORWARD
-            });
+            );
 
         return http.build();
     }

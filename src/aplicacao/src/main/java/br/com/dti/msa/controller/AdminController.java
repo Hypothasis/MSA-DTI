@@ -119,6 +119,27 @@ public class AdminController {
     }
     
     /**
+     * Endpoint para listar todos os hosts cadastrados.
+     * Rota: GET /admin/api/hosts
+     */
+    @GetMapping("/api/hosts")
+    @ResponseBody
+    public ResponseEntity<List<Host>> getAllHosts() {
+        try {
+            // 1. Chama o service para buscar todos os hosts no banco de dados.
+            List<Host> hosts = hostService.findAll();
+            
+            // 2. Retorna HTTP 200 OK com a lista de hosts no corpo da resposta.
+            return ResponseEntity.ok(hosts);
+            
+        } catch (Exception e) {
+            // Em caso de um erro inesperado no banco de dados, retorna um erro 500.
+            System.err.println("Erro ao buscar todos os hosts: " + e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
      * Endpoint para atualizar um host existente.
      * Recebe dados JSON via JavaScript (fetch).
      */
