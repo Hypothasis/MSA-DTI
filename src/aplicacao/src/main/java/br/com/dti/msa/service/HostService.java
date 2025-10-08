@@ -51,11 +51,7 @@ public class HostService {
     }
 
     /**
-     * Valida os dados contra o Zabbix e cri    // --- LOG DE DEPURAÇÃO 2: O que foi encontrado no banco? ---
-        System.out.println("Número de métricas encontradas no banco: " + selectedMetrics.size());
-        if(selectedMetrics.isEmpty() && !dto.getEnabledMetrics().isEmpty()) {
-            System.err.println("ALERTA: Nenhuma métrica foi encontrada no banco de dados para as chaves fornecidas!");
-        }a um novo host no banco de dados.
+     * Valida os dados contra o Zabbix e cria um novo host no banco de dados.
      */
     @Transactional
     public Host createAndValidateHost(CreateHostDTO dto) throws ZabbixValidationException {

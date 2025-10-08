@@ -1,26 +1,51 @@
 package br.com.dti.msa.integration.zabbix.dto;
 
-import br.com.dti.msa.integration.zabbix.dto.ZabbixCountResponseDTO;
-import br.com.dti.msa.integration.zabbix.dto.ZabbixRequestDTO;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import br.com.dti.msa.exception.ZabbixApiException;
+import lombok.Data;
+
 import org.springframework.web.client.RestClientException;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+
 
 @Component
 public class ZabbixClient {
+    
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @Data
+    static class ZabbixItem {
+        @JsonProperty("key_")
+        private String key;
+        
+        @JsonProperty("lastvalue")
+        private String lastValue;
+    }
 
-    // 1. Injeta as propriedades do application.properties
+    // Injeta as propriedades do application.properties
     @Value("${zabbix.api.url}")
     private String zabbixApiUrl;
 
     @Value("${zabbix.api.token}")
     private String authToken;
 
-    // 2. Cria uma instância do RestTemplate para fazer as chamadas HTTP
+    // Cria uma instância do RestTemplate para fazer as chamadas HTTP
     private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * Verifica se um host existe no Zabbix usando a API host.get.
@@ -73,6 +98,129 @@ public class ZabbixClient {
         } catch (RestClientException e) {
             System.err.println("Erro ao conectar com a API do Zabbix: " + e.getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Busca o último valor numérico de um item (métrica) em um host específico.
+     */
+    public Double getItemValue(Long zabbixHostId, String itemKey) {
+        System.out.println("Buscando valor para o item '" + itemKey + "' no host " + zabbixHostId);
+        
+        // Parâmetros para a chamada: filtra por hostid e busca pela chave exata.
+        Map<String, Object> params = Map.of(
+            "hostids", zabbixHostId,
+            "output", new String[]{"itemid", "name", "key_", "lastvalue"}, // Campos que queremos receber
+            "search", Map.of("key_", itemKey),
+            "limit", 1 // Garante que receberemos apenas um resultado
+        );
+
+        // Monta o corpo da requisição
+        ZabbixRequestDTO request = new ZabbixRequestDTO("item.get", params, authToken, 3);
+
+        try {
+            // A API retorna um array de itens, mesmo que seja só um
+            ZabbixItemResponseDTO[] response = restTemplate.postForObject(zabbixApiUrl, request, ZabbixItemResponseDTO[].class);
+            
+            // Verifica se a resposta não é nula, não está vazia e tem um valor
+            if (response != null && response.length > 0 && response[0].getLastValue() != null) {
+                // Converte o valor (que vem como String) para Double
+                return Double.parseDouble(response[0].getLastValue());
+            } else {
+                System.err.println("  > Item '" + itemKey + "' não encontrado ou sem valor no host " + zabbixHostId);
+                return null;
+            }
+        } catch (RestClientException | NumberFormatException e) {
+            System.err.println("Erro ao buscar valor do item '" + itemKey + "': " + e.getMessage());
+            return null; // Retorna nulo se houver erro de conexão ou se o valor não for um número
+        }
+    }
+
+    /**
+     * Busca TODOS os itens e seus últimos valores para um host específico.
+     * Retorna um Mapa de [chave_do_item -> valor].
+     */
+    public Map<String, Double> getAllItemValuesForHost(Long zabbixHostId) {
+        System.out.println("Buscando TODOS os itens para o host " + zabbixHostId);
+        
+        Map<String, Object> params = Map.of(
+            "hostids", zabbixHostId,
+            "output", new String[]{"key_", "lastvalue"}
+        );
+        ZabbixRequestDTO request = new ZabbixRequestDTO("item.get", params, authToken, 4);
+
+        try {
+            String jsonResponse = restTemplate.postForObject(zabbixApiUrl, request, String.class);
+            if (jsonResponse == null) {
+                throw new IllegalStateException("A resposta da API do Zabbix foi nula.");
+            }
+            
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+            if (rootNode.has("error")) {
+                // Imprime o erro detalhado vindo do Zabbix
+                String errorMessage = rootNode.get("error").get("data").asText();
+                throw new ZabbixApiException("Erro da API Zabbix: " + errorMessage);
+            }
+
+            JsonNode resultNode = rootNode.get("result");
+            ZabbixItem[] items = objectMapper.treeToValue(resultNode, ZabbixItem[].class);
+
+            return Arrays.stream(items)
+                .filter(item -> item.getLastValue() != null && !item.getLastValue().isEmpty())
+                .map(item -> {
+                    try {
+                        // Tenta converter o valor para Double
+                        Double value = Double.parseDouble(item.getLastValue());
+                        // Retorna um par simples [chave, valor]
+                        return Map.entry(item.getKey(), value);
+                    } catch (NumberFormatException e) {
+                        // Se a conversão falhar, retorna null
+                        return null;
+                    }
+                })
+                // Filtra todos os pares que falharam na conversão (ou seja, que retornaram null)
+                .filter(entry -> entry != null)
+                // Coleta o resultado final em um mapa, lidando com chaves duplicadas
+                .collect(Collectors.toMap(
+                    Map.Entry::getKey,
+                    Map.Entry::getValue,
+                    (existingValue, newValue) -> existingValue // Mantém o valor existente se houver chaves duplicadas
+                ));
+
+        } catch (JsonProcessingException e) {
+            // Este erro acontece se o JSON retornado for inválido
+            System.err.println("Erro de parsing do JSON para o host " + zabbixHostId + ": " + e.getMessage());
+        } catch (RestClientException | ZabbixApiException e) {
+            // Este erro pega falhas de conexão ou erros retornados pela API
+            System.err.println("Erro ao buscar todos os itens para o host " + zabbixHostId + ": " + e.getMessage());
+        }
+        return Map.of();
+    }
+
+
+    /**
+     * Faz uma chamada simples à API para verificar a conexão e autenticação.
+     * Lança uma exceção se a conexão falhar.
+     */
+    public void testConnection() {
+        System.out.println("--- INICIANDO TESTE DE CONEXÃO COM A API DO ZABBIX ---");
+        
+        List<Object> params = List.of();
+
+        ZabbixRequestDTO request = new ZabbixRequestDTO("apiinfo.version", params, null, 1);
+
+        try {
+            ResponseEntity<String> response = restTemplate.postForEntity(zabbixApiUrl, request, String.class);
+            
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().contains("\"result\"")) {
+                System.out.println("Teste de conexão com o Zabbix bem-sucedido! Versão da API: " + response.getBody());
+            } else {
+                throw new RuntimeException("Resposta inválida da API do Zabbix: " + response.getBody());
+            }
+        } catch (RestClientException e) {
+            System.err.println("FALHA no teste de conexão com a API do Zabbix: " + e.getMessage());
+            throw new RuntimeException("Não foi possível conectar à API do Zabbix. Verifique a URL.", e);
         }
     }
 }

@@ -20,4 +20,10 @@ public interface HostRepository extends JpaRepository<Host, Long> {
         @Param("types") List<String> types
     );
 
+    /**
+     * Busca todas as métricas dos hosts, evitando o problema de N+1 queries.
+     */
+    @Query("SELECT h FROM Host h LEFT JOIN FETCH h.metrics")
+    List<Host> findAllWithMetrics();
+
 }
