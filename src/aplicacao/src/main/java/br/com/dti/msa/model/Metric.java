@@ -7,16 +7,17 @@ import lombok.Data;
 @Entity
 @Table(name = "metrics")
 public class Metric {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "metric_key", nullable = false, unique = true)
+    @Column(name = "metric_key", unique = true, nullable = false)
     private String metricKey;
+
+    @Column(name = "zabbix_key", nullable = false)
+    private String zabbixKey;
 
     @Column(nullable = false)
     private String name;
-
+    
     private String unit;
 }

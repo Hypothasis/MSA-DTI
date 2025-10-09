@@ -51,6 +51,7 @@ public class SecurityConfig {
                 // Rotas públicas
                 .requestMatchers("/public/**", "/stylesheets/**", "/javascript/**", "/image/**").permitAll()
                 .requestMatchers("/", "/error").permitAll()
+                .requestMatchers(HttpMethod.GET,"/host/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/token").permitAll()
                 
                 // Rotas da aplicação web (páginas)

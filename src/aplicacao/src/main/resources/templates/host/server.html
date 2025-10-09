@@ -13,7 +13,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     
-    <title>SERVER</title>
+    <title th:text="${host.name}">Nome do Host</title>
 </head>
 <body>
     <header class="main-header">
@@ -285,7 +285,7 @@
 
                 <li>
                     <div class="title">
-                        <h1>Eventos Recentes</h1>
+                        <h1>5 Eventos mais recentes</h1>
                     </div>
                     <section>
                         <ol class="recentEvents">

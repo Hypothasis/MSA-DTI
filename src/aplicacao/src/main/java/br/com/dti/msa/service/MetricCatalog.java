@@ -8,22 +8,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class MetricCatalog {
 
-    private static final Map<String, List<String>> METRIC_MAP = Map.ofEntries(
-        Map.entry("disponibilidade-global", List.of("zabbix[host,agent,available]")),
-        Map.entry("disponibilidade-especifica", List.of("zabbix[host,agent,available]")),
-        Map.entry("latencia-tempo-resposta", List.of("icmppingsec")),
-        Map.entry("sistema-operacional", List.of("system.sw.os", "system.sw.arch")),
-        Map.entry("cpu-uso", List.of("system.cpu.util")),
-        Map.entry("cpu-processos", List.of("proc.num", "kernel.maxproc")),
-        Map.entry("cpu-troca-contextos", List.of("system.cpu.switches")),
-        Map.entry("memoria-ram", List.of("vm.memory.size[available]", "vm.memory.utilization")),
-        Map.entry("memoria-swap", List.of("system.swap.size[,total]", "system.swap.size[,free]")),
-        Map.entry("armazenamento", List.of("vfs.fs.size[/,total]", "vfs.fs.size[/,used]", "vfs.fs.size[/boot,total]", "vfs.fs.size[/boot,used]")),
-        Map.entry("dados-banda-larga", List.of("net.if.in[\"eth0\"]", "net.if.out[\"eth0\"]")),
-        Map.entry("tempo-ativo", List.of("system.uptime"))
+    // Mapeia o NOME do checkbox do formulário para as METRIC_KEYs do nosso banco
+    private static final Map<String, List<String>> CHECKBOX_TO_METRIC_KEYS = Map.ofEntries(
+        Map.entry("disponibilidade-global", List.of("disponibilidade-global")),
+        Map.entry("disponibilidade-especifica", List.of("disponibilidade-especifica")),
+        Map.entry("latencia-tempo-resposta", List.of("latencia")),
+        Map.entry("sistema-operacional", List.of("os-nome", "os-arch")),
+        Map.entry("cpu-uso", List.of("cpu-uso")),
+        Map.entry("cpu-processos", List.of("cpu-processos-atuais", "cpu-processos-max")),
+        Map.entry("cpu-troca-contextos", List.of("cpu-troca-contextos")),
+        Map.entry("memoria-ram", List.of("memoria-ram-total", "memoria-ram-disponivel")),
+        Map.entry("memoria-swap", List.of("memoria-swap-total", "memoria-swap-livre")),
+        Map.entry("armazenamento", List.of("armazenamento-root-total", "armazenamento-root-usado", "armazenamento-boot-total", "armazenamento-boot-usado")),
+        Map.entry("dados-banda-larga", List.of("dados-entrada", "dados-saida")),
+        Map.entry("tempo-ativo", List.of("tempo-ativo")),
+        Map.entry("eventos-recentes", List.of("eventos-recentes"))
     );
 
-    public List<String> getZabbixKeysFor(String formMetricName) {
-        return METRIC_MAP.getOrDefault(formMetricName, List.of());
+    public List<String> getMetricKeysForCheckbox(String checkboxName) {
+        return CHECKBOX_TO_METRIC_KEYS.getOrDefault(checkboxName, List.of());
     }
 }

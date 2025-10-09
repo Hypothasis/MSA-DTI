@@ -16,6 +16,7 @@ CREATE TABLE hosts (
 CREATE TABLE metrics (
     id INT AUTO_INCREMENT PRIMARY KEY,
     metric_key VARCHAR(255) NOT NULL UNIQUE,
+    zabbix_key VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
     unit VARCHAR(20)
 );

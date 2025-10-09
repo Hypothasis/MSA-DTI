@@ -13,7 +13,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     
-    <title>APP</title>
+    <title th:text="${host.name}">Nome do Host</title>
 </head>
 <body>
     <header class="main-header">
@@ -63,95 +63,15 @@
                     </div>
                     <section>
                         <div class="porcentPointGraphic">
-                            <p>99%</p>
+                            <p></p>
                             <p>de disponibilidade</p> 
                         </div>
                         <ol class="pointGraphic">
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point okay" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point warning" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point avarage" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point high" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point disaster" data-line1="24-06-22" data-line2="99%"></li>
-                                <li class="point empty" data-line1="24-06-22" data-line2="99%"></li>
                         </ol>
                     </section>
                 </li>
 
-                <!-- Disponibilidade por Seçao -->
+                <!-- Disponibilidade específica -->
 
                 <li>
                     <div class="title">
@@ -160,22 +80,22 @@
                     <section>
                         <ol class="overallUptime">
                             <li>
-                                <h3>100.00%</h3>
+                                <h3></h3>
                                 <p>em 48h</p>
                             </li>
 
                             <li>
-                                <h3>100.00%</h3>
+                                <h3></h3>
                                 <p>em 24h</p>
                             </li>
 
                             <li>
-                                <h3>100.00%</h3>
+                                <h3></h3>
                                 <p>em 12h</p>
                             </li>
 
                             <li>
-                                <h3>100.00%</h3>
+                                <h3></h3>
                                 <p>em 6h</p>
                             </li>
                         </ol>
@@ -253,7 +173,7 @@
 
                 <li>
                     <div class="title">
-                        <h1>Eventos Recentes</h1>
+                        <h1>5 Eventos mais recentes</h1>
                     </div>
                     <section>
                         <ol class="recentEvents">
@@ -347,6 +267,6 @@
     </footer>
 
     <script th:src="@{/javascript/component.js}"></script>
-    <script th:src="@{/javascript/TemplateAppRequest.js}"></script>
+    <script th:src="@{/javascript/TemplateApplicationRequest.js}"></script>
 </body>
 </html>

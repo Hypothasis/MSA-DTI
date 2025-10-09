@@ -17,6 +17,7 @@ import lombok.Data;
 import org.springframework.web.client.RestClientException;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -107,35 +108,48 @@ public class ZabbixClient {
     public Double getItemValue(Long zabbixHostId, String itemKey) {
         System.out.println("Buscando valor para o item '" + itemKey + "' no host " + zabbixHostId);
         
-        // Parâmetros para a chamada: filtra por hostid e busca pela chave exata.
         Map<String, Object> params = Map.of(
             "hostids", zabbixHostId,
-            "output", new String[]{"itemid", "name", "key_", "lastvalue"}, // Campos que queremos receber
+            "output", new String[]{"itemid", "name", "key_", "lastvalue"},
             "search", Map.of("key_", itemKey),
-            "limit", 1 // Garante que receberemos apenas um resultado
+            "limit", 1
         );
-
-        // Monta o corpo da requisição
         ZabbixRequestDTO request = new ZabbixRequestDTO("item.get", params, authToken, 3);
 
         try {
-            // A API retorna um array de itens, mesmo que seja só um
-            ZabbixItemResponseDTO[] response = restTemplate.postForObject(zabbixApiUrl, request, ZabbixItemResponseDTO[].class);
-            
-            // Verifica se a resposta não é nula, não está vazia e tem um valor
-            if (response != null && response.length > 0 && response[0].getLastValue() != null) {
-                // Converte o valor (que vem como String) para Double
+            // 1. Recebe a resposta como uma String bruta
+            String jsonResponse = restTemplate.postForObject(zabbixApiUrl, request, String.class);
+            if (jsonResponse == null) {
+                System.err.println("  > A resposta da API do Zabbix foi nula para o item '" + itemKey + "'.");
+                return null;
+            }
+
+            // 2. Analisa o JSON
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+            // 3. VERIFICA SE HÁ UM ERRO na resposta do Zabbix
+            if (rootNode.has("error")) {
+                String errorMessage = rootNode.get("error").get("data").asText();
+                System.err.println("Erro da API Zabbix ao buscar item '" + itemKey + "': " + errorMessage);
+                return null;
+            }
+
+            // 4. Se não houver erro, converte o resultado para o DTO
+            ZabbixItemResponseDTO[] response = objectMapper.treeToValue(rootNode.get("result"), ZabbixItemResponseDTO[].class);
+
+            // 5. Continua com a lógica original
+            if (response != null && response.length > 0 && response[0].getLastValue() != null && !response[0].getLastValue().isEmpty()) {
                 return Double.parseDouble(response[0].getLastValue());
             } else {
                 System.err.println("  > Item '" + itemKey + "' não encontrado ou sem valor no host " + zabbixHostId);
                 return null;
             }
-        } catch (RestClientException | NumberFormatException e) {
-            System.err.println("Erro ao buscar valor do item '" + itemKey + "': " + e.getMessage());
-            return null; // Retorna nulo se houver erro de conexão ou se o valor não for um número
+        } catch (Exception e) {
+            System.err.println("Erro crítico ao processar resposta para o item '" + itemKey + "': " + e.getMessage());
+            return null;
         }
     }
-
+    
     /**
      * Busca TODOS os itens e seus últimos valores para um host específico.
      * Retorna um Mapa de [chave_do_item -> valor].
@@ -198,6 +212,42 @@ public class ZabbixClient {
         return Map.of();
     }
 
+    /**
+     * Busca os 5 eventos (problemas) mais recentes de um host.
+     */
+    public List<ZabbixEventDTO> getRecentEvents(Long zabbixHostId) {
+        System.out.println("Buscando 5 eventos recentes para o host " + zabbixHostId);
+
+        Map<String, Object> params = Map.of(
+            "hostids", zabbixHostId,
+            "output", "extend",
+            "selectHosts", "extend",
+            "sortfield", new String[]{"clock"}, // Ordena pelo timestamp
+            "sortorder", "DESC", // Do mais recente para o mais antigo
+            "limit", 5, // Limita a 5 resultados
+            "value", 1 // Apenas eventos que estão no estado de "PROBLEMA"
+        );
+
+        ZabbixRequestDTO request = new ZabbixRequestDTO("event.get", params, authToken, 5);
+
+        try {
+            String jsonResponse = restTemplate.postForObject(zabbixApiUrl, request, String.class);
+            if (jsonResponse == null) return Collections.emptyList();
+
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            if (rootNode.has("error")) {
+                System.err.println("Erro da API Zabbix ao buscar eventos: " + rootNode.get("error").get("data").asText());
+                return Collections.emptyList();
+            }
+
+            ZabbixEventDTO[] events = objectMapper.treeToValue(rootNode.get("result"), ZabbixEventDTO[].class);
+            return Arrays.asList(events);
+
+        } catch (Exception e) {
+            System.err.println("Erro crítico ao buscar eventos para o host " + zabbixHostId + ": " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 
     /**
      * Faz uma chamada simples à API para verificar a conexão e autenticação.
