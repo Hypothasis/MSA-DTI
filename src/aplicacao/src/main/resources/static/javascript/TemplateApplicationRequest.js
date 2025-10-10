@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function () {
             
             const data = await response.json();
 
+
             if (data.latencyHistory) {
                 data.latencyHistory.forEach(point => {
                     point.y = point.y * 1000; // Segundos para Milissegundos
@@ -76,13 +77,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 // 1. Prepara os dados recebidos da API
                 const memoriaEmGb = [
                     data.memoryData.total,
-                    data.memoryData.used,
-                    data.memoryData.free
+                    data.memoryData.free,
+                    data.memoryData.used
                 ];
                 const memoriaPorcents = [
                     100,
-                    data.memoryData.percentUsed,
-                    100 - data.memoryData.percentUsed
+                    100 - data.memoryData.percentUsed,
+                    data.memoryData.percentUsed
                 ];
 
                 // 2. Atualiza o gráfico com as novas séries E os novos formatters
@@ -199,72 +200,90 @@ document.addEventListener('DOMContentLoaded', function () {
         const percentElement = document.querySelector('.porcentPointGraphic p:first-child');
         if (!container || !percentElement) return;
 
-        container.innerHTML = ''; // Limpa os pontos antigos
+        container.innerHTML = '';
 
-        // 1. Converte os dados da API em um Mapa para busca rápida.
-        // A chave do mapa será o timestamp arredondado para o início do intervalo de 30 min.
-        const intervalMs = 30 * 60 * 1000; // 30 minutos em milissegundos
+        const intervalMs = 30 * 60 * 1000; // 30 minutos
         const dataMap = new Map();
+        let latestTimestamp = 0;
+
         if (historyData && historyData.length > 0) {
             historyData.forEach(point => {
-                // Arredonda o timestamp para baixo para o intervalo de 30 min mais próximo
-                const roundedTimestamp = Math.floor(point.x / intervalMs) * intervalMs;
+                // 🔹 Corrige o fuso horário (UTC → Fortaleza UTC-3)
+                const offsetMs = 3 * 60 * 60 * 1000; // 3 horas
+                const fortalezaTimestamp = point.x - offsetMs;
+
+                // Arredonda para o intervalo de 30 min
+                const roundedTimestamp = Math.floor(fortalezaTimestamp / intervalMs) * intervalMs;
+
+                // Armazena no mapa o valor ajustado
                 dataMap.set(roundedTimestamp, point.y);
+
+                // Atualiza o timestamp mais recente
+                if (fortalezaTimestamp > latestTimestamp) {
+                    latestTimestamp = fortalezaTimestamp;
+                }
             });
-            
-            const overallAverage = historyData.reduce((acc, point) => acc + point.y, 0) / historyData.length;
+
+            // Calcula a média geral
+            const overallAverage =
+                historyData.reduce((acc, point) => acc + point.y, 0) / historyData.length;
             percentElement.textContent = `${overallAverage.toFixed(2)}%`;
         } else {
             percentElement.textContent = `N/A`;
         }
 
-        // Função auxiliar para determinar a cor
+        // Define a classe visual com base na disponibilidade
         function getStatusClass(availability) {
-            if (availability == null) return 'empty'; // Se não houver dados, a classe é 'empty'
+            if (availability == null) return 'empty';
             if (availability >= 99.9) return 'okay';
             if (availability >= 99.0) return 'warning';
             if (availability >= 95.0) return 'avarage';
             if (availability >= 90.0) return 'high';
             return 'disaster';
         }
-        
-        // 2. Itera pelos 96 períodos de 30 minutos nas últimas 48 horas.
-        const numberOfPoints = 96;
-        const now = new Date();
-        // Arredonda a hora atual para o início do intervalo de 30 min
-        const startTimestamp = Math.floor(now.getTime() / intervalMs) * intervalMs; 
-        
+
+        const numberOfPoints = 96; // 48h / 0.5h = 96 pontos
+
+        // Define o ponto de referência (último dado ou agora)
+        const referenceTime = latestTimestamp > 0 ? latestTimestamp : new Date().getTime();
+        const startTimestamp = Math.floor(referenceTime / intervalMs) * intervalMs;
+
+        // Gera os pontos para as últimas 48h
         for (let i = 0; i < numberOfPoints; i++) {
-            // Calcula o timestamp para cada um dos 96 pontos no passado
-            const pointTimestamp = startTimestamp - (i * intervalMs);
-            
-            // 3. Verifica se existe um dado para este timestamp no mapa.
-            const availability = dataMap.get(pointTimestamp); // Será o valor (ex: 99.8) ou 'undefined'
-            
+            const pointTimestamp = startTimestamp - i * intervalMs;
+            const availability = dataMap.get(pointTimestamp);
+
             const li = document.createElement('li');
-            const statusClass = getStatusClass(availability);
-            li.className = `point ${statusClass}`;
-            
+            li.className = `point ${getStatusClass(availability)}`;
+
+            // 🔹 Cria objeto Date com o timestamp ajustado
             const date = new Date(pointTimestamp);
-            const formattedDate = `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`;
-            const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-            const formattedPercent = availability != null ? `${availability.toFixed(2)}%` : 'Sem dados';
-            
-            li.dataset.line1 = `${formattedDate} ${formattedTime}`;
+
+            // 🔹 Exibe a data/hora já no fuso de Fortaleza
+            const formattedDateTime = date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'America/Fortaleza'
+            });
+
+            const formattedPercent =
+                availability != null ? `${availability.toFixed(2)}%` : 'Sem dados';
+
+            li.dataset.line1 = formattedDateTime;
             li.dataset.line2 = formattedPercent;
 
-            container.prepend(li); // Usa prepend para adicionar do mais antigo para o mais novo
+            container.prepend(li);
         }
     }
 
     function updateGlobalAvailability(availabilityData) {
         if (!availabilityData) return;
-        const container = document.querySelector('.overallUptime');
-        console.log("Atualizando disponibilidade global:", availabilityData);   
-        container.querySelector('li:nth-child(1) h3').textContent = `${(availabilityData.last48h || 0).toFixed(2)}%`;
-        container.querySelector('li:nth-child(2) h3').textContent = `${(availabilityData.last24h || 0).toFixed(2)}%`;
-        container.querySelector('li:nth-child(3) h3').textContent = `${(availabilityData.last12h || 0).toFixed(2)}%`;
-        container.querySelector('li:nth-child(4) h3').textContent = `${(availabilityData.last6h || 0).toFixed(2)}%`;
+        document.getElementById('availabilityData48h').textContent = `${(availabilityData.last48h || 0).toFixed(2)}%`;
+        document.getElementById('availabilityData24h').textContent = `${(availabilityData.last24h || 0).toFixed(2)}%`;
+        document.getElementById('availabilityData12h').textContent = `${(availabilityData.last12h || 0).toFixed(2)}%`;
+        document.getElementById('availabilityData6h').textContent = `${(availabilityData.last6h || 0).toFixed(2)}%`;
     }
 
     function updateUptime(uptimeString) {
@@ -401,9 +420,32 @@ function getResponseTimeChartOptions() {
             title: { text: 'Latência (ms)' },
             labels: { formatter: val => val.toFixed(2) + " ms" }
         },
-        xaxis: { type: 'datetime', labels: { format: 'dd MMM HH:mm' }},
+        xaxis: {
+            type: 'datetime',
+            labels: {
+                formatter: function (value, timestamp) {
+                    const date = new Date(timestamp);
+                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', 
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
+            }
+        },
         tooltip: {
-            y: { formatter: val => val.toFixed(2) + " ms" }
+            x: {
+                formatter: function (value) {
+                    const date = new Date(value);
+                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
+            }
         }
     };
 }
@@ -464,16 +506,30 @@ function getCpuChartOptions() {
         xaxis: {
             type: 'datetime',
             labels: {
-                format: 'dd MMM HH:mm'
+                formatter: function (value, timestamp) {
+                    const date = new Date(timestamp);
+                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', 
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
             }
         },
         tooltip: {
-            shared: false,
             x: {
-                format: 'dd MMM yyyy - HH:mm'
+                formatter: function (value) {
+                    const date = new Date(value);
+                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
             },
             y: {
-                // Garante a exibição com 2 casas decimais no tooltip
                 formatter: function (val) {
                     return val.toFixed(2) + " %";
                 }
@@ -501,8 +557,8 @@ function getMemoryChartOptions() {
                 }
             }
         },
-        colors: ['#092d7aff', 'orange', 'green'],
-        labels: ['Memória Total', 'Memória em Uso', 'Memória Livre'],
+        colors: ['#092d7aff', 'green', 'orange'],
+        labels: ['Memória Total', 'Memória Livre', 'Memória em Uso'],
 
         tooltip: {
             enabled: true,
@@ -617,13 +673,29 @@ function getDataChartOptions() {
         xaxis: {
             type: 'datetime',
             labels: {
-                format: 'HH:mm'
+                formatter: function (value, timestamp) {
+                    const date = new Date(timestamp);
+                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', 
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
             }
         },
         tooltip: {
             x: {
-                format: 'dd/MM/yy HH:mm'
-            },
+                formatter: function (value) {
+                    const date = new Date(value);
+                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
+            }
         },
         legend: {
             position: 'top'

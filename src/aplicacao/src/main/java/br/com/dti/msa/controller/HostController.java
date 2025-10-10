@@ -1,6 +1,7 @@
 package br.com.dti.msa.controller;
 
 import br.com.dti.msa.dto.HostDashboardDTO;
+import br.com.dti.msa.dto.HostSearchResultDTO;
 import br.com.dti.msa.model.Host;
 import br.com.dti.msa.service.HostService;
 import jakarta.persistence.EntityNotFoundException;
@@ -11,8 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -55,5 +58,15 @@ public class HostController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    /**
+     * ENDPOINT PARA HOME: Retorna 5 hosts pelo nome
+     * Rota: GET /host/api/search
+     */
+    @GetMapping("/api/search")
+    public ResponseEntity<List<HostSearchResultDTO>> searchHosts(@RequestParam("term") String term) {
+        List<HostSearchResultDTO> results = hostService.searchPublicHostsByName(term);
+        return ResponseEntity.ok(results);
     }
 }

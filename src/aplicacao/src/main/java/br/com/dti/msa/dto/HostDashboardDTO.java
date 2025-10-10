@@ -50,7 +50,9 @@ public class HostDashboardDTO {
         private double y; // Valor
 
         public MetricValueDTO(LocalDateTime timestamp, Double value) {
-            this.x = timestamp.atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli();
+            this.x = timestamp.atZone(java.time.ZoneId.of("America/Fortaleza"))
+                          .toInstant()
+                          .toEpochMilli();
             this.y = value != null ? value : 0.0;
         }
     }

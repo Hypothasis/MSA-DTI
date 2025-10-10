@@ -2,6 +2,7 @@ package br.com.dti.msa.service;
 
 import br.com.dti.msa.dto.CreateHostDTO;
 import br.com.dti.msa.dto.HostDashboardDTO;
+import br.com.dti.msa.dto.HostSearchResultDTO;
 import br.com.dti.msa.dto.UpdateHostDTO;
 import br.com.dti.msa.exception.ZabbixValidationException;
 import br.com.dti.msa.integration.zabbix.dto.ZabbixClient;
@@ -60,6 +61,21 @@ public class HostService {
                 .orElseThrow(() -> new EntityNotFoundException("Host não encontrado com ID Público: " + publicId));
     }
 
+    /**
+     * Busca 5 hosts pelo nome, usado no Home
+     */
+    public List<HostSearchResultDTO> searchPublicHostsByName(String term) {
+        if (term == null || term.trim().length() < 2) {
+            return List.of(); // Retorna lista vazia se o termo for muito curto
+        }
+        
+        List<Host> hosts = hostRepository.findTop5ByNameContainingIgnoreCase(term);
+        
+        // Mapeia a lista de entidades para a lista de DTOs leves
+        return hosts.stream()
+                    .map(host -> new HostSearchResultDTO(host.getPublicId(), host.getName()))
+                    .collect(Collectors.toList());
+    }
     /**
      * Obtém todos os dados dinâmicos (métricas) para o dashboard do host.
      */

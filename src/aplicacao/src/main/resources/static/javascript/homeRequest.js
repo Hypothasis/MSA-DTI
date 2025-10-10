@@ -6,6 +6,72 @@ document.addEventListener('DOMContentLoaded', function () {
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     //#######################################################################
+    //###         FUNÇÕES PARA REQUISIÇÃO DE BUSCA DE SERVIÇOS            ###
+    //#######################################################################
+
+    const searchInput = document.getElementById('home-search-input');
+    const resultsList = document.getElementById('search-results-list');
+    const resultsContainer = document.getElementById('outdoor-search');
+    let debounceTimer;
+
+    searchInput.addEventListener('input', function(event) {
+        const searchTerm = event.target.value;
+
+        // Cancela o timer anterior para não fazer múltiplas requisições
+        clearTimeout(debounceTimer);
+
+        if (searchTerm.length < 2) {
+            resultsList.innerHTML = '';
+            resultsContainer.classList.remove('expanded');
+            return;
+        }
+
+        // Cria um novo timer. A busca só acontece após 300ms de inatividade
+        debounceTimer = setTimeout(() => {
+            fetchHosts(searchTerm);
+        }, 300);
+    });
+
+    async function fetchHosts(term) {
+        try {
+            const response = await fetch(`/host/api/search?term=${encodeURIComponent(term)}`);
+            if (!response.ok) throw new Error('Erro na busca.');
+            
+            const hosts = await response.json();
+            renderResults(hosts);
+
+        } catch (error) {
+            console.error("Falha ao buscar hosts:", error);
+            resultsList.innerHTML = '<li>Erro ao buscar. Tente novamente.</li>';
+            resultsContainer.classList.add('expanded');
+        }
+    }
+
+    function renderResults(hosts) {
+        resultsList.innerHTML = ''; // Limpa resultados antigos
+
+        if (hosts.length === 0) {
+            resultsList.innerHTML = '<li>Nenhum serviço encontrado.</li>';
+        } else {
+            hosts.forEach(host => {
+                const li = document.createElement('li');
+                const p = document.createElement('p');
+                const a = document.createElement('a');
+
+                p.textContent = host.name;
+                a.textContent = 'Acessar';
+                a.href = `/host/${host.publicId}`;
+
+                li.appendChild(p);
+                li.appendChild(a);
+                resultsList.appendChild(li);
+            });
+        }
+        // Mostra ou esconde o container de resultados
+        resultsContainer.classList.toggle('expanded', hosts.length > 0);
+    }
+
+    //#######################################################################
     //###        FUNÇÕES PARA REQUISIÇÃO ASSÍCRONA PARA BACKEND           ###
     //#######################################################################
 

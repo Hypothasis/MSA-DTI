@@ -31,4 +31,9 @@ public interface HostRepository extends JpaRepository<Host, Long> {
      * Busca o Host pela sua publicId.
      */
     Optional<Host> findByPublicId(String publicId);
+
+    /**
+     * Busca os 5 primeiros hosts cujo nome contém o termo (ignorando maiúsculas/minúsculas)
+     */
+    List<Host> findTop5ByNameContainingIgnoreCase(String name);
 }
