@@ -141,10 +141,15 @@ public class HostService {
 
         // Lógica para Processos da CPU (Composto)
         if (configuredMetricKeys.containsAll(metricCatalog.getMetricKeysForCheckbox("cpu-processos"))) {
-            findLastValue(host.getId(), "cpu-processos-atuais").ifPresent(current -> 
-                findLastValue(host.getId(), "cpu-processos-max").ifPresent(max -> {
-                    dto.setProcessInfo(new HostDashboardDTO.ProcessInfoDTO(current, max));
-                })
+            
+            List<HostDashboardDTO.MetricValueDTO> currentProcessesHistory = 
+                fetchMetricHistory(host.getId(), "cpu-processos-atuais", startTime48h);
+
+            List<HostDashboardDTO.MetricValueDTO> maxProcessesHistory = 
+                fetchMetricHistory(host.getId(), "cpu-processos-max", startTime48h);
+
+            dto.setProcessInfoHistory(
+                new HostDashboardDTO.ProcessInfoHistoryDTO(currentProcessesHistory, maxProcessesHistory)
             );
         }
         

@@ -31,7 +31,7 @@ public class HostDashboardDTO {
     // Métricas de Estado Atual (para gauges, radiais ou valores únicos)
     private AvailabilityDTO globalAvailability;
     private OsInfoDTO osInfo;
-    private ProcessInfoDTO processInfo;
+    private ProcessInfoHistoryDTO processInfoHistory;
     private StorageDTO memoryData;
     private StorageDTO swapData;
     private StorageDTO storageRootData;
@@ -81,9 +81,9 @@ public class HostDashboardDTO {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ProcessInfoDTO {
-        private double current;
-        private double max;
+    public static class ProcessInfoHistoryDTO {
+        private List<MetricValueDTO> current;
+        private List<MetricValueDTO> max;
     }
     
     // Para cálculos de disponibilidade

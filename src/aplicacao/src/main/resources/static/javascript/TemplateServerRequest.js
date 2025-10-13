@@ -1,116 +1,514 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // ===================================================================
+    // INICIALIZAÇÃO DOS GRÁFICOS
+    // ===================================================================
+    // Inicializamos cada gráfico uma vez com dados vazios. Guardamos as instâncias em um objeto para fácil acesso.
+    const charts = {        
+        cpu: new ApexCharts(document.querySelector("#cpuChart"), getCpuChartOptions()),
+        cpuProcesses: new ApexCharts(document.querySelector("#cpuProcessosChart"), getCpuProcessesChartOptions()),
+        cpuSwitchContexts: new ApexCharts(document.querySelector("#cpuContextosChart"), getCpuSwitchContextsChartOptions()),
+        
+        memory: new ApexCharts(document.querySelector("#memoriaChart"), getMemoryChartOptions()),
+        memorySwap: new ApexCharts(document.querySelector("#swapChart"), getMemorySwapChartOptions()),
 
-    // Variavel para o tempo de requisição Assícrono
-    const countdownElement = document.getElementById('countDownTime');
-    const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+        storage: new ApexCharts(document.querySelector("#armazenamentoChart"), getStorageChartOptions()),
+        data: new ApexCharts(document.querySelector("#dadosChart"), getDataChartOptions())
+    };
+    // Renderiza todos os gráficos
+    Object.values(charts).forEach(chart => chart.render());
 
-    //#######################################################################
-    //###        FUNÇÕES PARA REQUISIÇÃO ASSÍCRONA PARA BACKEND           ###
-    //#######################################################################
 
-    function updateLastRequestTime() {
-        // Obtém dados no tempo real
-        const now = new Date();
-
-        // Parse para Horas, Minutos e Segundos
-        const hour = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        const formattedTime = `${hour}:${minutes}:${seconds}`;
-
-        if (lastUpdateTimeElement) {
-            // Modifica o valor no html
-            lastUpdateTimeElement.textContent = formattedTime;
-        }
-    }
-
-    // função assícrona principal para chamar requisição ao backend
-    async function startCountDown() {
-        const update_trigger = 60; 
-        let secs_remaining = update_trigger;
-
-        // Laço de repetição continua
-        while (true) {
-            try {
-                // Modifica a tag para horarío real no html
-                if (countdownElement) {
-                    countdownElement.textContent = `${secs_remaining}s.`;
-                }
-
-                // Se a contagem chega a zero
-                // zera o tempo e chama função de requisição ao backend
-                if (secs_remaining <= 0) {
-
-                    // Registra no elemento do <html> o tempo da última atualização
-                    updateLastRequestTime();
-
-                    // Chama função assícrona para backend
-                    await getHostData();
-
-                    // Atualiza para 60s 
-                    secs_remaining = update_trigger;
-
-                    // Atualiza elemento para 60s
-                    if (countdownElement) {
-                        countdownElement.textContent = `${secs_remaining}s.`;
-                    }
-                }
-                
-                secs_remaining--;
-                
-                await delay(1000);
-
-            } catch (error) {
-                console.error("Erro no contador:", error);
-                await delay(5000);
-            }
-        }
-    }
+    // ===================================================================
+    // FUNÇÃO PRINCIPAL DE BUSCA E ATUALIZAÇÃO DE DADOS
+    // ===================================================================
 
     async function getHostData() {
-        console.log("Obtendo dados no Zabbix..")
+        console.log("Buscando dados do host no backend...");
+
+        // Pega o publicId da URL da página atual
+        const pathParts = window.location.pathname.split('/');
+        const publicId = pathParts[pathParts.length - 1];
+        if (!publicId) return console.error("ID do host não encontrado na URL.");
+
+        try {
+            // Faz a chamada fetch para a API
+            const response = await fetch(`/host/api/${publicId}`);
+            if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
+            
+            const data = await response.json();
+
+
+            if (data.latencyHistory) {
+                data.latencyHistory.forEach(point => {
+                    point.y = point.y * 1000; // Segundos para Milissegundos
+                });
+            }
+
+            // --- ATUALIZA A PÁGINA COM OS NOVOS DADOS ---
+            
+            updateHeader(data);
+
+            if  (data.globalAvailability) {
+                updateAvailabilityGraphic(data.globalAvailability);
+            } else {
+                document.getElementById('disponibilidadeGlobal').style.display = 'none';
+            }
+            
+            if  (data.availabilityHistory) {
+                updateGlobalAvailability(data.availabilityHistory);
+            } else {
+                document.getElementById('disponibilidadeEspecifica').style.display = 'none';
+            }
+
+            if (data.systemOperacional) {
+                updateSystemOperacionalGraphic(data.systemOperacional)
+            } else {
+                document.getElementById('sistemaOperacional').style.display = 'none';
+            }
+
+            if (data.cpuUsageHistory) {
+                charts.cpu.updateSeries([{ data: data.cpuUsageHistory || [] }]);
+            } else {
+                document.getElementById('cpuUso').style.display = 'none';
+            }
+
+            if (data.processInfoHistory) {
+                charts.cpuProcesses.updateSeries([
+                    // Objeto para a primeira série (processos máximos)
+                    {
+                        name: 'Número máximo de processos',
+                        data: data.processInfoHistory.max || []
+                    },
+                    // Objeto para a segunda série (processos atuais)
+                    {
+                        name: 'Número atual de processos',
+                        data: data.processInfoHistory.current || []
+                    }
+                ]);
+            } else {
+                document.getElementById('cpuProcessos').style.display = 'none';
+            }
+
+            if (data.cpuContextSwitchesHistory) {
+                charts.cpuSwitchContexts.updateSeries([{ data: data.cpuContextSwitchesHistory || [] }]);
+            } else {
+                document.getElementById('cpuContextos').style.display = 'none';
+            }
+
+            const bitsToMegabits = (bits) => bits / 1_000_000;
+
+            if (data.dataBandwidthInHistory || data.dataBandwidthOutHistory) {
+
+                data.dataBandwidthInHistory.forEach(point => {
+                    point.y = bitsToMegabits(point.y);
+                });
+
+                data.dataBandwidthOutHistory.forEach(point => {
+                    point.y = bitsToMegabits(point.y);
+                });
+
+
+                charts.data.updateSeries([
+                    { name: 'Dados Enviados (Upload)', data: data.dataBandwidthOutHistory || [] },
+                    { name: 'Dados Recebidos (Download)', data: data.dataBandwidthInHistory || [] }
+                ]);
+            } else {
+                document.getElementById('BandaLargaDados').style.display = 'none';
+            }
+
+            if (data.memoryData) {
+                // 1. Prepara os dados recebidos da API
+                const memoriaEmGb = [
+                    data.memoryData.total,
+                    data.memoryData.free,
+                    data.memoryData.used
+                ];
+                const memoriaPorcents = [
+                    100,
+                    100 - data.memoryData.percentUsed,
+                    data.memoryData.percentUsed
+                ];
+
+                // 2. Atualiza o gráfico com as novas séries E os novos formatters
+                charts.memory.updateOptions({
+                    series: memoriaPorcents,
+                    tooltip: {
+                        enabled: true,
+                        theme: 'dark',
+                        y: {
+                            // Novo formatter que usa os dados em GB atuais
+                            formatter: function(value, opts) {
+                                const gbValue = memoriaEmGb[opts.seriesIndex];
+                                return `${value.toFixed(0)}% (${gbValue.toFixed(2)} GB)`;
+                            }
+                        }
+                    },
+                    legend: {
+                        // Novo formatter da legenda
+                        formatter: function(seriesName, opts) {
+                            const percentage = opts.w.globals.series[opts.seriesIndex];
+                            const gbValue = memoriaEmGb[opts.seriesIndex];
+                            return `${seriesName}: ${percentage.toFixed(0)}% (${gbValue.toFixed(2)} GB)`;
+                        }
+                    }
+                });
+            } else {
+                document.getElementById('memoriaUso').style.display = 'none';
+            }
+
+            const swapData = data.swap;
+
+            if (swapData && swapData.total > 0) {
+                const swapEmGb = [
+                    swapData.total / (1024 ** 3),
+                    swapData.used / (1024 ** 3),
+                    swapData.free / (1024 ** 3)
+                ];
+
+                const swapPorcents = [
+                    100,
+                    (swapData.used / swapData.total) * 100,
+                    (swapData.free / swapData.total) * 100
+                ];
+
+                charts.memorySwap.updateOptions({
+                    series: swapPorcents,
+                    tooltip: {
+                        y: {
+                            // Novo formatter que usa os dados em GB atuais
+                            formatter: function(value, opts) {
+                                const gbValue = swapEmGb[opts.seriesIndex];
+                                return `${value.toFixed(1)}% (${gbValue.toFixed(1)} GB)`;
+                            }
+                        }
+                    },
+                    legend: {
+                        formatter: function(seriesName, opts) {
+                            const percentage = opts.w.globals.series[opts.seriesIndex];
+                            const gbValue = swapEmGb[opts.seriesIndex];
+                            return `${seriesName}: ${percentage.toFixed(1)}% (${gbValue.toFixed(1)} GB)`;
+                        }
+                    }
+                });
+            } else {
+                document.getElementById('swapUso').style.display = 'none';
+            }
+
+            if (data.storageRootData && data.storageBootData) {
+                // Array com os valores em GB na ordem correta para os tooltips
+                const armazenamentoEmGb = [
+                    data.storageRootData.total,
+                    data.storageRootData.used,
+                    data.storageBootData.total,
+                    data.storageBootData.used
+                ];
+
+                // Array com os percentuais para as séries do gráfico
+                const storagePorcents = [
+                    100, // Total / é sempre 100%
+                    data.storageRootData.percentUsed,
+                    100, // Total /boot é sempre 100%
+                    data.storageBootData.percentUsed
+                ];
+
+                // 2. Atualiza o gráfico com as novas séries E os novos formatters
+                charts.storage.updateOptions({
+                    series: storagePorcents,
+                    labels: ['Total ("/")', 'Usado ("/")', 'Total ("/boot")', 'Usado ("/boot")'],
+                    tooltip: {
+                        y: {
+                            formatter: function(value, opts) {
+                                // Pega o valor absoluto em GB correspondente ao anel
+                                const gbValue = armazenamentoEmGb[opts.seriesIndex];
+                                return `${gbValue.toFixed(2)} GB`; // Mostra o valor em GB, não a porcentagem
+                            }
+                        }
+                    },
+                    legend: {
+                        formatter: function(seriesName, opts) {
+                            const percentage = opts.w.globals.series[opts.seriesIndex];
+                            const gbValue = armazenamentoEmGb[opts.seriesIndex];
+                            // Mostra a porcentagem e o valor em GB na legenda
+                            return `${seriesName}: ${percentage.toFixed(1)}% (${gbValue.toFixed(2)} GB)`;
+                        }
+                    }
+                });
+            } else {
+                document.getElementById('armazenamentoUso').style.display = 'none';
+            }
+            
+            if (data.uptime) {
+                updateUptime(data.uptime);
+            } else {
+                document.getElementById('tempoAtivoServidor').style.display = 'none';
+            }
+            
+            if(data.recentEvents) {
+                updateRecentEvents(data.recentEvents);
+            } else {
+                document.getElementById('eventosRecentes').style.display = 'none';
+            }
+
+            console.log("Página atualizada com sucesso!");
+
+        } catch (error) {
+            console.error("Falha ao buscar e atualizar os dados do host:", error);
+        }
     }
 
-    startCountDown();
+    // ===================================================================
+    // FUNÇÕES AUXILIARES PARA ATUALIZAR A UI
+    // ===================================================================
+    function updateHeader(data) {
+        document.getElementById('hostName').textContent = data.name || 'N/A';
+        const statusFlag = document.getElementById('hostStatusFlag');
+        const statusPoint = document.getElementById('hostStatusPoint');
+        
+        let flagText = 'Desconhecido';
+        let flagColorClass = 'empty'; // Uma cor padrão para status desconhecido
 
-    //#######################################################################
-    //###             CONFIGURAÇÃO DOS GRÁFICOS DE POINTS                 ###
-    //#######################################################################
+        switch (data.status) {
+            case 'OK':
+                flagText = 'Funcionando';
+                flagColorClass = 'green';
+                break;
+            case 'ALERT':
+                flagText = 'com Alerta!';
+                flagColorClass = 'yellow';
+                break;
+            case 'PROBLEM':
+                flagText = 'Parado!';
+                flagColorClass = 'red';
+                break;
+        }
 
-    //#######################################################################
-    //###        CONFIGURAÇÃO DOS GRÁFICOS USANDO APEXCHARTS.JS           ###
-    //#######################################################################
+        statusFlag.textContent = flagText;
+        // Remove as classes de cor antigas e adiciona a nova
+        statusFlag.className = `flag ${flagColorClass}`;
+        statusPoint.className = `dot ${flagColorClass}`;
+    }
 
-    /* CPU */
+    function updateAvailabilityGraphic(historyData) {
+        const container = document.querySelector('.pointGraphic');
+        const percentElement = document.querySelector('.porcentPointGraphic p:first-child');
+        if (!container || !percentElement) return;
 
-    let cpuData = [
-        [new Date('2025-08-09T10:00:00').getTime(), 23],
-        [new Date('2025-08-10T11:15:00').getTime(), 55],
-        [new Date('2025-08-11T12:30:00').getTime(), 44],
-        [new Date('2025-08-12T13:45:00').getTime(), 23.2],
-        [new Date('2025-08-13T14:00:00').getTime(), 25.4],
-        [new Date('2025-08-14T15:20:00').getTime(), 23.4],
-        [new Date('2025-08-15T16:40:00').getTime(), 33.2],
-        [new Date('2025-08-16T17:00:00').getTime(), 44.3],
-        [new Date('2025-08-17T18:05:00').getTime(), 55.3],
-        [new Date('2025-08-18T19:10:00').getTime(), 23.3],
-        [new Date('2025-08-19T20:30:00').getTime(), 26.33],
-        [new Date('2025-08-20T21:00:00').getTime(), 67.3],
-        [new Date('2025-08-21T22:25:00').getTime(), 23.1],
-        [new Date('2025-08-22T23:50:00').getTime(), 22.1],
-        [new Date('2025-08-23T08:00:00').getTime(), 22.2],
-        [new Date('2025-08-24T09:15:00').getTime(), 33.2],
-        [new Date('2025-08-25T10:30:00').getTime(), 33.4],
-        [new Date('2025-08-26T11:45:00').getTime(), 26.3],
-        [new Date('2025-08-27T12:00:00').getTime(), 34.22],
-        [new Date('2025-08-28T13:10:00').getTime(), 24.11]
-    ];
+        container.innerHTML = '';
 
-    var options = {
+        const intervalMs = 30 * 60 * 1000; // 30 minutos
+        const dataMap = new Map();
+        let latestTimestamp = 0;
+
+        if (historyData && historyData.length > 0) {
+            historyData.forEach(point => {
+                // 🔹 Corrige o fuso horário (UTC → Fortaleza UTC-3)
+                const offsetMs = 3 * 60 * 60 * 1000; // 3 horas
+                const fortalezaTimestamp = point.x - offsetMs;
+
+                // Arredonda para o intervalo de 30 min
+                const roundedTimestamp = Math.floor(fortalezaTimestamp / intervalMs) * intervalMs;
+
+                // Armazena no mapa o valor ajustado
+                dataMap.set(roundedTimestamp, point.y);
+
+                // Atualiza o timestamp mais recente
+                if (fortalezaTimestamp > latestTimestamp) {
+                    latestTimestamp = fortalezaTimestamp;
+                }
+            });
+
+            // Calcula a média geral
+            const overallAverage =
+                historyData.reduce((acc, point) => acc + point.y, 0) / historyData.length;
+            percentElement.textContent = `${overallAverage.toFixed(2)}%`;
+        } else {
+            percentElement.textContent = `N/A`;
+        }
+
+        // Define a classe visual com base na disponibilidade
+        function getStatusClass(availability) {
+            if (availability == null) return 'empty';
+            if (availability >= 99.9) return 'okay';
+            if (availability >= 99.0) return 'warning';
+            if (availability >= 95.0) return 'avarage';
+            if (availability >= 90.0) return 'high';
+            return 'disaster';
+        }
+
+        const numberOfPoints = 96; // 48h / 0.5h = 96 pontos
+
+        // Define o ponto de referência (último dado ou agora)
+        const referenceTime = latestTimestamp > 0 ? latestTimestamp : new Date().getTime();
+        const startTimestamp = Math.floor(referenceTime / intervalMs) * intervalMs;
+
+        // Gera os pontos para as últimas 48h
+        for (let i = 0; i < numberOfPoints; i++) {
+            const pointTimestamp = startTimestamp - i * intervalMs;
+            const availability = dataMap.get(pointTimestamp);
+
+            const li = document.createElement('li');
+            li.className = `point ${getStatusClass(availability)}`;
+
+            // 🔹 Cria objeto Date com o timestamp ajustado
+            const date = new Date(pointTimestamp);
+
+            // 🔹 Exibe a data/hora já no fuso de Fortaleza
+            const formattedDateTime = date.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit',
+                timeZone: 'America/Fortaleza'
+            });
+
+            const formattedPercent =
+                availability != null ? `${availability.toFixed(2)}%` : 'Sem dados';
+
+            li.dataset.line1 = formattedDateTime;
+            li.dataset.line2 = formattedPercent;
+
+            container.prepend(li);
+        }
+    }
+
+    function updateGlobalAvailability(availabilityData) {
+        if (!availabilityData) return;
+        document.getElementById('availabilityData48h').textContent = `${(availabilityData.last48h || 0).toFixed(2)}%`;
+        document.getElementById('availabilityData24h').textContent = `${(availabilityData.last24h || 0).toFixed(2)}%`;
+        document.getElementById('availabilityData12h').textContent = `${(availabilityData.last12h || 0).toFixed(2)}%`;
+        document.getElementById('availabilityData6h').textContent = `${(availabilityData.last6h || 0).toFixed(2)}%`;
+    }
+
+    function updateUptime(uptimeString) {
+        if (!uptimeString) return;
+        // Ex: "37 dias, 4 horas, 24 minutos"
+        const parts = uptimeString.match(/(\d+)\s*dias,\s*(\d+)\s*horas,\s*(\d+)\s*minutos/);
+        if (parts) {
+            document.getElementById('diasUptime').textContent = parts[1];
+            document.getElementById('horasUptime').textContent = parts[2];
+            document.getElementById('minutosUptime').textContent = parts[3];
+        }
+    }
+
+    function updateRecentEvents(eventsData) {
+        const container = document.querySelector('.recentEvents');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (!eventsData || eventsData.length === 0) {
+            container.innerHTML = '<li>Nenhum evento recente.</li>';
+            return;
+        }
+
+        // Mapeia a severidade para a classe CSS
+        const severityMap = {
+            '0': 'okay', '1': 'okay', '2': 'important', '3': 'important', '4': 'important', '5': 'error'
+        };
+
+        eventsData.forEach(event => {
+            const li = document.createElement('li');
+            const severityClass = severityMap[event.severity] || 'empty';
+            
+            li.innerHTML = `
+                <div class="imgEvent ${severityClass}"></div>
+                <div>
+                    <h3 class="titleRecentEvents">${event.name}</h3>
+                    <p class="detailsRecentEvents"></p> <p class="dateRecentEvents">${event.timestamp}</p>
+                </div>
+            `;
+            container.appendChild(li);
+        });
+    }
+
+    function updateSystemOperacionalGraphic(systemOperacionalData) {
+
+    }
+
+    // ===================================================================
+    // LÓGICA DO CONTADOR (TIMER)
+    // ===================================================================
+    const countdownElement = document.getElementById('countDownTime');
+    const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
+
+    async function startCountDown() {
+        await getHostData(); // Faz a primeira busca imediatamente
+        updateLastRequestTime();
+        
+        const update_trigger = 60;
+        let secs_remaining = update_trigger;
+
+        setInterval(async () => {
+            secs_remaining--;
+            if (countdownElement) {
+                countdownElement.textContent = `${secs_remaining}s.`;
+            }
+
+            if (secs_remaining <= 0) {
+                await getHostData();
+                updateLastRequestTime();
+                secs_remaining = update_trigger;
+            }
+        }, 1000);
+    }
+    
+    function updateLastRequestTime() {
+        if (lastUpdateTimeElement) {
+            lastUpdateTimeElement.textContent = new Date().toLocaleTimeString('pt-BR');
+        }
+    }
+    
+    startCountDown(); // Inicia todo o processo
+});
+
+
+// ===================================================================
+// FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS (PARA REUTILIZAÇÃO)
+// ===================================================================
+
+// Opções para gráficos de linha/área genéricos
+function getChartOptions(type, colors, yaxisTitle) {
+    return {
+        series: [{ data: [] }],
+        chart: { type: type, height: 350, zoom: { enabled: true }, toolbar: { autoSelected: 'zoom' }, foreColor: '#555' },
+        colors: colors,
+        dataLabels: { enabled: false },
+        markers: { size: 0 },
+        fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.7, opacityTo: 0.1, stops: [0, 90, 100] }},
+        yaxis: { title: { text: yaxisTitle } },
+        xaxis: { type: 'datetime', labels: { format: 'dd MMM HH:mm' }},
+        tooltip: { shared: false, x: { format: 'dd MMM yyyy - HH:mm' }}
+    };
+}
+
+// Opções para o gráfico de Banda Larga
+function getDataChartOptions() {
+    const options = getChartOptions('area', ['#008FFB', '#00E396'], 'Tráfego (Mbps)');
+    options.title = { text: 'Tráfego de Dados', align: 'left' };
+    options.series = [{ name: 'Enviados', data: [] }, { name: 'Recebidos', data: [] }];
+    return options;
+}
+
+// Opções para gráficos radiais
+function getRadialChartOptions(labels) {
+    return {
+        series: [],
+        chart: { height: 390, type: 'radialBar' },
+        plotOptions: { radialBar: { offsetY: 0, startAngle: 0, endAngle: 270, hollow: { margin: 5, size: '30%', background: 'transparent' }}},
+        colors: ['#092d7aff', 'orange', 'green'],
+        labels: labels,
+        legend: { show: true, floating: true, fontSize: '16px', position: 'left', offsetX: 50, offsetY: 15, labels: { useSeriesColors: true }}
+    };
+}
+
+// ===================================================================
+// FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS ESPECÍFICOS
+// ===================================================================
+
+function getCpuChartOptions() {
+    return {
         series: [{
             name: 'Uso de CPU',
-            data: cpuData
+            data: [] // Começa com dados vazios
         }],
         chart: {
             type: 'area',
@@ -126,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             foreColor: '#555'
         },
-        colors: ['#da6247ff'],
+        colors: ['#ad3d24ff'],
         dataLabels: {
             enabled: false
         },
@@ -134,7 +532,7 @@ document.addEventListener('DOMContentLoaded', function () {
             size: 0,
         },
         title: {
-            text: 'Uso de CPU da aplicação',
+            text: 'Uso de CPU da Aplicação',
             align: 'left',
             offsetX: 20
         },
@@ -152,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function () {
         yaxis: {
             labels: {
                 formatter: function (val) {
-                    return (val).toFixed(0) + " %";
+                    return val.toFixed(2) + " %";
                 },
             },
             title: {
@@ -162,55 +560,215 @@ document.addEventListener('DOMContentLoaded', function () {
         xaxis: {
             type: 'datetime',
             labels: {
-                format: 'dd MMM HH:mm'
+                formatter: function (value, timestamp) {
+                    const date = new Date(timestamp);
+                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', 
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
             }
         },
         tooltip: {
-            shared: false,
             x: {
-                format: 'dd MMM yyyy - HH:mm'
+                formatter: function (value) {
+                    const date = new Date(value);
+                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
             },
             y: {
                 formatter: function (val) {
-                    // Usei toFixed(2) para mostrar valores decimais se houver
-                    return (val).toFixed(2) + " %";
+                    return val.toFixed(2) + " %";
                 }
             }
         }
     };
+}
 
-    const cpuChart = new ApexCharts(document.querySelector("#cpuChart"), options);
-    cpuChart.render();
+function getMemoryChartOptions() {
+    return {
+        series: [100, 0, 100], // Começa com 0% de uso
+        chart: {
+            height: 390,
+            type: 'radialBar',
+        },
+        plotOptions: {
+            radialBar: {
+                offsetY: 0,
+                startAngle: 0,
+                endAngle: 270,
+                hollow: {
+                    margin: 5,
+                    size: '30%',
+                    background: 'transparent',
+                }
+            }
+        },
+        colors: ['#092d7aff', 'green', 'orange'],
+        labels: ['Memória Total', 'Memória Livre', 'Memória em Uso'],
 
-    /* Processos CPU */
+        tooltip: {
+            enabled: true,
+            theme: 'dark',
+            y: {
+                // Formatter simples para o estado inicial, mostrando apenas a porcentagem
+                formatter: function(value) {
+                    return `${value.toFixed(0)}%`;
+                }
+            }
+        },
 
-    let processosAtuais = [
-        [new Date('2025-09-18T15:00:00').getTime(), 150],
-        [new Date('2025-09-18T15:15:00').getTime(), 155],
-        [new Date('2025-09-18T15:30:00').getTime(), 168],
-        [new Date('2025-09-18T15:45:00').getTime(), 160],
-        [new Date('2025-09-18T16:00:00').getTime(), 163],
-        [new Date('2025-09-18T16:15:00').getTime(), 175],
-        [new Date('2025-09-18T16:30:00').getTime(), 166]
-    ];
+        legend: {
+            show: true,
+            floating: true,
+            fontSize: '16px',
+            position: 'left',
+            offsetX: 50,
+            offsetY: 15,
+            labels: {
+                useSeriesColors: true,
+            },
+            // Formatter simples para o estado inicial
+            formatter: function(seriesName, opts) {
+                const percentage = opts.w.globals.series[opts.seriesIndex];
+                return `${seriesName}: ${percentage.toFixed(0)}%`;
+            }
+        },
 
-    let processosMax = [
-        [new Date('2025-09-18T15:00:00').getTime(), 32768],
-        [new Date('2025-09-18T15:15:00').getTime(), 32768],
-        [new Date('2025-09-18T15:30:00').getTime(), 32768],
-        [new Date('2025-09-18T15:45:00').getTime(), 32768],
-        [new Date('2025-09-18T16:00:00').getTime(), 32768],
-        [new Date('2025-09-18T16:15:00').getTime(), 32768],
-        [new Date('2025-09-18T16:30:00').getTime(), 32768]
-    ];
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                legend: {
+                    show: false
+                }
+            }
+        }]
+    };
+}
 
-    var options = {
+function getStorageChartOptions() {
+    return {
+        // Começa com 4 séries zeradas
+        series: [0, 0, 0, 0], 
+        chart: {
+            height: 390,
+            type: 'radialBar',
+        },
+        plotOptions: {
+            radialBar: {
+                offsetY: 0,
+                startAngle: 0,
+                endAngle: 270,
+                hollow: { margin: 5, size: '30%', background: 'transparent' }
+            }
+        },
+        // Cores para: Total /, Usado /, Total /boot, Usado /boot
+        colors: ['#4d097aff', '#ff8c00', '#2e8b57', '#ffa500'],
+        labels: ['Armazenamento Total ("/")', 'Armazenamento Usado ("/")', 'Armazenamento Total ("/boot")', 'Armazenamento Usado ("/boot")'],
+        legend: {
+            show: true,
+            floating: true,
+            fontSize: '14px',
+            position: 'left',
+            offsetX: 10,
+            offsetY: 15,
+            labels: { useSeriesColors: true },
+            // Formatter inicial simples
+            formatter: (seriesName, opts) => `${seriesName}: ${opts.w.globals.series[opts.seriesIndex].toFixed(0)}%`
+        }
+    };
+}
+
+function getDataChartOptions() {
+    return {
+        series: [{
+            name: 'Dados Enviados (Upload)',
+            data: []
+        }, {
+            name: 'Dados Recebidos (Download)',
+            data: []
+        }],
+        chart: {
+            height: 350,
+            type: 'area',
+            zoom: {
+                enabled: true
+            }
+        },
+        colors: ['#008FFB', '#00E396'],
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+        title: {
+            text: 'Tráfego de Dados da Aplicação',
+            align: 'left'
+        },
+        yaxis: {
+            title: {
+                text: 'Tráfego (Mbps)'
+            },
+            labels: {
+                formatter: function(val) {
+                    return val.toFixed(2) + " Mbps";
+                }
+            }
+        },
+        xaxis: {
+            type: 'datetime',
+            labels: {
+                formatter: function (value, timestamp) {
+                    const date = new Date(timestamp);
+                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', 
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
+            }
+        },
+        tooltip: {
+            x: {
+                formatter: function (value) {
+                    const date = new Date(value);
+                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
+            }
+        },
+        legend: {
+            position: 'top'
+        }
+    };
+}
+
+// ===================================================================
+// FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS ESPECÍFICOS SERVER
+// ===================================================================
+
+function getCpuProcessesChartOptions() {
+    return {
         series: [{
             name: 'Número máximo de processos',
-            data: processosMax
+            data: []
         }, {
             name: 'Número atual de processos',
-            data: processosAtuais
+            data: []
         }],
         chart: {
             height: 350,
@@ -233,57 +791,47 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         yaxis: {
             title: {
-                text: ''
+                text: 'Contagem' // Adicionei um título para clareza
             }
         },
         xaxis: {
             type: 'datetime',
             labels: {
-                format: 'HH:mm'
+                formatter: function (value, timestamp) {
+                    const date = new Date(timestamp);
+                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', 
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
             }
         },
         tooltip: {
             x: {
-                format: 'dd/MM/yy HH:mm'
+                formatter: function (value) {
+                    const date = new Date(value);
+                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
             },
         },
         legend: {
             position: 'top'
         }
     };
-    
-    var processosChart = new ApexCharts(document.querySelector("#cpuProcessosChart"), options);
-    processosChart.render();
+}
 
-    /* Troca de Contextos CPU */
-
-    let cpuContextosData = [
-        [new Date('2025-08-09T10:00:00').getTime(), 23],
-        [new Date('2025-08-10T11:15:00').getTime(), 55],
-        [new Date('2025-08-11T12:30:00').getTime(), 44],
-        [new Date('2025-08-12T13:45:00').getTime(), 23.2],
-        [new Date('2025-08-13T14:00:00').getTime(), 25.4],
-        [new Date('2025-08-14T15:20:00').getTime(), 23.4],
-        [new Date('2025-08-15T16:40:00').getTime(), 33.2],
-        [new Date('2025-08-16T17:00:00').getTime(), 44.3],
-        [new Date('2025-08-17T18:05:00').getTime(), 55.3],
-        [new Date('2025-08-18T19:10:00').getTime(), 23.3],
-        [new Date('2025-08-19T20:30:00').getTime(), 26.33],
-        [new Date('2025-08-20T21:00:00').getTime(), 67.3],
-        [new Date('2025-08-21T22:25:00').getTime(), 23.1],
-        [new Date('2025-08-22T23:50:00').getTime(), 22.1],
-        [new Date('2025-08-23T08:00:00').getTime(), 22.2],
-        [new Date('2025-08-24T09:15:00').getTime(), 33.2],
-        [new Date('2025-08-25T10:30:00').getTime(), 33.4],
-        [new Date('2025-08-26T11:45:00').getTime(), 26.3],
-        [new Date('2025-08-27T12:00:00').getTime(), 34.22],
-        [new Date('2025-08-28T13:10:00').getTime(), 24.11]
-    ];
-
-    var options = {
+function getCpuSwitchContextsChartOptions() {
+    return {
         series: [{
             name: 'Troca de Contextos',
-            data: cpuContextosData
+            data: []
         }],
         chart: {
             type: 'area',
@@ -329,39 +877,48 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
             },
             title: {
-                text: ''
+                text: 'Contagem' // Adicionei um título para clareza
             },
         },
         xaxis: {
             type: 'datetime',
             labels: {
-                format: 'dd MMM HH:mm'
+                formatter: function (value, timestamp) {
+                    const date = new Date(timestamp);
+                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', 
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
             }
         },
         tooltip: {
             shared: false,
             x: {
-                format: 'dd MMM yyyy - HH:mm'
+                formatter: function (value) {
+                    const date = new Date(value);
+                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
+                    return date.toLocaleString('pt-BR', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit',
+                        timeZone: 'America/Fortaleza'
+                    });
+                }
             },
             y: {
                 formatter: function (val) {
-                    // Usei toFixed(2) para mostrar valores decimais se houver
-                    return (val).toFixed(2);
+                    return (val).toFixed(0);
                 }
             }
         }
     };
+}
 
-    const cpuContextosChart = new ApexCharts(document.querySelector("#cpuContextosChart"), options);
-    cpuContextosChart.render();
-
-    /* MEMORIA RAM */
-
-    const memoriaEmGb = [95.65, 64.09, 22.00]; // Total, Em Uso, Livre
-    const memoriaPorcents = [100, 67, 23]; // Total, Em Uso, Livre
-
-    var options = {
-        series: memoriaPorcents,
+function getMemorySwapChartOptions() {
+    return {
+        series: [],
         chart: {
             height: 390,
             type: 'radialBar',
@@ -379,97 +936,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             }
         },
-        colors: ['#092d7aff', 'orange', 'green'],
-        labels: ['Memória total', 'Memória em Uso', 'Memória Livre'],
-
-        tooltip: {
-            enabled: true,
-            theme: 'dark',
-            y: {
-                formatter: function(value, opts) {
-                    const gbValue = memoriaEmGb[opts.seriesIndex];
-                    return `${value}% (${gbValue.toFixed(1)} GB)`;
-                }
-            }
-        },
-
-        legend: {
-            show: true,
-            floating: true,
-            fontSize: '16px',
-            position: 'left',
-            offsetX: 50,
-            offsetY: 15,
-            labels: {
-                useSeriesColors: true,
-            },
-            formatter: function(seriesName, opts) {
-                const percentage = opts.w.globals.series[opts.seriesIndex];
-                const gbValue = memoriaEmGb[opts.seriesIndex];
-                return `${seriesName}: ${percentage}% (${gbValue.toFixed(1)} GB)`;
-            }
-        },
-
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                legend: {
-                    show: false
-                }
-            }
-        }]
-    };
-
-    var memoryChart = new ApexCharts(document.querySelector("#memoriaChart"), options);
-    memoryChart.render();
-
-    /* SWAP */
-
-    // Dados de SWAP em GB [Total, Em Uso, Livre]
-    const swapEmGb = [76.98, 19.74, 57.24]; 
-
-    const swapPorcents = [
-        100, 
-        parseFloat((swapEmGb[2] / swapEmGb[0] * 100).toFixed(0)),  // % em uso
-        parseFloat((swapEmGb[1] / swapEmGb[0] * 100).toFixed(0))   // % livre
-    ];
-
-    var options = {
-        series: swapPorcents,
-        chart: {
-            height: 390,
-            type: 'radialBar',
-        },
-        plotOptions: {
-            radialBar: {
-                offsetY: 0,
-                startAngle: 0,
-                endAngle: 270,
-                hollow: {
-                    margin: 5,
-                    size: '30%',
-                    background: 'transparent',
-                    image: undefined,
-                }
-            }
-        },
-        // Cores para Total, Usado e Livre (pode ajustar se quiser)
         colors: ['#096d7aff', 'orange', 'green'], 
-        
-        // Novas legendas para o armazenamento
         labels: ['SWAP Total', 'SWAP em Uso', 'SWAP Livre'],
-
         tooltip: {
             enabled: true,
             theme: 'dark',
             y: {
-                formatter: function(value, opts) {
-                    const gbValue = swapEmGb[opts.seriesIndex];
-                    return `${value}% (${gbValue.toFixed(1)} GB)`;
+                formatter: function(value) {
+                    return `${value}%`;
                 }
             }
         },
-
         legend: {
             show: true,
             floating: true,
@@ -482,11 +959,9 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             formatter: function(seriesName, opts) {
                 const percentage = opts.w.globals.series[opts.seriesIndex];
-                const gbValue = swapEmGb[opts.seriesIndex];
-                return `${seriesName}: ${percentage}% (${gbValue.toFixed(1)} GB)`;
+                return `${seriesName}: ${percentage}%`;
             }
         },
-
         responsive: [{
             breakpoint: 480,
             options: {
@@ -496,156 +971,4 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }]
     };
-
-    var swapChart = new ApexCharts(document.querySelector("#swapChart"), options);
-    swapChart.render();
- 
-    /* ARMAZENAMENTO */
-
-    // Dados de armazenamento em GB [Total ("/"), Em Uso ("/"), Total ("/boot"), Em Uso ("/boot")]
-    const armazenamentoEmGb = [76.97, 19.39, 0.99, 0.224323273]; 
-
-    var optionsArmazenamento = {
-        series: armazenamentoEmGb,
-        chart: {
-            height: 390,
-            type: 'radialBar',
-        },
-        plotOptions: {
-            radialBar: {
-                offsetY: 0,
-                startAngle: 0,
-                endAngle: 270,
-                hollow: {
-                    margin: 5,
-                    size: '30%',
-                    background: 'transparent',
-                    image: undefined,
-                }
-            }
-        },
-        // Cores para Total ("/"), Em Uso ("/"), Total ("/boot"), Em Uso ("/boot")
-        colors: ['#4d097aff', 'orange', '#4d097aff','orange'], 
-        
-        // Novas legendas para o armazenamento
-        labels: ['Armazenamento Total ("/")', 'Armazenamento Livre ("/")', 'Armazenamento em Uso ("/boot")', 'Armazenamento Livre ("/boot")'],
-
-        tooltip: {
-            enabled: true,
-            theme: 'dark',
-            y: {
-                formatter: function(value, opts) {
-                    // Pega o valor correspondente em GB do array de armazenamento
-                    const gbValue = armazenamentoEmGb[opts.seriesIndex];
-                    return `${value}% (${gbValue.toFixed(1)} GB)`;
-                }
-            }
-        },
-
-        legend: {
-            show: true,
-            floating: true,
-            fontSize: '16px',
-            position: 'left',
-            offsetX: 50,
-            offsetY: 15,
-            labels: {
-                useSeriesColors: true,
-            },
-            formatter: function(seriesName, opts) {
-                const percentage = opts.w.globals.series[opts.seriesIndex];
-                // Pega o valor correspondente em GB do array de armazenamento
-                const gbValue = armazenamentoEmGb[opts.seriesIndex];
-                return `${seriesName}: ${percentage}% (${gbValue.toFixed(1)} GB)`;
-            }
-        },
-
-        responsive: [{
-            breakpoint: 480,
-            options: {
-                legend: {
-                    show: false
-                }
-            }
-        }]
-    };
-
-    var armazenamentoChart = new ApexCharts(document.querySelector("#armazenamentoChart"), optionsArmazenamento);
-    armazenamentoChart.render();
-
-    /* Banda Larga de Dados */
-
-    let dadosEnviados = [
-        [new Date('2025-09-15T14:00:00').getTime(), 2.5],
-        [new Date('2025-09-15T14:15:00').getTime(), 3.1],
-        [new Date('2025-09-15T14:30:00').getTime(), 4.0],
-        [new Date('2025-09-15T14:45:00').getTime(), 3.5],
-        [new Date('2025-09-15T15:00:00').getTime(), 5.2],
-        [new Date('2025-09-15T15:15:00').getTime(), 4.8]
-    ];
-
-    let dadosRecebidos = [
-        [new Date('2025-09-15T14:00:00').getTime(), 10.2],
-        [new Date('2025-09-15T14:15:00').getTime(), 12.5],
-        [new Date('2025-09-15T14:30:00').getTime(), 15.0],
-        [new Date('2025-09-15T14:45:00').getTime(), 11.8],
-        [new Date('2025-09-15T15:00:00').getTime(), 18.3],
-        [new Date('2025-09-15T15:15:00').getTime(), 16.5]
-    ];
-
-    var options = {
-        series: [{
-            name: 'Dados Enviados (Upload)',
-            data: dadosEnviados
-        }, {
-            name: 'Dados Recebidos (Download)',
-            data: dadosRecebidos
-        }],
-        chart: {
-            height: 350,
-            type: 'area',
-            zoom: {
-                enabled: true
-            }
-        },
-        colors: ['#008FFB', '#00E396'],
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            curve: 'smooth',
-            width: 3
-        },
-        title: {
-            text: 'Tráfego de Dados da Aplicação',
-            align: 'left'
-        },
-        yaxis: {
-            title: {
-                text: 'Tráfego (Mbps)'
-            },
-            labels: {
-                formatter: function(val) {
-                    return val.toFixed(2) + " Mbps";
-                }
-            }
-        },
-        xaxis: {
-            type: 'datetime',
-            labels: {
-                format: 'HH:mm'
-            }
-        },
-        tooltip: {
-            x: {
-                format: 'dd/MM/yy HH:mm'
-            },
-        },
-        legend: {
-            position: 'top'
-        }
-    };
-
-    var dataChart = new ApexCharts(document.querySelector("#dadosChart"), options);
-    dataChart.render();
-})
+}

@@ -37,41 +37,61 @@ document.addEventListener('DOMContentLoaded', function () {
             const data = await response.json();
 
 
-            if (data.latencyHistory) {
-                data.latencyHistory.forEach(point => {
-                    point.y = point.y * 1000; // Segundos para Milissegundos
-                });
-            }
+            
 
             // --- ATUALIZA A PÁGINA COM OS NOVOS DADOS ---
             
             updateHeader(data);
-            updateAvailabilityGraphic(data.availabilityHistory);
-            updateGlobalAvailability(data.globalAvailability);
-            
-            charts.responseTime.updateSeries([{ data: data.latencyHistory || [] }]);
 
-            charts.cpu.updateSeries([{ data: data.cpuUsageHistory || [] }]);
+            if  (data.globalAvailability) {
+                updateAvailabilityGraphic(data.globalAvailability);
+            } else {
+                document.getElementById('disponibilidadeGlobal').style.display = 'none';
+            }
+            
+            if  (data.availabilityHistory) {
+                updateGlobalAvailability(data.availabilityHistory);
+            } else {
+                document.getElementById('disponibilidadeEspecifica').style.display = 'none';
+            }
+            
+            if (data.latencyHistory) {
+                data.latencyHistory.forEach(point => {
+                    point.y = point.y * 1000; // Segundos para Milissegundos
+                });
+
+                charts.responseTime.updateSeries([{ data: data.latencyHistory || [] }]);
+
+            } else {
+                document.getElementById('tempoResposta').style.display = 'none';
+            }
+
+            if (data.cpuUsageHistory) {
+                charts.cpu.updateSeries([{ data: data.cpuUsageHistory || [] }]);
+            } else {
+                document.getElementById('cpuUso').style.display = 'none';
+            }
 
             const bitsToMegabits = (bits) => bits / 1_000_000;
 
+            if (data.dataBandwidthInHistory || data.dataBandwidthOutHistory) {
 
-            if (data.dataBandwidthInHistory) {
                 data.dataBandwidthInHistory.forEach(point => {
                     point.y = bitsToMegabits(point.y);
                 });
-            }
 
-            if (data.dataBandwidthOutHistory) {
                 data.dataBandwidthOutHistory.forEach(point => {
                     point.y = bitsToMegabits(point.y);
                 });
-            }
 
-            charts.data.updateSeries([
-                { name: 'Dados Enviados (Upload)', data: data.dataBandwidthOutHistory || [] },
-                { name: 'Dados Recebidos (Download)', data: data.dataBandwidthInHistory || [] }
-            ]);
+
+                charts.data.updateSeries([
+                    { name: 'Dados Enviados (Upload)', data: data.dataBandwidthOutHistory || [] },
+                    { name: 'Dados Recebidos (Download)', data: data.dataBandwidthInHistory || [] }
+                ]);
+            } else {
+                document.getElementById('BandaLargaDados').style.display = 'none';
+            }
 
             if (data.memoryData) {
                 // 1. Prepara os dados recebidos da API
@@ -109,6 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 });
+            } else {
+                document.getElementById('memoriaUso').style.display = 'none';
             }
 
             if (data.storageRootData && data.storageBootData) {
@@ -150,11 +172,21 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     }
                 });
+            } else {
+                document.getElementById('armazenamentoUso').style.display = 'none';
             }
 
+            if (data.uptime) {
+                updateUptime(data.uptime);
+            } else {
+                document.getElementById('tempoAtivoServidor').style.display = 'none';
+            }
             
-            updateUptime(data.uptime);
-            updateRecentEvents(data.recentEvents);
+            if(data.recentEvents) {
+                updateRecentEvents(data.recentEvents);
+            } else {
+                document.getElementById('eventosRecentes').style.display = 'none';
+            }
 
             console.log("Página atualizada com sucesso!");
 
@@ -700,5 +732,199 @@ function getDataChartOptions() {
         legend: {
             position: 'top'
         }
+    };
+}
+
+// ===================================================================
+// FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS ESPECÍFICOS SERVER
+// ===================================================================
+
+function getCpuProcessosChartOptions() {
+    return {
+        series: [{
+            name: 'Número máximo de processos',
+            data: []
+        }, {
+            name: 'Número atual de processos',
+            data: []
+        }],
+        chart: {
+            height: 350,
+            type: 'area',
+            zoom: {
+                enabled: true
+            }
+        },
+        colors: ['#fb7900ff', '#00e3b2ff'],
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'smooth',
+            width: 3
+        },
+        title: {
+            text: 'Uso de Processos ao Longo do Tempo',
+            align: 'left'
+        },
+        yaxis: {
+            title: {
+                text: ''
+            }
+        },
+        xaxis: {
+            type: 'datetime',
+            labels: {
+                format: 'HH:mm'
+            }
+        },
+        tooltip: {
+            x: {
+                format: 'dd/MM/yy HH:mm'
+            },
+        },
+        legend: {
+            position: 'top'
+        }
+    };
+}
+
+
+function getCpuContextosChartOptions() {
+    return {
+        series: [{
+            name: 'Troca de Contextos',
+            data: []
+        }],
+        chart: {
+            type: 'area',
+            stacked: false,
+            height: 350,
+            zoom: {
+                type: 'x',
+                enabled: true,
+                autoScaleYaxis: true
+            },
+            toolbar: {
+                autoSelected: 'zoom'
+            },
+            foreColor: '#555'
+        },
+        colors: ['#da6247ff'],
+        dataLabels: {
+            enabled: false
+        },
+        markers: {
+            size: 0,
+        },
+        title: {
+            text: 'Troca de contextos no servidor',
+            align: 'left',
+            offsetX: 20
+        },
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'light',
+                shadeIntensity: 1,
+                inverseColors: false,
+                opacityFrom: 0.7,
+                opacityTo: 0.1,
+                stops: [0, 90, 100]
+            },
+        },
+        yaxis: {
+            labels: {
+                formatter: function (val) {
+                    return (val).toFixed(0);
+                },
+            },
+            title: {
+                text: ''
+            },
+        },
+        xaxis: {
+            type: 'datetime',
+            labels: {
+                format: 'dd MMM HH:mm'
+            }
+        },
+        tooltip: {
+            shared: false,
+            x: {
+                format: 'dd MMM yyyy - HH:mm'
+            },
+            y: {
+                formatter: function (val) {
+                    // Usei toFixed(2) para mostrar valores decimais se houver
+                    return (val).toFixed(2);
+                }
+            }
+        }
+    };
+}
+
+function getMemorySwapChartOptions() {
+    return {
+        series: swapPorcents,
+        chart: {
+            height: 390,
+            type: 'radialBar',
+        },
+        plotOptions: {
+            radialBar: {
+                offsetY: 0,
+                startAngle: 0,
+                endAngle: 270,
+                hollow: {
+                    margin: 5,
+                    size: '30%',
+                    background: 'transparent',
+                    image: undefined,
+                }
+            }
+        },
+        // Cores para Total, Usado e Livre (pode ajustar se quiser)
+        colors: ['#096d7aff', 'orange', 'green'], 
+        
+        // Novas legendas para o armazenamento
+        labels: ['SWAP Total', 'SWAP em Uso', 'SWAP Livre'],
+
+        tooltip: {
+            enabled: true,
+            theme: 'dark',
+            y: {
+                formatter: function(value, opts) {
+                    const gbValue = swapEmGb[opts.seriesIndex];
+                    return `${value}% (${gbValue.toFixed(1)} GB)`;
+                }
+            }
+        },
+
+        legend: {
+            show: true,
+            floating: true,
+            fontSize: '16px',
+            position: 'left',
+            offsetX: 50,
+            offsetY: 15,
+            labels: {
+                useSeriesColors: true,
+            },
+            formatter: function(seriesName, opts) {
+                const percentage = opts.w.globals.series[opts.seriesIndex];
+                const gbValue = swapEmGb[opts.seriesIndex];
+                return `${seriesName}: ${percentage}% (${gbValue.toFixed(1)} GB)`;
+            }
+        },
+
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                legend: {
+                    show: false
+                }
+            }
+        }]
     };
 }
