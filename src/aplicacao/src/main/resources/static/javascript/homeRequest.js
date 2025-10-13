@@ -140,7 +140,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
     startCountDown();
 
-    //#######################################################################
-    //###             CONFIGURAÇÃO DOS GRÁFICOS DE POINTS                 ###
-    //#######################################################################
 })

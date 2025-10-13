@@ -29,7 +29,6 @@ public class MetricCollectorScheduler {
     @Autowired private ZabbixClient zabbixClient;
     @Autowired private RecentEventsRepository recentEventsRepository;
 
-    @Scheduled(fixedRate = 60000)
     @Transactional
     public void collectAllMetrics() {
         System.out.println("--- INICIANDO COLETA DE MÉTRICAS: " + LocalDateTime.now() + " ---");

@@ -103,22 +103,26 @@ public class HostService {
 
         // 1. Métricas de Histórico (para gráficos de linha/área)
         if (configuredMetricKeys.contains("disponibilidade-especifica")) {
-            // Busca os dados já agregados por dia
-            List<Object[]> dailyData = metricHistoryRepository.getDailyAvailability(host.getId(), "disponibilidade-especifica", startTime48h);
-            
-            // Converte para o formato DTO
-            List<HostDashboardDTO.MetricValueDTO> history = dailyData.stream()
-                .map(row -> new HostDashboardDTO.MetricValueDTO(((java.sql.Date) row[0]).toLocalDate().atStartOfDay(), (Double) row[1]))
-                .collect(Collectors.toList());
+
+            // ✅ CORREÇÃO: Use o método que busca o histórico completo, sem agregar.
+            List<HostDashboardDTO.MetricValueDTO> history =
+                fetchMetricHistory(host.getId(), "disponibilidade-especifica", startTime48h);
+
+            // Opcional, mas recomendado: Converte os valores de 1.0 para 100.0
+            // para que o gráfico mostre 100% em vez de 1.
+            history.forEach(point -> point.setY(point.getY() * 100.0));
 
             dto.setAvailabilityHistory(history);
         }
+
         if (configuredMetricKeys.contains("latencia")) {
             dto.setLatencyHistory(fetchMetricHistory(host.getId(), "latencia", startTime48h));
         }
+
         if (configuredMetricKeys.contains("cpu-uso")) {
             dto.setCpuUsageHistory(fetchMetricHistory(host.getId(), "cpu-uso", startTime48h));
         }
+
         if (configuredMetricKeys.contains("cpu-troca-contextos")) {
             dto.setCpuContextSwitchesHistory(fetchMetricHistory(host.getId(), "cpu-troca-contextos", startTime48h));
         }

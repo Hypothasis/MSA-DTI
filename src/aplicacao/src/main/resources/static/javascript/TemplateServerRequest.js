@@ -48,14 +48,14 @@ document.addEventListener('DOMContentLoaded', function () {
             
             updateHeader(data);
 
-            if  (data.globalAvailability) {
-                updateAvailabilityGraphic(data.globalAvailability);
+            if  (data.availabilityHistory) {
+                updateAvailabilityGraphic(data.availabilityHistory);
             } else {
                 document.getElementById('disponibilidadeGlobal').style.display = 'none';
             }
             
-            if  (data.availabilityHistory) {
-                updateGlobalAvailability(data.availabilityHistory);
+            if  (data.globalAvailability) {
+                updateGlobalAvailability(data.globalAvailability);
             } else {
                 document.getElementById('disponibilidadeEspecifica').style.display = 'none';
             }

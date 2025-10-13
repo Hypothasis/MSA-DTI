@@ -1,5 +1,6 @@
 package br.com.dti.msa.integration.zabbix.dto;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -45,8 +46,13 @@ public class ZabbixClient {
     private String authToken;
 
     // Cria uma instância do RestTemplate para fazer as chamadas HTTP
-    private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
+    private final RestTemplate restTemplate;
+
+    @Autowired
+    public ZabbixClient(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     /**
      * Verifica se um host existe no Zabbix usando a API host.get.
@@ -252,7 +258,7 @@ public class ZabbixClient {
     /**
      * Faz uma chamada simples à API para verificar a conexão e autenticação.
      * Lança uma exceção se a conexão falhar.
-     */
+     */ 
     public void testConnection() {
         System.out.println("--- INICIANDO TESTE DE CONEXÃO COM A API DO ZABBIX ---");
         
