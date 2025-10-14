@@ -20,6 +20,11 @@
 </head>
 <body>
 
+    <div id="flash-message" class="flash-message hidden">
+        <p id="flash-message-text"></p>
+        <button class="close-flash" id="btn-flash-message">×</button>
+    </div>
+    
     <aside>
         <div>
             <button id="asideBtn">
@@ -109,6 +114,7 @@
         </div>
     </main>
 
+    <script th:src="@{/javascript/zabbixStatusChecker.js}"></script>
     <script th:src="@{/javascript/aside.js}"></script>
     <script th:src="@{/javascript/admin.js}"></script>
     <script th:src="@{/javascript/adminRequest.js}"></script>

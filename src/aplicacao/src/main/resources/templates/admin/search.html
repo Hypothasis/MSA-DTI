@@ -17,6 +17,11 @@
     <title>Pesquisar</title>
 </head>
 <body>
+
+    <div id="flash-message" class="flash-message hidden">
+        <p id="flash-message-text"></p>
+        <button class="close-flash" id="btn-flash-message">×</button>
+    </div>
     
     <aside>
         <div>
@@ -606,6 +611,7 @@
         </div>
     </div>
 
+    <script th:src="@{/javascript/zabbixStatusChecker.js}"></script>
     <script th:src="@{/javascript/aside.js}"></script>
     <script th:src="@{/javascript/search.js}"></script>
     <script th:src="@{/javascript/searchRequest.js}"></script>

@@ -1,8 +1,10 @@
 package br.com.dti.msa.service;
 
 import br.com.dti.msa.dto.CreateHostDTO;
+import br.com.dti.msa.dto.HomepageHostDTO;
 import br.com.dti.msa.dto.HostDashboardDTO;
 import br.com.dti.msa.dto.HostSearchResultDTO;
+import br.com.dti.msa.dto.PublicHostStatusDTO;
 import br.com.dti.msa.dto.UpdateHostDTO;
 import br.com.dti.msa.exception.ZabbixValidationException;
 import br.com.dti.msa.integration.zabbix.dto.ZabbixClient;
@@ -76,6 +78,7 @@ public class HostService {
                     .map(host -> new HostSearchResultDTO(host.getPublicId(), host.getName()))
                     .collect(Collectors.toList());
     }
+    
     /**
      * Obtém todos os dados dinâmicos (métricas) para o dashboard do host.
      */
@@ -104,7 +107,7 @@ public class HostService {
         // 1. Métricas de Histórico (para gráficos de linha/área)
         if (configuredMetricKeys.contains("disponibilidade-especifica")) {
 
-            // ✅ CORREÇÃO: Use o método que busca o histórico completo, sem agregar.
+            // Use o método que busca o histórico completo, sem agregar.
             List<HostDashboardDTO.MetricValueDTO> history =
                 fetchMetricHistory(host.getId(), "disponibilidade-especifica", startTime48h);
 
@@ -222,6 +225,51 @@ public class HostService {
         
         return dto;
     } 
+
+    /**
+     * Obtém lista de todos os hosts com seus status
+     */
+    public List<PublicHostStatusDTO> getPublicHostStatuses() {
+        return hostRepository.findAll().stream()
+                .map(PublicHostStatusDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Obtém status do host, junto com dados do availabilityGlobal para exibição pública (Home).
+     */
+    public List<HomepageHostDTO> getHomepageHosts() {
+        // 1. Busca todos os hosts
+        List<Host> allHosts = hostRepository.findAllWithMetrics();
+        LocalDateTime startTime48h = LocalDateTime.now().minusHours(48);
+        
+        return allHosts.stream()
+            // 2. Filtra apenas os que NÃO estão com status ACTIVE
+            .filter(host -> host.getStatus() != Host.HostStatus.ACTIVE)
+            // 3. Mapeia para o DTO e busca os dados de disponibilidade para cada um
+            .map(host -> {
+                HomepageHostDTO dto = new HomepageHostDTO(host);
+                
+                // Verifica se a métrica de disponibilidade está configurada
+                boolean hasAvailability = host.getMetrics().stream()
+                    .anyMatch(m -> m.getMetricKey().equals("disponibilidade-global"));
+
+                if (hasAvailability) {
+                    // Calcula a disponibilidade global das últimas 48h
+                    Double availability = metricHistoryRepository.calculateAvailability(host.getId(), "disponibilidade-global", startTime48h);
+                    dto.setGlobalAvailability48h(availability != null ? availability : 0.0);
+                    
+                    // Busca o histórico de pontos para o gráfico
+                    List<Object[]> dailyData = metricHistoryRepository.getDailyAvailability(host.getId(), "disponibilidade-especifica", startTime48h);
+                    List<HostDashboardDTO.MetricValueDTO> history = dailyData.stream()
+                        .map(row -> new HostDashboardDTO.MetricValueDTO(((java.sql.Date) row[0]).toLocalDate().atStartOfDay(), (Double) row[1]))
+                        .collect(Collectors.toList());
+                    dto.setAvailabilityHistory(history);
+                }
+                return dto;
+            })
+            .collect(Collectors.toList());
+    }
 
     /**
      * 

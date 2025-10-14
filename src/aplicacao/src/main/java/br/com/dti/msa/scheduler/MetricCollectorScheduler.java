@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 public class MetricCollectorScheduler {
@@ -31,13 +32,17 @@ public class MetricCollectorScheduler {
 
     @Transactional
     public void collectAllMetrics() {
-        System.out.println("--- INICIANDO COLETA DE MÉTRICAS: " + LocalDateTime.now() + " ---");
+        System.out.println("--- INICIANDO COLETA E ANÁLISE DE STATUS: " + LocalDateTime.now() + " ---");
 
         List<Host> hostsToMonitor = hostRepository.findAllWithMetrics();
         List<MetricHistory> historyBatch = new ArrayList<>();
+        List<RecentEvents> eventsBatch = new ArrayList<>(); // Use a single batch for events
 
         for (Host host : hostsToMonitor) {
             System.out.println("Coletando para o host: " + host.getName());
+
+            // 1. FAZ UMA ÚNICA CHAMADA À API para buscar todos os itens do host
+            Map<String, Double> allZabbixItems = zabbixClient.getAllItemValuesForHost(host.getZabbixId().longValue());
 
             // --- COLETA DE MÉTRICAS NUMÉRICAS ---
             for (Metric metric : host.getMetrics()) {
@@ -45,19 +50,25 @@ public class MetricCollectorScheduler {
                 if (zabbixKey == null || zabbixKey.equalsIgnoreCase("zabbix_api")) {
                     continue;
                 }
-                Double value = zabbixClient.getItemValue(host.getZabbixId().longValue(), zabbixKey);
+                
+                // Busca o valor no MAPA, sem fazer nova chamada à API
+                Double value = allZabbixItems.get(zabbixKey); 
+
                 if (value != null) {
                     MetricHistory historyRecord = new MetricHistory(host, metric, LocalDateTime.now(), value);
                     historyBatch.add(historyRecord);
                     System.out.println("  > Métrica '" + metric.getName() + "' (chave " + zabbixKey + ") coletada: " + value);
                 } else {
-                    System.err.println("  > Falha ao coletar métrica '" + metric.getName() + "' com chave '" + zabbixKey + "'");
+                    System.err.println("  > Falha ao coletar métrica '" + metric.getName() + "' com chave '" + zabbixKey + "' (valor não encontrado na resposta do Zabbix).");
                 }
             }
 
-            // ===================================================================
-            // LÓGICA PARA COLETAR EVENTOS (ADICIONE/VERIFIQUE ESTE BLOCO)
-            // ===================================================================
+            // 2. DETERMINA O NOVO STATUS DO HOST (usando o mesmo mapa de métricas)
+            Host.HostStatus newStatus = determineHostStatus(host, allZabbixItems);
+            host.setStatus(newStatus);
+            System.out.println("  > Status do host '" + host.getName() + "' definido para: " + newStatus);
+
+            // 3. LÓGICA PARA COLETAR EVENTOS
             boolean shouldCollectEvents = host.getMetrics().stream()
                 .anyMatch(metric -> metric.getMetricKey().equals("eventos-recentes"));
 
@@ -65,33 +76,83 @@ public class MetricCollectorScheduler {
                 // Deleta os eventos antigos deste host para inserir os novos
                 recentEventsRepository.deleteByHostId(host.getId());
 
-                // Busca os 5 eventos mais recentes na API do Zabbix
                 List<ZabbixEventDTO> zabbixEvents = zabbixClient.getRecentEvents(host.getZabbixId().longValue());
-
-                List<RecentEvents> eventsBatchForHost = new ArrayList<>();
                 for (ZabbixEventDTO zabbixEvent : zabbixEvents) {
                     RecentEvents newEvent = new RecentEvents();
                     newEvent.setHost(host);
                     newEvent.setTimestamp(LocalDateTime.ofInstant(Instant.ofEpochSecond(zabbixEvent.getClock()), ZoneId.systemDefault()));
                     newEvent.setSeverity(String.valueOf(zabbixEvent.getSeverity()));
                     newEvent.setName(zabbixEvent.getName());
-                    eventsBatchForHost.add(newEvent);
+                    eventsBatch.add(newEvent);
                 }
-
-                // Salva os novos eventos
-                if (!eventsBatchForHost.isEmpty()) {
-                    recentEventsRepository.saveAll(eventsBatchForHost);
-                    System.out.println("  > " + eventsBatchForHost.size() + " eventos recentes salvos.");
+                if (!zabbixEvents.isEmpty()) {
+                   System.out.println("  > " + zabbixEvents.size() + " eventos recentes coletados.");
                 }
             }
         }
 
-        // Salva o lote de métricas numéricas
+        // Salva todos os lotes no banco de dados DE UMA SÓ VEZ
         if (!historyBatch.isEmpty()) {
             metricHistoryRepository.saveAll(historyBatch);
             System.out.println(historyBatch.size() + " registros de histórico salvos no banco.");
         }
+        if (!eventsBatch.isEmpty()) {
+            recentEventsRepository.saveAll(eventsBatch);
+            System.out.println(eventsBatch.size() + " eventos recentes salvos no banco.");
+        }
 
-        System.out.println("--- COLETA DE MÉTRICAS FINALIZADA ---");
+        System.out.println("--- COLETA E ANÁLISE FINALIZADA ---");
+    }
+
+
+    /**
+     * Método auxiliar que contém a lógica de negócio para definir o status de um host.
+     */
+    private Host.HostStatus determineHostStatus(Host host, Map<String, Double> zabbixMetrics) {
+        // Regra 1: INATIVO (Prioridade Máxima)
+        // Pega a chave zabbix da métrica de disponibilidade do nosso banco
+        Optional<Metric> availabilityMetric = host.getMetrics().stream()
+                .filter(m -> m.getMetricKey().equals("disponibilidade-global"))
+                .findFirst();
+        
+        if (availabilityMetric.isPresent()) {
+            Double availabilityValue = zabbixMetrics.get(availabilityMetric.get().getZabbixKey());
+            if (availabilityValue != null && availabilityValue == 0.0) {
+                return Host.HostStatus.INACTIVE; // Host está inacessível
+            }
+        } else {
+            // Se a métrica de disponibilidade não está nem configurada, não podemos saber o status
+            return Host.HostStatus.INACTIVE;
+        }
+
+        // Regra 2: ALERTA
+        // Alerta de CPU (acima de 90%)
+        Optional<Metric> cpuMetric = host.getMetrics().stream()
+                .filter(m -> m.getMetricKey().equals("cpu-uso"))
+                .findFirst();
+        if (cpuMetric.isPresent()) {
+            Double cpuValue = zabbixMetrics.get(cpuMetric.get().getZabbixKey());
+            if (cpuValue != null && cpuValue > 90.0) {
+                return Host.HostStatus.ALERT;
+            }
+        }
+        
+        // Alerta de Memória RAM (disponível abaixo de 10%)
+        Optional<Metric> memTotalMetric = host.getMetrics().stream().filter(m -> m.getMetricKey().equals("memoria-ram-total")).findFirst();
+        Optional<Metric> memAvailableMetric = host.getMetrics().stream().filter(m -> m.getMetricKey().equals("memoria-ram-disponivel")).findFirst();
+        
+        if (memTotalMetric.isPresent() && memAvailableMetric.isPresent()) {
+            Double total = zabbixMetrics.get(memTotalMetric.get().getZabbixKey());
+            Double available = zabbixMetrics.get(memAvailableMetric.get().getZabbixKey());
+            if (total != null && available != null && total > 0) {
+                double percentFree = (available / total) * 100;
+                if (percentFree < 10.0) {
+                    return Host.HostStatus.ALERT;
+                }
+            }
+        }
+
+        // Se passou por todas as checagens, o host está ATIVO
+        return Host.HostStatus.ACTIVE;
     }
 }

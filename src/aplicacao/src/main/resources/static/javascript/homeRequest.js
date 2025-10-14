@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    const servicesContainer = document.getElementById('services-list-container');
+
+    if (servicesContainer) {
+        servicesContainer.innerHTML = '<li class="loading-message"><p>Verificando status dos serviços...</p></li>';
+    }
+
     // Variavel para o tempo de requisição Assícrono
     const countdownElement = document.getElementById('countDownTime');
     const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
@@ -72,6 +78,74 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     //#######################################################################
+    //###                    FUNÇÕES PARA CONFIGURAÇÃO                    ###
+    //#######################################################################
+
+    // Função que constrói o HTML dos cards
+    function renderHostStatusCards(hosts) {
+        if (!servicesContainer) return;
+        servicesContainer.innerHTML = ''; // Limpa o conteúdo antigo
+
+        if (!hosts || hosts.length === 0) {
+            // Se não houver hosts com problema, cria e exibe a mensagem
+            const messageElement = document.createElement('div');
+            messageElement.className = 'no-problems-message';
+            messageElement.textContent = 'Nenhum host com problema';
+            servicesContainer.appendChild(messageElement);
+            return; // Encerra a função aqui
+        }
+
+        const statusMap = {
+            'ACTIVE': { text: 'Funcionando', color: 'green' },
+            'ALERT': { text: 'com Alerta!', color: 'yellow' },
+            'INACTIVE': { text: 'Parado!', color: 'red' }
+        };
+
+        hosts.forEach(host => {
+            const li = document.createElement('li');
+            const statusInfo = statusMap[host.status] || { text: 'Desconhecido', color: 'empty' };
+            
+            li.innerHTML = `
+                <header>
+                    <div class="app-info">
+                        <a href="/host/${host.publicId}">${host.name}</a>
+                        <p>|</p>
+                        <p class="porcent ${statusInfo.color}">${(host.globalAvailability48h || 0).toFixed(1)}%</p>
+                    </div>
+                    <div class="app-status">
+                        <div class="dot ${statusInfo.color}"></div>
+                        <p class="flag ${statusInfo.color}">${statusInfo.text}</p>
+                    </div>
+                </header>
+                <ol class="pointGraphic">
+                    ${generatePointGraphicHTML(host.availabilityHistory)}
+                </ol>
+            `;
+            servicesContainer.appendChild(li);
+        });
+    }
+
+    // Função auxiliar para gerar o HTML do pointGraphic
+    function generatePointGraphicHTML(historyData) {
+        if (!historyData || historyData.length === 0) return '';
+        
+        const getStatusClass = (availability) => {
+            if (availability >= 99.9) return 'okay';
+            if (availability >= 99.0) return 'warning';
+            if (availability >= 95.0) return 'avarage';
+            return 'disaster';
+        };
+
+        return historyData.map(point => {
+            const date = new Date(point.x);
+            const formattedDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+            const formattedPercent = `${point.y.toFixed(2)}%`;
+            const statusClass = getStatusClass(point.y);
+            return `<li class="point ${statusClass}" data-line1="${formattedDate}" data-line2="${formattedPercent}"></li>`;
+        }).join('');
+    }
+
+    //#######################################################################
     //###        FUNÇÕES PARA REQUISIÇÃO ASSÍCRONA PARA BACKEND           ###
     //#######################################################################
 
@@ -134,8 +208,22 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Função que busca e renderiza os cards de status dos hosts
     async function getHomeData() {
-        console.log("Obtendo dados no Zabbix..")
+        console.log("Buscando status dos hosts...");
+        try {
+            const response = await fetch('/api/public/home/status');
+            if (!response.ok) throw new Error('Falha ao buscar status dos hosts.');
+
+            const hosts = await response.json();
+            renderHostStatusCards(hosts);
+
+        } catch (error) {
+            console.error(error);
+            if (servicesContainer) {
+                servicesContainer.innerHTML = '<li>Erro ao carregar status dos serviços.</li>';
+            }
+        }
     }
 
     startCountDown();

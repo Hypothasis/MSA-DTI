@@ -2,6 +2,8 @@ package br.com.dti.msa.scheduler;
 
 import br.com.dti.msa.model.MetricHistory;
 import br.com.dti.msa.repository.MetricHistoryRepository;
+import br.com.dti.msa.repository.ZabbixConnectionStatusRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -11,8 +13,8 @@ import java.util.Optional;
 @Component
 public class CleanupScheduler {
 
-    @Autowired
-    private MetricHistoryRepository metricHistoryRepository;
+    @Autowired private MetricHistoryRepository metricHistoryRepository;
+    @Autowired private ZabbixConnectionStatusRepository zabbixStatusRepository;
 
     // Executa a cada hora, no minuto 0.
     // Ex: "0 0 4 * * ?" para rodar todo dia às 4 da manhã.
@@ -37,10 +39,17 @@ public class CleanupScheduler {
             }
         }
 
+        // --- TAREFA 1: Limpar Histórico de Métricas  ---
         // SE A COLETA ESTIVER OK, PROSSEGUE COM A LIMPEZA
         LocalDateTime cutoffDate = LocalDateTime.now().minusHours(48);
         System.out.println("Apagando registros de histórico anteriores a: " + cutoffDate);
         metricHistoryRepository.deleteOlderThan(cutoffDate);
+
+        // --- TAREFA 2: Limpar Logs de Conexão com o Zabbix ---
+        // Vamos manter os logs dos últimas 48 horas.
+        LocalDateTime statusCutoffDate = LocalDateTime.now().minusHours(48);
+        System.out.println("Apagando registros de status de conexão anteriores a: " + statusCutoffDate);
+        zabbixStatusRepository.deleteOlderThan(statusCutoffDate);
 
         System.out.println("--- JOB DE LIMPEZA FINALIZADO ---");
     }

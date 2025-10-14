@@ -28,6 +28,10 @@ public class Host {
     @Column(name = "host_type", nullable = false)
     private String type; // O nome do campo agora é 'type'
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private HostStatus status = HostStatus.ACTIVE;
+
     // RELACIONAMENTO MUITOS-PARA-MUITOS
     @ManyToMany(fetch = FetchType.EAGER) // EAGER para carregar as métricas junto com o host
     @JoinTable(
@@ -37,4 +41,9 @@ public class Host {
     )
     private List<Metric> metrics = new ArrayList<>();
 
+    public enum HostStatus {
+        ACTIVE,  
+        ALERT,  
+        INACTIVE
+    }
 }

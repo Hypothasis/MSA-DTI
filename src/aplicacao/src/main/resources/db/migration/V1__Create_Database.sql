@@ -9,6 +9,7 @@ CREATE TABLE hosts (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     host_type VARCHAR(50) NOT NULL CHECK (host_type IN ('APPLICATION', 'SERVER', 'DATABASE')),
+    status ENUM('ACTIVE', 'ALERT', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
     created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
 );
 
@@ -55,3 +56,11 @@ CREATE TABLE recent_events (
 -- Índices para acelerar as consultas
 CREATE INDEX idx_metric_history_timestamp ON metric_history (`timestamp` DESC);
 CREATE INDEX idx_events_timestamp ON recent_events (`timestamp` DESC);
+
+-- Tabela para registrar o status da conexão do coletor com o Zabbix
+CREATE TABLE zabbix_connection_status (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    `timestamp` DATETIME(6) NOT NULL,
+    status ENUM('SUCCESS', 'ERROR') NOT NULL,
+    details TEXT
+);
