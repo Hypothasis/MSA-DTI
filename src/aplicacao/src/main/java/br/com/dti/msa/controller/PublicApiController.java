@@ -2,13 +2,16 @@ package br.com.dti.msa.controller;
 
 import br.com.dti.msa.dto.HomepageHostDTO;
 import br.com.dti.msa.dto.PublicHostStatusDTO;
+import br.com.dti.msa.dto.ZabbixHealthCheckResponse;
 import br.com.dti.msa.model.ZabbixConnectionStatus;
 import br.com.dti.msa.repository.ZabbixConnectionStatusRepository;
 import br.com.dti.msa.service.HostService;
+import br.com.dti.msa.service.ZabbixConnectionTesterService;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,17 +22,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class PublicApiController {
 
     @Autowired private ZabbixConnectionStatusRepository statusRepository;
+    @Autowired private ZabbixConnectionTesterService zabbixTesterService;
     @Autowired private HostService hostService;
 
     /**
      * Retorna o status da última tentativa de conexão com o Zabbix.
      * URL: GET /api/public/status/zabbix
      */
-    @GetMapping("/status/zabbix")
+    @GetMapping("/zabbix/status")
     public ResponseEntity<ZabbixConnectionStatus> getZabbixConnectionStatus() {
         return statusRepository.findTopByOrderByTimestampDesc()
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Realiza um teste de conexão em TEMPO REAL com o Zabbix e retorna o resultado.
+     * URL: GET /api/public/zabbix/health-check
+     */
+    @GetMapping("/zabbix/health-check")
+    public ResponseEntity<ZabbixHealthCheckResponse> checkZabbixHealth() {
+        ZabbixHealthCheckResponse response = zabbixTesterService.testConnection();
+
+        if ("OK".equals(response.getStatus())) {
+            return ResponseEntity.ok(response);
+        } else {
+            // Retorna um status HTTP que indica que um serviço dependente está indisponível
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+        }
     }
 
 

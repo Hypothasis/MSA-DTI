@@ -4,36 +4,33 @@ document.addEventListener('DOMContentLoaded', function () {
     const closeButton = document.getElementById('btn-flash-message');
 
     /**
-     * Função principal que busca o status da conexão com o Zabbix.
+     * Função principal que realiza um teste de conexão em tempo real com o Zabbix.
      */
     async function checkZabbixStatus() {
         try {
-            const response = await fetch('/api/public/status/zabbix');
-            
-            // Se a API não retornar sucesso (ex: 404), trata como erro de conexão com o MSA
-            if (!response.ok) {
-                throw new Error('Serviço de status do MSA indisponível.');
-            }
-            
-            const statusData = await response.json();
-            
-            // Se o último status registrado foi de ERRO
-            if (statusData.status === 'ERROR') {
-                const timestamp = new Date(statusData.timestamp);
-                const formattedTime = timestamp.toLocaleString('pt-BR', {
-                    dateStyle: 'short',
-                    timeStyle: 'medium'
-                });
-                const message = `Atenção: A última tentativa de coleta de dados (${formattedTime}) falhou. Os dados podem estar desatualizados. Detalhes: ${statusData.details}`;
-                showMessage('error', message);
-            } else {
-                // Se o status for SUCESSO, garante que a mensagem esteja escondida
+            const response = await fetch('/api/public/zabbix/health-check');
+                        
+            // Se a resposta for 2xx (ex: 200 OK), a conexão com o Zabbix está boa.
+            if (response.ok) {
                 hideMessage();
+            } else {
+                // Se a resposta for 4xx ou 5xx, a conexão com o Zabbix falhou.
+                // Vamos tentar ler a mensagem de erro do backend.
+                let errorMessage = 'Falha na conexão com o sistema de monitoramento. Os dados podem estar desatualizados.';
+                try {
+                    const errorData = await response.json();
+                    if (errorData && errorData.error) {
+                        errorMessage = `Atenção: ${errorData.error}`;
+                    }
+                } catch (e) {
+                    // A resposta de erro não era um JSON. Usamos a mensagem padrão.
+                }
+                showMessage('error', errorMessage);
             }
 
         } catch (error) {
             console.error("Falha ao verificar status do Zabbix:", error);
-            showMessage('error', 'Não foi possível conectar ao sistema de monitoramento. Verifique se o serviço MSA está no ar.');
+            showMessage('error', 'Não foi possível conectar ao serviço MSA. A aplicação pode estar offline.');
         }
     }
 

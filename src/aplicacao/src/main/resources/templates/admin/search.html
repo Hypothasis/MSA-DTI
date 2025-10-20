@@ -104,6 +104,7 @@
                     th:attr="
                         data-host-id=${host.id},
                         data-host-name=${host.name},
+                        data-host-public-id=${host.publicId},
                     " 
                     sec:authorize="hasAuthority('ADMIN_READ')">
                         
@@ -113,16 +114,19 @@
                     </header>
 
                     <div>
+                        <a th:href="@{/host/{id}(id=${host.publicId})}" class="access-host" target="_blank">
+                            <img th:src="@{/image/icons/right_white.png}" alt="" height="25px">
+                        </a>
                         <button sec:authorize="hasAuthority('ADMIN_READ')" class="read">
-                            <img src="/image/icons/read_white.png" alt="" height="25px">
+                            <img th:src="@{/image/icons/read_white.png}" alt="" height="25px">
                         </button>
 
                         <button sec:authorize="hasAuthority('ADMIN_UPDATE')" class="update">
-                            <img src="/image/icons/update_white.png" alt="" height="25px">
+                            <img th:src="@{/image/icons/update_white.png}" alt="" height="25px">
                         </button>
 
                         <button sec:authorize="hasAuthority('ADMIN_DELETE')" class="delete">
-                            <img src="/image/icons/delete_white.png" alt="" height="25px">
+                            <img th:src="@{/image/icons/delete_white.png}" alt="" height="25px">
                         </button>
                     </div>
                 </li>

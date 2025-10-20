@@ -2,14 +2,62 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const servicesContainer = document.getElementById('services-list-container');
 
-    if (servicesContainer) {
-        servicesContainer.innerHTML = '<li class="loading-message"><p>Verificando status dos serviços...</p></li>';
-    }
-
     // Variavel para o tempo de requisição Assícrono
     const countdownElement = document.getElementById('countDownTime');
     const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    // Elementos do Alerta Sonoro
+    const alertButton = document.getElementById('alert-btn');
+    const alertAudio = document.getElementById('alert-sound');
+    const ALERT_STORAGE_KEY = 'msaSoundAlertsEnabled'; // Chave para o localStorage
+
+    //#######################################################################
+    //###                 LÓGICA DO ALERTA SONORO                       ###
+    //#######################################################################
+
+    let isAlertEnabled = false; // Estado inicial
+
+    // Função para tocar o som de forma segura
+    async function playAlertSound() {
+        if (!alertAudio) return;
+        try {
+            alertAudio.currentTime = 0; // Reinicia o som
+            await alertAudio.play();
+        } catch (err) {
+            console.warn("Não foi possível tocar o som de alerta (o usuário pode precisar interagir com a página primeiro).", err);
+        }
+    }
+
+    // Função para atualizar a aparência do botão de alerta
+    function updateAlertButtonUI() {
+        if (!alertButton) return;
+        const img = alertButton.querySelector('img');
+        const text = alertButton.querySelector('p');
+
+        if (isAlertEnabled) {
+            img.src = '/image/icons/sound_black.png';
+            text.textContent = 'Alert Sound On';
+        } else {
+            img.src = '/image/icons/mute_black.png';
+            text.textContent = 'Alert Sound Off';
+        }
+    }
+
+    // Inicializa o botão de alerta
+    if (alertButton && alertAudio) {
+        // Carrega o estado salvo do localStorage
+        isAlertEnabled = localStorage.getItem(ALERT_STORAGE_KEY) === 'true';
+
+        updateAlertButtonUI();
+
+        // 3. Adiciona o listener de clique
+        alertButton.addEventListener('click', () => {
+            isAlertEnabled = !isAlertEnabled; // Inverte o estado
+            localStorage.setItem(ALERT_STORAGE_KEY, isAlertEnabled); // Salva o novo estado
+            updateAlertButtonUI(); // Atualiza a UI
+        });
+    }
 
     //#######################################################################
     //###         FUNÇÕES PARA REQUISIÇÃO DE BUSCA DE SERVIÇOS            ###
@@ -67,6 +115,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 p.textContent = host.name;
                 a.textContent = 'Acessar';
                 a.href = `/host/${host.publicId}`;
+                a.target = '_blank';
 
                 li.appendChild(p);
                 li.appendChild(a);
@@ -218,6 +267,10 @@ document.addEventListener('DOMContentLoaded', function () {
             const hosts = await response.json();
             renderHostStatusCards(hosts);
 
+            if (isAlertEnabled && hosts.length > 0) {
+                playAlertSound();
+            }
+
         } catch (error) {
             console.error(error);
             if (servicesContainer) {
@@ -226,6 +279,8 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    getHomeData();
+    updateLastRequestTime();
     startCountDown();
 
 })
