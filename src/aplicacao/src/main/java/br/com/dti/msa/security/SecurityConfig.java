@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .requestMatchers("/", "/error").permitAll()
                 .requestMatchers(HttpMethod.GET,"/host/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/token").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/public/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/public/**", "/admin/api/dashboard-stats").permitAll()
                 
                 // Rotas da aplicação web (páginas)
                 .requestMatchers("/admin/search/**").hasAuthority("search_admin")

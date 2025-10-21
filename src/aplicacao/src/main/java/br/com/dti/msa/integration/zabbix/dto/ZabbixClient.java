@@ -160,37 +160,42 @@ public class ZabbixClient {
     
     /**
      * Busca TODOS os itens e seus últimos valores para um host específico.
-     * Retorna um Mapa de [chave_do_item -> valor].
+     * Retorna um Mapa de [chave_do_item -> valor_bruto_como_string].
      */
-    public Map<String, Double> getAllItemValuesForHost(Long zabbixHostId) {
+    public Map<String, String> getAllItemValuesForHost(Long zabbixHostId) {
         System.out.println("Buscando TODOS os itens para o host " + zabbixHostId);
-        Map<String, Object> params = Map.of("hostids", zabbixHostId, "output", new String[]{"key_", "lastvalue"});
+        Map<String, Object> params = Map.of(
+            "hostids", zabbixHostId,
+            "output", new String[]{"key_", "lastvalue"}
+        );
         ZabbixRequestDTO request = new ZabbixRequestDTO("item.get", params, 4);
 
         try {
-            String jsonResponse = sendRequest(request);
+            String jsonResponse = sendRequest(request); // Usa seu método de envio com Bearer Token
+            if (jsonResponse == null) {
+                throw new ZabbixApiException("A resposta da API do Zabbix foi nula.");
+            }
+            
             JsonNode resultNode = objectMapper.readTree(jsonResponse).get("result");
+            if (resultNode == null || !resultNode.isArray() || resultNode.isEmpty()) {
+                System.err.println("  > Host " + zabbixHostId + " não retornou nenhum item do Zabbix.");
+                return Map.of();
+            }
+            
             ZabbixItem[] items = objectMapper.treeToValue(resultNode, ZabbixItem[].class);
 
+            // Converte para um Mapa<String, String> simples.
             return Arrays.stream(items)
-                .filter(item -> item.getLastValue() != null && !item.getLastValue().isEmpty())
+                .filter(item -> item.getKey() != null && item.getLastValue() != null && !item.getLastValue().isEmpty())
                 .collect(Collectors.toMap(
                     ZabbixItem::getKey,
-                    item -> {
-                        try {
-                            return Double.parseDouble(item.getLastValue());
-                        } catch (NumberFormatException e) {
-                            return null;
-                        }
-                    },
-                    (val1, val2) -> val1 // Em caso de chaves duplicadas
-                ))
-                .entrySet().stream()
-                .filter(entry -> entry.getValue() != null)
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                    ZabbixItem::getLastValue,
+                    (existingValue, newValue) -> existingValue // Mantém o valor existente se houver chaves duplicadas
+                ));
 
         } catch (Exception e) {
-            System.err.println("Erro ao buscar todos os itens para o host " + zabbixHostId + ": " + e.getMessage());
+            System.err.println("Erro crítico ao buscar todos os itens para o host " + zabbixHostId + ":");
+            e.printStackTrace();
             return Map.of();
         }
     }

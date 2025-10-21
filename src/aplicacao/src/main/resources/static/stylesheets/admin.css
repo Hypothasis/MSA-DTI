@@ -75,6 +75,7 @@
     padding: 20px;
     box-shadow: 0 2px 4px var(--shadow-color);
     border: 1px solid var(--border-color);
+    height: auto;
 }
 
 .dashboard-widget h3 {
@@ -92,6 +93,11 @@
 }
 
 /* Estilo do Feed de Alertas */
+#alert-feed-container {
+    height: 270px;
+    overflow-y: scroll;
+}
+
 #alert-feed-container .alert-item {
     display: flex;
     flex-direction: column;
@@ -128,6 +134,32 @@
 
 
 /* Estilo da Lista de Top Hosts */
+
+.problem-host-item a{
+    text-decoration: none;
+    color: black;
+    font-family: var(--font-ubuntu);
+    transition: all 0.3s ease-in-out;
+}
+
+.problem-host-item a:hover {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.problem-host-item p{
+    text-decoration: none;
+    color: rgb(65, 65, 65);
+    font-family: var(--font-ubuntu);
+    transition: all 0.3s ease-in-out;
+}
+
+.host-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
 .top-hosts-list {
     list-style: none;
     padding: 0;

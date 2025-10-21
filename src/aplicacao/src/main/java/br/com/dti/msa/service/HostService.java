@@ -1,5 +1,6 @@
 package br.com.dti.msa.service;
 
+import br.com.dti.msa.dto.AdminDashboardDTO;
 import br.com.dti.msa.dto.CreateHostDTO;
 import br.com.dti.msa.dto.HomepageHostDTO;
 import br.com.dti.msa.dto.HostDashboardDTO;
@@ -18,6 +19,7 @@ import br.com.dti.msa.repository.MetricRepository;
 import br.com.dti.msa.repository.RecentEventsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -271,6 +273,60 @@ public class HostService {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Obtém status do host para o dashboard admin.
+     */
+    @Transactional(readOnly = true)
+    public AdminDashboardDTO getAdminDashboardStats() {
+        AdminDashboardDTO dto = new AdminDashboardDTO();
+
+        // 1. Preenche os KPIs
+        dto.setTotalHosts(hostRepository.count());
+        dto.setActiveHosts(hostRepository.countByStatus(Host.HostStatus.ACTIVE));
+        dto.setAlertHosts(hostRepository.countByStatus(Host.HostStatus.ALERT));
+        dto.setInactiveHosts(hostRepository.countByStatus(Host.HostStatus.INACTIVE));
+
+        // 2. Calcula Disponibilidade Média Geral
+        LocalDateTime startTime48h = LocalDateTime.now().minusHours(48);
+        Double avg = metricHistoryRepository.calculateOverallAvailability("disponibilidade-global", startTime48h);
+        dto.setOverallAvailability(avg != null ? avg : 100.0);
+
+        // 3. Busca Últimos Alertas Críticos (com JOIN FETCH)
+        List<String> criticalSeverities = List.of("3", "4", "5");
+        
+        // CORREÇÃO: Chama o método 'findRecentCriticalEvents' que faz o JOIN FETCH
+        // e usa PageRequest para limitar os resultados.
+        PageRequest pageable = PageRequest.of(0, 5); // Busca os 5 primeiros (página 0)
+        List<RecentEvents> alerts = recentEventsRepository.findRecentCriticalEvents(criticalSeverities, pageable);
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+        dto.setLatestAlerts(alerts.stream().map(event -> {
+            AdminDashboardDTO.RecentEventDTO eventDto = new AdminDashboardDTO.RecentEventDTO();
+            
+            // Esta linha agora funciona, pois o Host foi pré-carregado
+            eventDto.setHostName(event.getHost().getName()); 
+            
+            eventDto.setEventName(event.getName());
+            eventDto.setSeverity(event.getSeverity());
+            eventDto.setTimestamp(event.getTimestamp().format(formatter));
+            return eventDto;
+        }).collect(Collectors.toList()));
+
+        // 4. Busca Top Hosts com Problemas
+        List<Host.HostStatus> problemStatuses = List.of(Host.HostStatus.ALERT, Host.HostStatus.INACTIVE);
+        List<Host> problemHosts = hostRepository.findByStatusIn(problemStatuses);
+        dto.setTopProblemHosts(problemHosts.stream().limit(5).map(host -> {
+            AdminDashboardDTO.ProblematicHostDTO hostDto = new AdminDashboardDTO.ProblematicHostDTO();
+            hostDto.setPublicId(host.getPublicId());
+            hostDto.setName(host.getName());
+            hostDto.setStatus(host.getStatus());
+            hostDto.setDescription(host.getDescription());
+            return hostDto;
+        }).collect(Collectors.toList()));
+
+        return dto;
+    }
+    
     /**
      * 
      * Realiza uma busca filtrando por termo e/ou por tipos de host.

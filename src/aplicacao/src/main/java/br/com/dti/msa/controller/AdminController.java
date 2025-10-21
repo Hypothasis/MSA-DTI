@@ -1,5 +1,6 @@
 package br.com.dti.msa.controller;
 
+import br.com.dti.msa.dto.AdminDashboardDTO;
 import br.com.dti.msa.dto.CreateHostDTO;
 import br.com.dti.msa.dto.UpdateHostDTO;
 import br.com.dti.msa.exception.ZabbixValidationException;
@@ -30,6 +31,13 @@ public class AdminController {
     @GetMapping({"", "/"})
     public String showAdminIndex() {
         return "admin/index";
+    }
+
+    @GetMapping("/api/dashboard-stats")
+    @ResponseBody
+    public ResponseEntity<AdminDashboardDTO> getDashboardStats() {
+        AdminDashboardDTO stats = hostService.getAdminDashboardStats();
+        return ResponseEntity.ok(stats);
     }
 
     @GetMapping("/search")

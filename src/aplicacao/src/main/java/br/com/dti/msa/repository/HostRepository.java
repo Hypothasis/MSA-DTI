@@ -36,4 +36,12 @@ public interface HostRepository extends JpaRepository<Host, Long> {
      * Busca os 5 primeiros hosts cujo nome contém o termo (ignorando maiúsculas/minúsculas)
      */
     List<Host> findTop5ByNameContainingIgnoreCase(String name);
+
+    // Contagem otimizada por status
+    long countByStatus(Host.HostStatus status);
+    
+    /**
+     * Busca hosts que não estão ativos
+     */
+    List<Host> findByStatusIn(List<Host.HostStatus> statuses);
 }

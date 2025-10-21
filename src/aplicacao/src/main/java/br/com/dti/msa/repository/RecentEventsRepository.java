@@ -2,6 +2,9 @@ package br.com.dti.msa.repository;
 
 import br.com.dti.msa.model.RecentEvents;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -20,4 +23,12 @@ public interface RecentEventsRepository extends JpaRepository<RecentEvents, Long
      */
     @Transactional
     void deleteByHostId(Long hostId);
+
+    /**
+     * Busca os eventos mais recentes com severidade alta ou desastre
+     */
+    @Query("SELECT re FROM RecentEvents re JOIN FETCH re.host " +
+           "WHERE re.severity IN :severities " +
+           "ORDER BY re.timestamp DESC")
+    List<RecentEvents> findRecentCriticalEvents(@Param("severities") List<String> severities, Pageable pageable);
 }

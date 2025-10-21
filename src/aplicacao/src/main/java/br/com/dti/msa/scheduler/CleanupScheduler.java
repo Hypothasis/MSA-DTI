@@ -22,6 +22,7 @@ public class CleanupScheduler {
     public void cleanupOldMetricHistory() {
         System.out.println("--- INICIANDO JOB DE LIMPEZA DE MÉTRICAS ANTIGAS ---");
 
+        /* 
         // VERIFICA O ÚLTIMO REGISTRO
         Optional<MetricHistory> latestRecord = metricHistoryRepository.findFirstByOrderByTimestampDesc();
 
@@ -38,6 +39,7 @@ public class CleanupScheduler {
                 return;
             }
         }
+        */
 
         // --- TAREFA 1: Limpar Histórico de Métricas  ---
         // SE A COLETA ESTIVER OK, PROSSEGUE COM A LIMPEZA

@@ -41,34 +41,43 @@ public class MetricCollectorScheduler {
         for (Host host : hostsToMonitor) {
             System.out.println("Coletando para o host: " + host.getName());
 
-            // 1. FAZ UMA ÚNICA CHAMADA À API para buscar todos os itens do host
-            Map<String, Double> allZabbixItems = zabbixClient.getAllItemValuesForHost(host.getZabbixId().longValue());
+            Map<String, String> allZabbixItems = zabbixClient.getAllItemValuesForHost(host.getZabbixId().longValue());
 
-            // --- COLETA DE MÉTRICAS NUMÉRICAS ---
+            if (allZabbixItems.isEmpty()) {
+                System.err.println("  > Não foi possível obter itens do Zabbix para o host " + host.getName());
+            }
+
+            // --- COLETA DE MÉTRICAS ---
             for (Metric metric : host.getMetrics()) {
                 String zabbixKey = metric.getZabbixKey();
                 if (zabbixKey == null || zabbixKey.equalsIgnoreCase("zabbix_api")) {
-                    continue;
+                    continue; // Pula métricas especiais como "eventos-recentes"
                 }
                 
-                // Busca o valor no MAPA, sem fazer nova chamada à API
-                Double value = allZabbixItems.get(zabbixKey); 
+                String rawValue = allZabbixItems.get(zabbixKey); 
 
-                if (value != null) {
-                    MetricHistory historyRecord = new MetricHistory(host, metric, LocalDateTime.now(), value);
-                    historyBatch.add(historyRecord);
-                    System.out.println("  > Métrica '" + metric.getName() + "' (chave " + zabbixKey + ") coletada: " + value);
+                if (rawValue != null) {
+                    // TENTA CONVERTER O VALOR BRUTO PARA NÚMERO
+                    try {
+                        Double value = Double.parseDouble(rawValue);
+                        // Se for um número, salva no histórico
+                        MetricHistory historyRecord = new MetricHistory(host, metric, LocalDateTime.now(), value);
+                        historyBatch.add(historyRecord);
+                        System.out.println("  > Métrica NUMÉRICA '" + metric.getName() + "' (chave " + zabbixKey + ") coletada: " + value);
+                    } catch (NumberFormatException e) {
+                        System.out.println("  > Métrica de TEXTO '" + metric.getName() + "' (chave " + zabbixKey + ") detectada: " + rawValue);
+                    }
                 } else {
                     System.err.println("  > Falha ao coletar métrica '" + metric.getName() + "' com chave '" + zabbixKey + "' (valor não encontrado na resposta do Zabbix).");
                 }
             }
 
-            // 2. DETERMINA O NOVO STATUS DO HOST (usando o mesmo mapa de métricas)
+            // DETERMINA O NOVO STATUS DO HOST (agora passando o mapa de Strings)
             Host.HostStatus newStatus = determineHostStatus(host, allZabbixItems);
             host.setStatus(newStatus);
-            System.out.println("  > Status do host '" + host.getName() + "' definido para: " + newStatus);
+            System.out.println("  > Status do host '" + host.getName() + "' definido para: " + newStatus);;
 
-            // 3. LÓGICA PARA COLETAR EVENTOS
+            // LÓGICA PARA COLETAR EVENTOS
             boolean shouldCollectEvents = host.getMetrics().stream()
                 .anyMatch(metric -> metric.getMetricKey().equals("eventos-recentes"));
 
@@ -106,53 +115,65 @@ public class MetricCollectorScheduler {
 
 
     /**
-     * Método auxiliar que contém a lógica de negócio para definir o status de um host.
+     * Método auxiliar que agora recebe um Mapa de Strings.
      */
-    private Host.HostStatus determineHostStatus(Host host, Map<String, Double> zabbixMetrics) {
-        // Regra 1: INATIVO (Prioridade Máxima)
-        // Pega a chave zabbix da métrica de disponibilidade do nosso banco
+    private Host.HostStatus determineHostStatus(Host host, Map<String, String> zabbixMetrics) {
+        // Regra 1: INATIVO
         Optional<Metric> availabilityMetric = host.getMetrics().stream()
                 .filter(m -> m.getMetricKey().equals("disponibilidade-global"))
                 .findFirst();
         
         if (availabilityMetric.isPresent()) {
-            Double availabilityValue = zabbixMetrics.get(availabilityMetric.get().getZabbixKey());
+            // Converte o valor de disponibilidade (que é "0.0" ou "1.0") para Double
+            Double availabilityValue = parseDouble(zabbixMetrics.get(availabilityMetric.get().getZabbixKey()));
             if (availabilityValue != null && availabilityValue == 0.0) {
                 return Host.HostStatus.INACTIVE; // Host está inacessível
             }
         } else {
-            // Se a métrica de disponibilidade não está nem configurada, não podemos saber o status
-            return Host.HostStatus.INACTIVE;
+            return Host.HostStatus.INACTIVE; // Se não monitora disponibilidade, marca como inativo
         }
 
-        // Regra 2: ALERTA
-        // Alerta de CPU (acima de 90%)
+        // Regra 2: ALERTA (CPU)
         Optional<Metric> cpuMetric = host.getMetrics().stream()
                 .filter(m -> m.getMetricKey().equals("cpu-uso"))
                 .findFirst();
         if (cpuMetric.isPresent()) {
-            Double cpuValue = zabbixMetrics.get(cpuMetric.get().getZabbixKey());
+            Double cpuValue = parseDouble(zabbixMetrics.get(cpuMetric.get().getZabbixKey()));
             if (cpuValue != null && cpuValue > 90.0) {
-                return Host.HostStatus.ALERT;
+                return Host.HostStatus.ALERT; // CPU acima de 90%
             }
         }
         
-        // Alerta de Memória RAM (disponível abaixo de 10%)
+        // Regra 3: ALERTA (Memória)
         Optional<Metric> memTotalMetric = host.getMetrics().stream().filter(m -> m.getMetricKey().equals("memoria-ram-total")).findFirst();
         Optional<Metric> memAvailableMetric = host.getMetrics().stream().filter(m -> m.getMetricKey().equals("memoria-ram-disponivel")).findFirst();
         
         if (memTotalMetric.isPresent() && memAvailableMetric.isPresent()) {
-            Double total = zabbixMetrics.get(memTotalMetric.get().getZabbixKey());
-            Double available = zabbixMetrics.get(memAvailableMetric.get().getZabbixKey());
+            Double total = parseDouble(zabbixMetrics.get(memTotalMetric.get().getZabbixKey()));
+            Double available = parseDouble(zabbixMetrics.get(memAvailableMetric.get().getZabbixKey()));
+            
             if (total != null && available != null && total > 0) {
                 double percentFree = (available / total) * 100;
                 if (percentFree < 10.0) {
-                    return Host.HostStatus.ALERT;
+                    return Host.HostStatus.ALERT; // Menos de 10% de RAM livre
                 }
             }
         }
 
-        // Se passou por todas as checagens, o host está ATIVO
-        return Host.HostStatus.ACTIVE;
+        return Host.HostStatus.ACTIVE; // Se passou por tudo, está OK
     }
+
+    /**
+     * método auxiliar para converter String para Double de forma segura,
+     * tratando valores nulos ou não-numéricos.
+     */
+    private Double parseDouble(String rawValue) {
+        if (rawValue == null) return null;
+        try {
+            return Double.parseDouble(rawValue);
+        } catch (NumberFormatException e) {
+            return null; // Retorna nulo se não for um número
+        }
+    }
+
 }

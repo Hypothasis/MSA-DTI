@@ -64,4 +64,13 @@ public interface MetricHistoryRepository extends JpaRepository<MetricHistory, Me
     List<Object[]> getDailyAvailability(@Param("hostId") Long hostId, 
                                         @Param("metricKey") String metricKey, 
                                         @Param("startTime") LocalDateTime startTime);
+
+    /**
+     * Calcula a média de disponibilidade de TODOS os hosts no período
+     */
+    @Query("SELECT AVG(mh.value) * 100.0 FROM MetricHistory mh " +
+           "WHERE mh.metric.metricKey = :metricKey " +
+           "AND mh.timestamp >= :startTime")
+    Double calculateOverallAvailability(@Param("metricKey") String metricKey, 
+                                        @Param("startTime") LocalDateTime startTime);
 }
