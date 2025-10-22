@@ -132,41 +132,24 @@ public class ZabbixClient {
     }
 
     /**
-     * Busca o último valor numérico de um item (métrica) em um host específico.
-     */
-    public Double getItemValue(Long zabbixHostId, String itemKey) {
-        Map<String, Object> params = Map.of(
-            "hostids", zabbixHostId, "output", new String[]{"key_", "lastvalue"},
-            "search", Map.of("key_", itemKey), "limit", 1
-        );
-        ZabbixRequestDTO request = new ZabbixRequestDTO("item.get", params, 3);
-        try {
-            String jsonResponse = sendRequest(request);
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            if (rootNode.has("error")) {
-                System.err.println("Erro da API Zabbix ao buscar valor para '" + itemKey + "': " + rootNode.get("error").get("data").asText());
-                return null;
-            }
-            ZabbixItem[] items = objectMapper.treeToValue(rootNode.get("result"), ZabbixItem[].class);
-            if (items != null && items.length > 0 && items[0].getLastValue() != null) {
-                return Double.parseDouble(items[0].getLastValue());
-            }
-            return null;
-        } catch (Exception e) {
-            System.err.println("Erro crítico ao buscar valor do item '" + itemKey + "': " + e.getMessage());
-            return null;
-        }
-    }
-    
-    /**
-     * Busca TODOS os itens e seus últimos valores para um host específico.
+     * Busca os valores de uma lista específica de chaves de item para um host.
+     * Esta é a abordagem otimizada para evitar o N+1 e o "buscar tudo".
      * Retorna um Mapa de [chave_do_item -> valor_bruto_como_string].
      */
-    public Map<String, String> getAllItemValuesForHost(Long zabbixHostId) {
-        System.out.println("Buscando TODOS os itens para o host " + zabbixHostId);
+    public Map<String, String> getSpecificItemValues(Long zabbixHostId, List<String> itemKeys) {
+        
+        // Se a lista de chaves estiver vazia, não faz uma chamada de API desnecessária
+        if (itemKeys == null || itemKeys.isEmpty()) {
+            return Map.of();
+        }
+        
+        System.out.println("Buscando " + itemKeys.size() + " itens específicos para o host " + zabbixHostId);
+
+        // Parâmetros para a chamada: filtra por hostid E pela lista de chaves
         Map<String, Object> params = Map.of(
             "hostids", zabbixHostId,
-            "output", new String[]{"key_", "lastvalue"}
+            "output", new String[]{"key_", "lastvalue"},
+            "search", Map.of("key_", itemKeys) // <-- A MÁGICA ESTÁ AQUI
         );
         ZabbixRequestDTO request = new ZabbixRequestDTO("item.get", params, 4);
 
@@ -177,8 +160,8 @@ public class ZabbixClient {
             }
             
             JsonNode resultNode = objectMapper.readTree(jsonResponse).get("result");
-            if (resultNode == null || !resultNode.isArray() || resultNode.isEmpty()) {
-                System.err.println("  > Host " + zabbixHostId + " não retornou nenhum item do Zabbix.");
+            if (resultNode == null || !resultNode.isArray()) {
+                System.err.println("  > Host " + zabbixHostId + " não retornou um array de itens do Zabbix.");
                 return Map.of();
             }
             
@@ -190,16 +173,16 @@ public class ZabbixClient {
                 .collect(Collectors.toMap(
                     ZabbixItem::getKey,
                     ZabbixItem::getLastValue,
-                    (existingValue, newValue) -> existingValue // Mantém o valor existente se houver chaves duplicadas
+                    (existingValue, newValue) -> existingValue 
                 ));
 
         } catch (Exception e) {
-            System.err.println("Erro crítico ao buscar todos os itens para o host " + zabbixHostId + ":");
+            System.err.println("Erro crítico ao buscar itens específicos para o host " + zabbixHostId + ":");
             e.printStackTrace();
-            return Map.of();
+            return Map.of(); // Retorna um mapa vazio em caso de falha
         }
     }
-
+    
     /**
      * Busca os 5 eventos (problemas) mais recentes de um host.
      */

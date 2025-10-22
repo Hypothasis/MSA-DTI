@@ -72,10 +72,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const metricsList = readModal.querySelector('ul');
             metricsList.innerHTML = '';
-            if (hostData.metrics && hostData.metrics.length > 0) {
-                hostData.metrics.forEach(metric => {
+            if (hostData.enabledCheckboxes && hostData.enabledCheckboxes.length > 0) {
+                hostData.enabledCheckboxes.forEach(graphic => {
                     const li = document.createElement('li');
-                    li.textContent = metric.name; // Usa o nome da métrica do objeto
+                    li.textContent = graphic;
                     metricsList.appendChild(li);
                 });
             } else {
@@ -114,12 +114,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const activeTabPane = updateForm.querySelector(`#tab-${hostType.toUpperCase()}`);
 
             if (activeTabPane) {
-                // Limpa todos os checkboxes do formulário e marca os corretos APENAS DENTRO DA ABA ATIVA
                 updateForm.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-                if (hostData.metrics) {
-                    hostData.metrics.forEach(metric => {
-                        // Procura o checkbox SOMENTE dentro do painel da aba ativa
-                        const checkbox = activeTabPane.querySelector(`input[name="${metric.metricKey}"]`);
+
+                if (hostData.enabledCheckboxes) {
+                    // Itera sobre os NOMES dos checkboxes que vieram da API
+                    hostData.enabledCheckboxes.forEach(checkboxName => {
+                        // Procura o checkbox pelo NOME (que é o nome do "grupo")
+                        const checkbox = activeTabPane.querySelector(`input[name="${checkboxName}"]`);
                         if (checkbox) {
                             checkbox.checked = true;
                         }

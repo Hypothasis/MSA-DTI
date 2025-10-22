@@ -35,13 +35,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 corGrafico = '#FF4560'; // Vermelho (ruim)
             }
 
+            console.log(`Média de Disponibilidade: ${mediaDisponibilidade}%, Cor do Gráfico: ${corGrafico}`);
+
             // 3. Atualiza o gráfico de Disponibilidade Média com a nova cor e os novos dados
             avgAvailChart.updateOptions({
                 series: [mediaDisponibilidade],
                 fill: {
-                    gradient: {
-                        gradientToColors: [corGrafico]
-                    }
+                    colors: [corGrafico]
                 }
             });
 
@@ -114,30 +114,57 @@ document.addEventListener('DOMContentLoaded', function () {
             chart: { type: 'radialBar', height: 250 },
             plotOptions: {
                 radialBar: {
-                    hollow: { size: '65%' },
+                    hollow: {
+                        margin: 0,
+                        size: '70%',
+                        background: '#293450'
+                    },
+                    track: {
+                        background: '#404F6D',
+                    },
                     dataLabels: {
-                        name: { show: false },
+                        name: {
+                            show: true,
+                            offsetY: -10,
+                            color: '#C0C0C0',
+                            fontSize: '16px',
+                            formatter: function (seriesName) {
+                                return 'Disponibilidade'
+                            }
+                        },
                         value: {
-                            formatter: (val) => val.toFixed(2) + '%',
-                            fontSize: '22px',
-                            fontWeight: 700,
-                            color: '#555'
+                            offsetY: 5,
+                            color: '#FFFFFF',
+                            fontSize: '34px',
+                            show: true,
+                            formatter: function (val) {
+                                return val.toFixed(2) + "%";
+                            }
                         }
                     }
                 }
             },
+            tooltip: {
+                enabled: true,
+                theme: 'dark',
+                fillSeriesColor: false,
+                y: {
+                    formatter: function (val) {
+                        return val.toFixed(2) + "%"; 
+                    },
+                    title: {
+                        formatter: function (seriesName) {
+                            return 'Disponibilidade:';
+                        }
+                    }
+                },
+                marker: {
+                    show: false
+                }
+            },
             fill: {
                 type: 'gradient',
-                gradient: {
-                    shade: 'dark',
-                    type: 'horizontal',
-                    shadeIntensity: 0.5,
-                    gradientToColors: ['#26E7A6'], // Cor inicial (verde)
-                    inverseColors: false,
-                    opacityFrom: 1,
-                    opacityTo: 1,
-                    stops: [0, 100]
-                }
+                colors: ['#26E7A6'],
             },
             stroke: { lineCap: 'round' },
             labels: ['Disponibilidade']

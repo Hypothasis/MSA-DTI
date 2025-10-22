@@ -2,6 +2,7 @@ package br.com.dti.msa.controller;
 
 import br.com.dti.msa.dto.AdminDashboardDTO;
 import br.com.dti.msa.dto.CreateHostDTO;
+import br.com.dti.msa.dto.HostDetailsDTO;
 import br.com.dti.msa.dto.UpdateHostDTO;
 import br.com.dti.msa.exception.ZabbixValidationException;
 import br.com.dti.msa.model.Host;
@@ -112,15 +113,17 @@ public class AdminController {
     }
     
     /**
-     * Endpoint para buscar os dados completos de um host por ID.
-     * Usado pelo JavaScript para popular os modais de Read e Update.
+     * Busca um host específico por ID e retorna um DTO completo
+     * com os dados do host, a lista de métricas individuais (para Read)
+     * e a lista de checkboxes agrupados (para Update).
+     * Rota: GET /admin/api/hosts/{id}
      */
     @GetMapping("/api/hosts/{id}")
-    @ResponseBody // Indica que o retorno é um corpo de resposta (JSON), não o nome de uma view
-    public ResponseEntity<Host> getHostById(@PathVariable Long id) {
+    @ResponseBody
+    public ResponseEntity<HostDetailsDTO> getHostById(@PathVariable Long id) {
         try {
-            Host host = hostService.findById(id);
-            return ResponseEntity.ok(host);
+            HostDetailsDTO hostDetails = hostService.getHostDetailsForUpdate(id);
+            return ResponseEntity.ok(hostDetails);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }

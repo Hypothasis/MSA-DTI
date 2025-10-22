@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class MetricCollectorScheduler {
@@ -41,9 +42,19 @@ public class MetricCollectorScheduler {
         for (Host host : hostsToMonitor) {
             System.out.println("Coletando para o host: " + host.getName());
 
-            Map<String, String> allZabbixItems = zabbixClient.getAllItemValuesForHost(host.getZabbixId().longValue());
+            List<Metric> configuredMetrics = host.getMetrics();
 
-            if (allZabbixItems.isEmpty()) {
+            // Extrai APENAS as chaves Zabbix que precisamos buscar
+            List<String> zabbixKeysToFetch = configuredMetrics.stream()
+                .map(Metric::getZabbixKey)
+                .filter(key -> key != null && !key.equalsIgnoreCase("zabbix_api"))
+                .distinct()
+                .collect(Collectors.toList());
+
+            // FAZ UMA ÚNICA CHAMADA OTIMIZADA à API
+            Map<String, String> allZabbixItems = zabbixClient.getSpecificItemValues(host.getZabbixId().longValue(), zabbixKeysToFetch);
+            
+            if (allZabbixItems.isEmpty() && !zabbixKeysToFetch.isEmpty()) {
                 System.err.println("  > Não foi possível obter itens do Zabbix para o host " + host.getName());
             }
 

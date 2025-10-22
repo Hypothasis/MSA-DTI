@@ -4,6 +4,7 @@ import br.com.dti.msa.dto.AdminDashboardDTO;
 import br.com.dti.msa.dto.CreateHostDTO;
 import br.com.dti.msa.dto.HomepageHostDTO;
 import br.com.dti.msa.dto.HostDashboardDTO;
+import br.com.dti.msa.dto.HostDetailsDTO;
 import br.com.dti.msa.dto.HostSearchResultDTO;
 import br.com.dti.msa.dto.PublicHostStatusDTO;
 import br.com.dti.msa.dto.UpdateHostDTO;
@@ -327,6 +328,24 @@ public class HostService {
         return dto;
     }
     
+    /**
+     * Busca um host e retorna um DTO com os nomes dos checkboxes habilitados.
+     */
+    public HostDetailsDTO getHostDetailsForUpdate(Long hostId) {
+        Host host = findById(hostId); // Este método já deve fazer o JOIN FETCH das métricas
+
+        // Pega as chaves individuais que estão salvas no banco (ex: "memoria-ram-total")
+        List<String> savedMetricKeys = host.getMetrics().stream()
+                                            .map(Metric::getMetricKey)
+                                            .collect(Collectors.toList());
+
+        // Agora, usa o MetricCatalog para "traduzir ao contrário"
+        // (chave individual -> nome do checkbox)
+        List<String> enabledCheckboxes = metricCatalog.getCheckboxesForMetricKeys(savedMetricKeys);
+
+        return new HostDetailsDTO(host, enabledCheckboxes);
+    }
+
     /**
      * 
      * Realiza uma busca filtrando por termo e/ou por tipos de host.

@@ -1,5 +1,6 @@
 package br.com.dti.msa.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,5 +28,24 @@ public class MetricCatalog {
 
     public List<String> getMetricKeysForCheckbox(String checkboxName) {
         return CHECKBOX_TO_METRIC_KEYS.getOrDefault(checkboxName, List.of());
+    }
+
+    /**
+     * Traduz de volta de chaves do banco para nomes de checkbox.
+     */
+    public List<String> getCheckboxesForMetricKeys(List<String> savedKeys) {
+        List<String> checkboxes = new ArrayList<>();
+        
+        // Itera sobre o catálogo (ex: "memoria-ram" -> ["memoria-ram-total", ...])
+        for (Map.Entry<String, List<String>> entry : CHECKBOX_TO_METRIC_KEYS.entrySet()) {
+            String checkboxName = entry.getKey();
+            List<String> keysForThisCheckbox = entry.getValue();
+
+            // Se a lista de chaves salvas contém TODAS as chaves deste checkbox...
+            if (savedKeys.containsAll(keysForThisCheckbox)) {
+                checkboxes.add(checkboxName);
+            }
+        }
+        return checkboxes;
     }
 }
