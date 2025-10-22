@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,61 +33,57 @@ public class MetricCollectorScheduler {
     @Autowired private RecentEventsRepository recentEventsRepository;
 
     @Transactional
+    @Scheduled(fixedRate = 60000) // Executa a cada 60 segundos
     public void collectAllMetrics() {
         System.out.println("--- INICIANDO COLETA E ANÁLISE DE STATUS: " + LocalDateTime.now() + " ---");
 
         List<Host> hostsToMonitor = hostRepository.findAllWithMetrics();
         List<MetricHistory> historyBatch = new ArrayList<>();
-        List<RecentEvents> eventsBatch = new ArrayList<>(); // Use a single batch for events
+        List<RecentEvents> eventsBatch = new ArrayList<>();
 
         for (Host host : hostsToMonitor) {
             System.out.println("Coletando para o host: " + host.getName());
 
-            List<Metric> configuredMetrics = host.getMetrics();
+            // Mapa temporário para guardar os valores coletados PARA ESTE HOST
+            // Este mapa será usado pelo 'determineHostStatus'
+            Map<String, String> collectedItems = new HashMap<>();
 
-            // Extrai APENAS as chaves Zabbix que precisamos buscar
-            List<String> zabbixKeysToFetch = configuredMetrics.stream()
-                .map(Metric::getZabbixKey)
-                .filter(key -> key != null && !key.equalsIgnoreCase("zabbix_api"))
-                .distinct()
-                .collect(Collectors.toList());
-
-            // FAZ UMA ÚNICA CHAMADA OTIMIZADA à API
-            Map<String, String> allZabbixItems = zabbixClient.getSpecificItemValues(host.getZabbixId().longValue(), zabbixKeysToFetch);
-            
-            if (allZabbixItems.isEmpty() && !zabbixKeysToFetch.isEmpty()) {
-                System.err.println("  > Não foi possível obter itens do Zabbix para o host " + host.getName());
-            }
-
-            // --- COLETA DE MÉTRICAS ---
+            // --- COLETA DE MÉTRICAS (LÓGICA N+1) ---
             for (Metric metric : host.getMetrics()) {
                 String zabbixKey = metric.getZabbixKey();
+                
+                // Pula métricas especiais que não são coletadas (são apenas marcadores)
                 if (zabbixKey == null || zabbixKey.equalsIgnoreCase("zabbix_api")) {
-                    continue; // Pula métricas especiais como "eventos-recentes"
+                    continue; 
                 }
                 
-                String rawValue = allZabbixItems.get(zabbixKey); 
+                // FAZ UMA CHAMADA DE API PARA CADA MÉTRICA
+                String rawValue = zabbixClient.getSingleItemValue(host.getZabbixId().longValue(), zabbixKey); 
 
                 if (rawValue != null) {
-                    // TENTA CONVERTER O VALOR BRUTO PARA NÚMERO
+                    // Salva o valor bruto (String) no mapa para usar no 'determineHostStatus'
+                    collectedItems.put(zabbixKey, rawValue);
+                    
+                    // Tenta salvar o valor no histórico se for numérico
                     try {
                         Double value = Double.parseDouble(rawValue);
-                        // Se for um número, salva no histórico
                         MetricHistory historyRecord = new MetricHistory(host, metric, LocalDateTime.now(), value);
                         historyBatch.add(historyRecord);
                         System.out.println("  > Métrica NUMÉRICA '" + metric.getName() + "' (chave " + zabbixKey + ") coletada: " + value);
                     } catch (NumberFormatException e) {
+                        // Se não for um número, é um dado de TEXTO (ex: "Linux...")
                         System.out.println("  > Métrica de TEXTO '" + metric.getName() + "' (chave " + zabbixKey + ") detectada: " + rawValue);
+                        // (Aqui você adicionaria a lógica para salvar na tabela metric_current_value)
                     }
                 } else {
-                    System.err.println("  > Falha ao coletar métrica '" + metric.getName() + "' com chave '" + zabbixKey + "' (valor não encontrado na resposta do Zabbix).");
+                    System.err.println("  > Falha ao coletar métrica '" + metric.getName() + "' com chave '" + zabbixKey + "'.");
                 }
             }
 
-            // DETERMINA O NOVO STATUS DO HOST (agora passando o mapa de Strings)
-            Host.HostStatus newStatus = determineHostStatus(host, allZabbixItems);
+            // DETERMINA O NOVO STATUS DO HOST (usando o mapa que acabamos de preencher)
+            Host.HostStatus newStatus = determineHostStatus(host, collectedItems);
             host.setStatus(newStatus);
-            System.out.println("  > Status do host '" + host.getName() + "' definido para: " + newStatus);;
+            System.out.println("  > Status do host '" + host.getName() + "' definido para: " + newStatus);
 
             // LÓGICA PARA COLETAR EVENTOS
             boolean shouldCollectEvents = host.getMetrics().stream()
@@ -106,7 +103,7 @@ public class MetricCollectorScheduler {
                     eventsBatch.add(newEvent);
                 }
                 if (!zabbixEvents.isEmpty()) {
-                   System.out.println("  > " + zabbixEvents.size() + " eventos recentes coletados.");
+                System.out.println("  > " + zabbixEvents.size() + " eventos recentes coletados.");
                 }
             }
         }
@@ -123,7 +120,6 @@ public class MetricCollectorScheduler {
 
         System.out.println("--- COLETA E ANÁLISE FINALIZADA ---");
     }
-
 
     /**
      * Método auxiliar que agora recebe um Mapa de Strings.

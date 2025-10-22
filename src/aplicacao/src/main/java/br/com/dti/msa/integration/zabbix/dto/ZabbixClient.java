@@ -51,41 +51,31 @@ public class ZabbixClient {
     private String authToken;
 
     // Cria uma instância do RestTemplate para fazer as chamadas HTTP
+    private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RestTemplate restTemplate;
-
-    @Autowired
-    public ZabbixClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
 
     /**
      * MÉTODO CENTRAL: Envia a requisição para a API do Zabbix com o Bearer Token.
      */
-    private String sendRequest(ZabbixRequestDTO requestPayload) throws RestClientException {
+    private String sendRequest(ZabbixRequestDTO requestPayload) throws RestClientException, ZabbixApiException, JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-        headers.setBearerAuth(authToken);
+        headers.setBearerAuth(authToken); // Adiciona 'Authorization: Bearer seu_token'
 
-        // Converte o corpo manualmente para JSON puro
-        Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("jsonrpc", "2.0");
-        requestMap.put("method", requestPayload.getMethod());
-        requestMap.put("params", requestPayload.getParams());
-        requestMap.put("id", requestPayload.getId());
+        // Envia o DTO diretamente. O RestTemplate cuidará da serialização.
+        HttpEntity<ZabbixRequestDTO> requestEntity = new HttpEntity<>(requestPayload, headers);
+        
+        ResponseEntity<String> response = restTemplate.postForEntity(zabbixApiUrl, requestEntity, String.class);
+        String jsonResponse = response.getBody();
 
-        try {
-            String jsonBody = objectMapper.writeValueAsString(requestMap); // garante JSON válido
-
-            HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
-
-            ResponseEntity<String> response = restTemplate.postForEntity(zabbixApiUrl, requestEntity, String.class);
-            return response.getBody();
-
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Erro ao serializar JSON para o Zabbix", e);
+        if (jsonResponse != null) {
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            if (rootNode.has("error")) {
+                 String errorMessage = rootNode.path("error").path("data").asText("Erro desconhecido na API Zabbix");
+                 throw new ZabbixApiException("Erro da API Zabbix: " + errorMessage);
+            }
         }
+        return jsonResponse;
     }
 
     /**
@@ -132,57 +122,37 @@ public class ZabbixClient {
     }
 
     /**
-     * Busca os valores de uma lista específica de chaves de item para um host.
-     * Esta é a abordagem otimizada para evitar o N+1 e o "buscar tudo".
-     * Retorna um Mapa de [chave_do_item -> valor_bruto_como_string].
+     * Busca o último valor de UM item (métrica) específico.
+     * Esta é a chamada N+1 que o Scheduler usará.
      */
-    public Map<String, String> getSpecificItemValues(Long zabbixHostId, List<String> itemKeys) {
-        
-        // Se a lista de chaves estiver vazia, não faz uma chamada de API desnecessária
-        if (itemKeys == null || itemKeys.isEmpty()) {
-            return Map.of();
-        }
-        
-        System.out.println("Buscando " + itemKeys.size() + " itens específicos para o host " + zabbixHostId);
-
-        // Parâmetros para a chamada: filtra por hostid E pela lista de chaves
+    public String getSingleItemValue(Long zabbixHostId, String itemKey) {
+                
         Map<String, Object> params = Map.of(
             "hostids", zabbixHostId,
             "output", new String[]{"key_", "lastvalue"},
-            "search", Map.of("key_", itemKeys) // <-- A MÁGICA ESTÁ AQUI
+            "search", Map.of("key_", itemKey), // 'search' funciona para uma única chave
+            "limit", 1
         );
-        ZabbixRequestDTO request = new ZabbixRequestDTO("item.get", params, 4);
+        ZabbixRequestDTO request = new ZabbixRequestDTO("item.get", params, 3);
 
         try {
-            String jsonResponse = sendRequest(request); // Usa seu método de envio com Bearer Token
-            if (jsonResponse == null) {
-                throw new ZabbixApiException("A resposta da API do Zabbix foi nula.");
-            }
+            String jsonResponse = sendRequest(request); // Usa o método de envio com Bearer Token
             
             JsonNode resultNode = objectMapper.readTree(jsonResponse).get("result");
-            if (resultNode == null || !resultNode.isArray()) {
-                System.err.println("  > Host " + zabbixHostId + " não retornou um array de itens do Zabbix.");
-                return Map.of();
+            if (resultNode == null || !resultNode.isArray() || resultNode.isEmpty()) {
+                System.err.println("  > Item '" + itemKey + "' não encontrado no host " + zabbixHostId);
+                return null;
             }
-            
-            ZabbixItem[] items = objectMapper.treeToValue(resultNode, ZabbixItem[].class);
 
-            // Converte para um Mapa<String, String> simples.
-            return Arrays.stream(items)
-                .filter(item -> item.getKey() != null && item.getLastValue() != null && !item.getLastValue().isEmpty())
-                .collect(Collectors.toMap(
-                    ZabbixItem::getKey,
-                    ZabbixItem::getLastValue,
-                    (existingValue, newValue) -> existingValue 
-                ));
+            ZabbixItem item = objectMapper.treeToValue(resultNode.get(0), ZabbixItem.class);
+            return item.getLastValue();
 
         } catch (Exception e) {
-            System.err.println("Erro crítico ao buscar itens específicos para o host " + zabbixHostId + ":");
-            e.printStackTrace();
-            return Map.of(); // Retorna um mapa vazio em caso de falha
+            System.err.println("Erro crítico ao buscar valor do item '" + itemKey + "': " + e.getMessage());
+            return null;
         }
     }
-    
+
     /**
      * Busca os 5 eventos (problemas) mais recentes de um host.
      */

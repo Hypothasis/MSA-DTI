@@ -27,7 +27,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // 2. LÓGICA DE COR DINÂMICA
             const mediaDisponibilidade = data.overallAvailability || 0;
-            let corGrafico = '#26E7A6'; // Verde (bom)
+            
+            let corGrafico = '#474747ff';
+
+            if (mediaDisponibilidade < 95) {
+                corGrafico = '#26E7A6'; // Verde (bom)
+            }
             if (mediaDisponibilidade < 90) {
                 corGrafico = '#ffc65cff'; // Amarelo (ok)
             }
@@ -163,7 +168,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             },
             fill: {
-                type: 'gradient',
                 colors: ['#26E7A6'],
             },
             stroke: { lineCap: 'round' },

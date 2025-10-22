@@ -47,12 +47,12 @@
 
     <main>
         <header>
-            <div class="dot green" id="hostStatusPoint"></div>
+            <div class="dot" id="hostStatusPoint"></div>
             <section>
                 <div class="hostOutdoor">
-                    <h1 id="hostName">Hostname</h1>
+                    <h1 id="hostName"></h1>
                     <h1>está</h1>
-                    <h1 class="flag green" id="hostStatusFlag">Funcionando</h1>
+                    <h1 class="flag" id="hostStatusFlag"></h1>
                 </div>
                 <p>Checagem a cada minuto</p>
             </section>
@@ -260,19 +260,10 @@
                             <p>Fullscreen mode</p>
                         </button>
                     </li>
-
-                    <li>
-                        <button id="alert-btn"> 
-                            <img th:src="@{/image/icons/mute_black.png}" alt="" height="20px">
-                            <p>Alert Sound</p>
-                        </button>
-                    </li>
                 </ul>
             </div>
         </article>
     </footer>
-
-    <audio id="alert-sound" src="/sounds/alert.mp3" preload="auto"></audio>
 
     <script th:src="@{/javascript/zabbixStatusChecker.js}"></script>
     <script th:src="@{/javascript/component.js}"></script>

@@ -290,7 +290,7 @@ public class HostService {
         // 2. Calcula Disponibilidade Média Geral
         LocalDateTime startTime48h = LocalDateTime.now().minusHours(48);
         Double avg = metricHistoryRepository.calculateOverallAvailability("disponibilidade-global", startTime48h);
-        dto.setOverallAvailability(avg != null ? avg : 100.0);
+        dto.setOverallAvailability(avg != null ? avg : 0.00);
 
         // 3. Busca Últimos Alertas Críticos (com JOIN FETCH)
         List<String> criticalSeverities = List.of("3", "4", "5");
