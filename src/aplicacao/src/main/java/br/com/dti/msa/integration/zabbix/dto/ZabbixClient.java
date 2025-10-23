@@ -57,26 +57,99 @@ public class ZabbixClient {
     /**
      * MÉTODO CENTRAL: Envia a requisição para a API do Zabbix com o Bearer Token.
      */
-    private String sendRequest(ZabbixRequestDTO requestPayload) throws RestClientException, ZabbixApiException, JsonProcessingException {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(authToken); // Adiciona 'Authorization: Bearer seu_token'
+    private String sendRequest(ZabbixRequestDTO requestPayload)
+            throws RestClientException, ZabbixApiException {
 
-        // Envia o DTO diretamente. O RestTemplate cuidará da serialização.
-        HttpEntity<ZabbixRequestDTO> requestEntity = new HttpEntity<>(requestPayload, headers);
-        
-        ResponseEntity<String> response = restTemplate.postForEntity(zabbixApiUrl, requestEntity, String.class);
-        String jsonResponse = response.getBody();
-
-        if (jsonResponse != null) {
-            JsonNode rootNode = objectMapper.readTree(jsonResponse);
-            if (rootNode.has("error")) {
-                 String errorMessage = rootNode.path("error").path("data").asText("Erro desconhecido na API Zabbix");
-                 throw new ZabbixApiException("Erro da API Zabbix: " + errorMessage);
-            }
+        // ===== 1️⃣ Validação local da estrutura =====
+        if (requestPayload == null) {
+            throw new ZabbixApiException("Payload nulo: o corpo da requisição não pode ser vazio.");
         }
-        return jsonResponse;
+
+        if (requestPayload.getMethod() == null || requestPayload.getMethod().isBlank()) {
+            throw new ZabbixApiException("Campo 'method' ausente no payload Zabbix.");
+        }
+
+        if (requestPayload.getJsonrpc() == null || !requestPayload.getJsonrpc().equals("2.0")) {
+            throw new ZabbixApiException("Campo 'jsonrpc' inválido ou ausente (deve ser '2.0').");
+        }
+
+        if (requestPayload.getId() <= 0) {
+            throw new ZabbixApiException("Campo 'id' deve ser um número positivo.");
+        }
+
+        // ===== 2️⃣ Serialização manual do JSON =====
+        String jsonBody;
+        try {
+            jsonBody = objectMapper.writeValueAsString(requestPayload);
+        } catch (Exception e) {
+            throw new ZabbixApiException("Falha ao serializar o payload em JSON: " + e.getMessage());
+        }
+
+        // ===== 3️⃣ Validação sintática do JSON gerado =====
+        try {
+            objectMapper.readTree(jsonBody); // tenta parsear o próprio JSON — se falhar, é inválido
+        } catch (Exception e) {
+            throw new ZabbixApiException("JSON gerado é inválido: " + e.getMessage() + "\nJSON: " + jsonBody);
+        }
+
+        // ===== 4️⃣ Cabeçalhos estritos =====
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json"); // sem charset
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        headers.setBearerAuth(authToken);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+
+        System.out.println("🔹 Enviando requisição ao Zabbix...");
+        System.out.println("URL: " + zabbixApiUrl);
+        System.out.println("JSON enviado: " + jsonBody);
+
+        try {
+            // ===== 5️⃣ Envio da requisição =====
+            ResponseEntity<String> response = restTemplate.exchange(
+                    zabbixApiUrl,
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class
+            );
+
+            String jsonResponse = response.getBody();
+            System.out.println("🔹 Resposta do Zabbix (" + response.getStatusCode() + "): " + jsonResponse);
+
+            // ===== 6️⃣ Tratamento de erro no retorno =====
+            if (jsonResponse == null || jsonResponse.isBlank()) {
+                throw new ZabbixApiException("Resposta vazia da API Zabbix.");
+            }
+
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+
+            if (rootNode.has("error")) {
+                String errorData = rootNode.path("error").path("data").asText("");
+                String errorMessage = rootNode.path("error").path("message").asText("Erro desconhecido");
+                throw new ZabbixApiException("Erro da API Zabbix: " + errorMessage + " - " + errorData);
+            }
+
+            if (!rootNode.has("result")) {
+                throw new ZabbixApiException("Resposta inválida da API Zabbix: campo 'result' ausente.\nCorpo: " + jsonResponse);
+            }
+
+            return jsonResponse;
+
+        } catch (RestClientException e) {
+            System.err.println("❌ Erro de comunicação com o Zabbix: " + e.getMessage());
+            throw new ZabbixApiException("Falha ao conectar à API do Zabbix: " + e.getMessage(), e);
+
+        } catch (ZabbixApiException e) {
+            // Repassa exceções tratadas internamente
+            throw e;
+
+        } catch (Exception e) {
+            // Fallback genérico
+            System.err.println("❌ Erro inesperado ao enviar requisição: " + e.getMessage());
+            throw new ZabbixApiException("Erro inesperado ao processar requisição Zabbix: " + e.getMessage(), e);
+        }
     }
+
 
     /**
      * Verifica se um host existe no Zabbix usando a API host.get.
