@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function () {
         for (let i = 0; i < numberOfPoints; i++) {
             const pointTimestamp = startTimestamp - i * intervalMs;
             const availability = dataMap.get(pointTimestamp);
-
+ 
             const li = document.createElement('li');
             li.className = `point ${getStatusClass(availability)}`;
 

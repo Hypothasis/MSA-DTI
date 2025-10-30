@@ -262,11 +262,19 @@ main section article > aside > ul li p {
     color: rgb(39, 39, 39);
 }
 
+/* -------------- Filtros Buttons ------------ */
+
+.container-btn{
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+}
+
 #filtros-btn{
     position: relative;
     text-decoration: none;
     border: 1px solid white;
-    background-color: rgb(216, 216, 216);
+    background-color: rgb(147, 185, 228);
     padding: 7px 20px 7px 20px;
     border-radius: 7px;
     margin-bottom: 20px;
@@ -295,6 +303,43 @@ main section article > aside > ul li p {
 }
 
 #filtros-btn:hover {
+    color: white;
+    cursor: pointer;
+}
+
+#reset-btn{
+    position: relative;
+    text-decoration: none;
+    border: 1px solid white;
+    background-color: rgb(230, 171, 161);
+    padding: 7px 20px 7px 20px;
+    border-radius: 7px;
+    margin-bottom: 20px;
+    font-family: var(--font-ubuntu);
+    overflow: hidden;
+    z-index: 1;
+
+    transition: color 0.6s ease-in-out;
+}
+
+#reset-btn::before{
+    position: absolute;
+    content: '';
+    height: 100%;
+    width: 0;
+    top: 0;
+    left: -1%;
+    background-color: rgb(226, 95, 95);
+    z-index: -1;
+
+    transition: all 0.3s ease-in-out;
+}
+
+#reset-btn:hover::before {
+    width: 101%;
+}
+
+#reset-btn:hover {
     color: white;
     cursor: pointer;
 }
@@ -334,7 +379,7 @@ main section article > aside > ul li p {
 .services-outdoor > ul {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 50px 20px 20px 20px;
     gap: 35px;
     height: 900px;
 

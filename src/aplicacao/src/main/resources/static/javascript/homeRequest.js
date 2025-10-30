@@ -7,10 +7,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+    // --- Elementos do Filtro ---
+    const filterBtn = document.getElementById('filtros-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const availabilityRange = document.getElementById('disponibilidade-range');
+
     // Elementos do Alerta Sonoro
     const alertButton = document.getElementById('alert-btn');
     const alertAudio = document.getElementById('alert-sound');
     const ALERT_STORAGE_KEY = 'msaSoundAlertsEnabled'; // Chave para o localStorage
+
+    let allHostsData = [];
+    let isFilterActive = false;
 
     //#######################################################################
     //###                 LÓGICA DO ALERTA SONORO                       ###
@@ -57,6 +65,79 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.setItem(ALERT_STORAGE_KEY, isAlertEnabled); // Salva o novo estado
             updateAlertButtonUI(); // Atualiza a UI
         });
+    }
+
+    //#######################################################################
+    //###                    FUNÇÕES DE FILTRAGEM                       ###
+    //#######################################################################
+
+    /**
+     * Função principal que aplica os filtros e re-renderiza os cards.
+     */
+    function applyFiltersAndRender() {
+        const filters = getSelectedFilters();
+        let filteredHosts = allHostsData;
+
+        // --- LÓGICA DE FILTRAGEM ---
+        
+        if (isFilterActive) {
+            // Filtro de Categoria
+            if (filters.categories.length > 0) {
+
+                filteredHosts = filteredHosts.filter(host => filters.categories.includes(host.type));
+            }
+            // Filtro de Estado
+            if (filters.states.length > 0) {
+                filteredHosts = filteredHosts.filter(host => filters.states.includes(host.status));
+            }
+        } else {
+            filteredHosts = filteredHosts.filter(host => host.status === 'ALERT' || host.status === 'INACTIVE');
+        }
+
+        // O slider funciona como "mostrar hosts com disponibilidade ATÉ este valor"
+        filteredHosts = filteredHosts.filter(host => {
+            const hostAvailability = (host.globalAvailability ? host.globalAvailability.last48h : 0);
+            return hostAvailability <= filters.availability; // <-- Lógica corrigida para "menor ou igual"
+        });
+
+        // 3. Renderiza os cards com a lista final filtrada
+        renderHostStatusCards(filteredHosts, isFilterActive);
+    }
+
+    /**
+     * Lê os checkboxes e o slider e retorna um objeto com os filtros selecionados.
+     */
+    function getSelectedFilters() {
+        const categories = [];
+        if (document.getElementById('cat-servicos').checked) categories.push('APPLICATION');
+        if (document.getElementById('cat-servidores').checked) categories.push('SERVER');
+        if (document.getElementById('cat-DB').checked) categories.push('DATABASE');
+        
+        const states = [];
+        if (document.getElementById('funcional').checked) states.push('ACTIVE');
+        if (document.getElementById('alerta').checked) states.push('ALERT');
+        if (document.getElementById('parado').checked) states.push('INACTIVE');
+
+        const availability = availabilityRange ? parseFloat(availabilityRange.value) : 100;
+
+        return { categories, states, availability };
+    }
+
+    // Adiciona o listener ao botão "Aplicar"
+    if (filterBtn) {
+        filterBtn.addEventListener('click', () => {
+            console.log("Aplicando filtros... " + allHostsData.length + " hosts disponíveis.");
+            isFilterActive = true; // ATIVA O FILTRO MANUAL
+            applyFiltersAndRender();
+        });
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            console.log("Resetando filtros...");
+            isFilterActive = false; // DESATIVA O FILTRO MANUAL
+            applyFiltersAndRender();
+        })
     }
 
     //#######################################################################
@@ -133,15 +214,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // Função que constrói o HTML dos cards
     function renderHostStatusCards(hosts) {
         if (!servicesContainer) return;
-        servicesContainer.innerHTML = ''; // Limpa o conteúdo antigo
+        servicesContainer.innerHTML = ''; 
 
         if (!hosts || hosts.length === 0) {
-            // Se não houver hosts com problema, cria e exibe a mensagem
             const messageElement = document.createElement('div');
             messageElement.className = 'no-problems-message';
             messageElement.textContent = 'Nenhum host com problema';
             servicesContainer.appendChild(messageElement);
-            return; // Encerra a função aqui
+            return;
         }
 
         const statusMap = {
@@ -153,13 +233,14 @@ document.addEventListener('DOMContentLoaded', function () {
         hosts.forEach(host => {
             const li = document.createElement('li');
             const statusInfo = statusMap[host.status] || { text: 'Desconhecido', color: 'empty' };
-            
+            const availability48h = (host.globalAvailability ? host.globalAvailability.last48h : 0); // Ajuste aqui se o DTO mudou
+
             li.innerHTML = `
                 <header>
                     <div class="app-info">
-                        <a href="/host/${host.publicId}">${host.name}</a>
+                        <a href="/host/${host.publicId}" target="_blank">${host.name}</a>
                         <p>|</p>
-                        <p class="porcent ${statusInfo.color}">${(host.globalAvailability48h || 0).toFixed(1)}%</p>
+                        <p class="porcent ${statusInfo.color}">${availability48h.toFixed(1)}%</p>
                     </div>
                     <div class="app-status">
                         <div class="dot ${statusInfo.color}"></div>
@@ -174,24 +255,89 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Função auxiliar para gerar o HTML do pointGraphic
+    /**
+     * Gera a string HTML para os 96 pontos do gráfico de disponibilidade,
+     * tratando fuso horário e dias vazios.
+     */
     function generatePointGraphicHTML(historyData) {
-        if (!historyData || historyData.length === 0) return '';
-        
-        const getStatusClass = (availability) => {
+        const intervalMs = 30 * 60 * 1000; // 30 minutos
+        const dataMap = new Map();
+        let latestTimestamp = 0;
+
+        // Seleciona o elemento de porcentagem (precisa estar acessível no escopo)
+        const percentElement = document.querySelector('.porcentPointGraphic p:first-child'); 
+
+        if (historyData && historyData.length > 0) {
+            let availabilitySum = 0; // Para calcular a média
+
+            historyData.forEach(point => {
+                // 🔹 Corrige o fuso horário (UTC → Fortaleza UTC-3)
+                const offsetMs = 3 * 60 * 60 * 1000; // 3 horas
+                const fortalezaTimestamp = point.x - offsetMs;
+                const roundedTimestamp = Math.floor(fortalezaTimestamp / intervalMs) * intervalMs;
+
+                // ==========================================================
+                // CORREÇÃO: Converte o valor (ex: 1.0) para porcentagem (ex: 100.0)
+                // ==========================================================
+                const percentValue = point.y * 100.0;
+                dataMap.set(roundedTimestamp, percentValue);
+                availabilitySum += percentValue; // Soma a porcentagem
+                
+                if (fortalezaTimestamp > latestTimestamp) {
+                    latestTimestamp = fortalezaTimestamp;
+                }
+            });
+
+            // Calcula a média geral usando a soma das porcentagens
+            const overallAverage = availabilitySum / historyData.length;
+            if (percentElement) {
+                percentElement.textContent = `${overallAverage.toFixed(2)}%`;
+            }
+        } else {
+            if (percentElement) {
+                percentElement.textContent = `N/A`;
+            }
+        }
+
+        // Função auxiliar para determinar a cor (agora recebe 0-100)
+        function getStatusClass(availability) {
+            if (availability == null) return 'empty';
             if (availability >= 99.9) return 'okay';
             if (availability >= 99.0) return 'warning';
             if (availability >= 95.0) return 'avarage';
-            return 'disaster';
-        };
+            if (availability >= 90.0) return 'high';
+            return 'disaster'; // Agora só retorna 'disaster' se a média for < 90
+        }
 
-        return historyData.map(point => {
-            const date = new Date(point.x);
-            const formattedDate = `${String(date.getDate()).padStart(2, '0')}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-            const formattedPercent = `${point.y.toFixed(2)}%`;
-            const statusClass = getStatusClass(point.y);
-            return `<li class="point ${statusClass}" data-line1="${formattedDate}" data-line2="${formattedPercent}"></li>`;
-        }).join('');
+        const numberOfPoints = 96; // 96 pontos de 30 min = 48 horas
+        const referenceTime = latestTimestamp > 0 ? latestTimestamp : new Date().getTime();
+        const startTimestamp = Math.floor(referenceTime / intervalMs) * intervalMs;
+
+        let pointsHTML = ''; 
+        const offsetMs = 3 * 60 * 60 * 1000; // Define o fuso
+
+        for (let i = numberOfPoints - 1; i >= 0; i--) {
+            const pointTimestamp = startTimestamp - (i * intervalMs);
+            
+            // 'availability' agora é 100.0, 0.0, ou undefined
+            const availability = dataMap.get(pointTimestamp); 
+
+            const date = new Date(pointTimestamp);
+            
+            // Lê a data/hora como se estivesse em UTC (que é o UTC-3 que calculamos)
+            const formattedDate = `${String(date.getUTCDate()).padStart(2, '0')}/${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+            const formattedTime = `${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')}`;
+            
+            // 'availability' já está em porcentagem, então .toFixed(2) funciona
+            const formattedPercent = availability != null ? `${availability.toFixed(2)}%` : 'Sem dados';
+            
+            // 'getStatusClass' recebe a porcentagem (100.0) e retorna 'okay'
+            const statusClass = getStatusClass(availability);
+
+            pointsHTML += `<li class="point ${statusClass}" data-line1="${formattedDate}, ${formattedTime}" data-line2="${formattedPercent}"></li>`;
+        }
+
+        return pointsHTML;
     }
 
     //#######################################################################
@@ -261,13 +407,17 @@ document.addEventListener('DOMContentLoaded', function () {
     async function getHomeData() {
         console.log("Buscando status dos hosts...");
         try {
-            const response = await fetch('/api/public/home/status');
+            const response = await fetch('/api/public/hosts/status');
             if (!response.ok) throw new Error('Falha ao buscar status dos hosts.');
 
-            const hosts = await response.json();
-            renderHostStatusCards(hosts);
+            allHostsData = await response.json(); // Salva os dados na variável global
+            
+            // Aplica os filtros e renderiza a lista
+            applyFiltersAndRender(); 
 
-            if (isAlertEnabled && hosts.length > 0) {
+            // A lógica de alerta sonoro NÃO DEPENDE do filtro, mas dos dados brutos
+            const problemHosts = allHostsData.filter(host => host.status !== 'ACTIVE');
+            if (isAlertEnabled && problemHosts.length > 0) {
                 playAlertSound();
             }
 

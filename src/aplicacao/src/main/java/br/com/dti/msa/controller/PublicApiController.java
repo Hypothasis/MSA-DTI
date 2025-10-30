@@ -1,12 +1,15 @@
 package br.com.dti.msa.controller;
 
 import br.com.dti.msa.dto.HomepageHostDTO;
+import br.com.dti.msa.dto.HostDashboardDTO;
+import br.com.dti.msa.dto.HostSearchResultDTO;
 import br.com.dti.msa.dto.PublicHostStatusDTO;
 import br.com.dti.msa.dto.ZabbixHealthCheckResponse;
 import br.com.dti.msa.model.ZabbixConnectionStatus;
 import br.com.dti.msa.repository.ZabbixConnectionStatusRepository;
 import br.com.dti.msa.service.HostService;
 import br.com.dti.msa.service.ZabbixConnectionTesterService;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 
@@ -14,7 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -64,7 +70,7 @@ public class PublicApiController {
     }
 
     /**
-     * Retorna uma lista com o status atual de todos os hosts, com availabilityGlobal.
+     * Retorna uma lista com o status atual de todos os hosts com PROBLEMAS, com availabilityGlobal.
      * URL: GET /api/public/home/status
      */
     @GetMapping("/home/status")
@@ -72,4 +78,5 @@ public class PublicApiController {
         List<HomepageHostDTO> hosts = hostService.getHomepageHosts();
         return ResponseEntity.ok(hosts);
     }
+
 }

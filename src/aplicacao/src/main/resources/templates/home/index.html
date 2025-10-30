@@ -113,12 +113,15 @@
 
                             <div>
                                 <p>0%</p>
-                                <input type="range" value="100" name="disponibilidade-range" id="disponibilidade-range">
+                                <input type="range" min="0" max="100" step="0.1" value="100" name="disponibilidade-range" id="disponibilidade-range">
                                 <p>100%</p>
                             </div>
                         </li>
                     </ul>
-                    <button id="filtros-btn">Aplicar</button>
+                    <div class="container-btn">
+                        <button id="filtros-btn">Aplicar</button>
+                        <button id="reset-btn">Limpar</button>
+                    </div>
                 </aside>
                 
                 <div class="services-outdoor">

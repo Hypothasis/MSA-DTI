@@ -230,14 +230,52 @@ public class HostService {
     } 
 
     /**
-     * Obtém lista de todos os hosts com seus status
+     * Obtém uma lista de TODOS os hosts com seus status, disponibilidade global
+     * e histórico de disponibilidade para a exibição pública.
      */
     public List<PublicHostStatusDTO> getPublicHostStatuses() {
-        return hostRepository.findAll().stream()
-                .map(PublicHostStatusDTO::new)
-                .collect(Collectors.toList());
-    }
+        
+        List<Host> allHosts = hostRepository.findAllWithMetrics();
+        LocalDateTime startTime48h = LocalDateTime.now().minusHours(48);
+        
+        return allHosts.stream()
+            .map(host -> {
+                // 1. Cria o DTO básico
+                PublicHostStatusDTO dto = new PublicHostStatusDTO(host);
+                
+                // 2. Verifica se o host tem a métrica 'disponibilidade-global'
+                boolean hasGlobalAvail = host.getMetrics().stream()
+                    .anyMatch(m -> m.getMetricKey().equals("disponibilidade-global"));
 
+                if (hasGlobalAvail) {
+                    // 3. Se sim, calcula os dados dos cards (48h, 24h, etc.)
+                    dto.setGlobalAvailability(calculateGlobalAvailability(host.getId(), "disponibilidade-global"));
+                }
+
+                // 4. Verifica se o host tem a métrica 'disponibilidade-especifica'
+                boolean hasSpecificAvail = host.getMetrics().stream()
+                    .anyMatch(m -> m.getMetricKey().equals("disponibilidade-especifica"));
+
+                if (hasSpecificAvail) {
+                    List<MetricHistory> historyData = metricHistoryRepository.findByHostIdAndMetricMetricKeyAndTimestampAfterOrderByTimestampAsc(
+                        host.getId(), 
+                        "disponibilidade-especifica", 
+                        startTime48h
+                    );
+                    
+                    // Converte a lista de entidades para a lista de DTOs
+                    List<HostDashboardDTO.MetricValueDTO> history = historyData.stream()
+                        .map(h -> new HostDashboardDTO.MetricValueDTO(h.getTimestamp(), h.getValue()))
+                        .collect(Collectors.toList());
+                    
+                    dto.setAvailabilityHistory(history);
+                }
+                
+                return dto;
+            })
+            .collect(Collectors.toList());
+    }
+    
     /**
      * Obtém status do host, junto com dados do availabilityGlobal para exibição pública (Home).
      */
