@@ -76,6 +76,7 @@
 }
 
 .tabs-nav .tab-button {
+
     flex-grow: 1; /* Faz com que os botões ocupem o espaço disponível */
     padding: 15px 20px;
     background-color: transparent;
@@ -152,6 +153,9 @@
     cursor: pointer;
 }
 
+.checkbox-group input[type="text"]{
+  width: 100%;
+}
 
 details {
   border: 1px solid #aaaaaa;

@@ -437,6 +437,10 @@ main section article > aside > ul li p {
     color: rgb(72, 228, 72);
 }
 
+.porcent.yellow{
+    color: rgb(228, 205, 72);
+}
+
 .porcent.orange{
     color: rgb(224, 123, 64);
 }
@@ -451,6 +455,14 @@ main section article > aside > ul li p {
   border-radius: 50%;
   background-color: #69ffa8;
   animation: 1.5s greenPulse infinite ease-in-out;
+}
+
+.dot.yellow {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  background-color: #ffea28;
+  animation: 1.5s yellowPulse infinite ease-in-out;
 }
 
 .dot.red {
@@ -473,6 +485,12 @@ main section article > aside > ul li p {
     color: #69ffa8;
 }
 
+.flag.yellow{
+    font-family: var(--font-ubuntu);
+    font-weight: bold;
+    color: #ffd769;
+}
+
 .flag.red{
     font-weight: bold;
     font-family: var(--font-ubuntu);
@@ -485,6 +503,16 @@ main section article > aside > ul li p {
 @keyframes greenPulse {
   0% {
     box-shadow: 0 0 0 0 #69ffa8;
+  }
+
+  100% {
+    box-shadow: 0 0 0 14px #69ffa800;
+  }
+}
+
+@keyframes yellowPulse {
+    0% {
+    box-shadow: 0 0 0 0 #fffd69;
   }
 
   100% {
