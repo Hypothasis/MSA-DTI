@@ -16,7 +16,7 @@ public interface RecentEventsRepository extends JpaRepository<RecentEvents, Long
      * ordenados pela data e hora em ordem decrescente.
      * O Spring Data JPA cria a query automaticamente pelo nome do método.
      */
-    List<RecentEvents> findTop5ByHostIdOrderByTimestampDesc(Long hostId);
+    //List<RecentEvents> findTop5ByHostIdOrderByTimestampDesc(Long hostId);
 
     /**
      * Deleta os eventos antigos deste host.
@@ -31,4 +31,17 @@ public interface RecentEventsRepository extends JpaRepository<RecentEvents, Long
            "WHERE re.severity IN :severities " +
            "ORDER BY re.timestamp DESC")
     List<RecentEvents> findRecentCriticalEvents(@Param("severities") List<String> severities, Pageable pageable);
+
+    /**
+     * Busca os eventos mais recentes para um HOST ESPECÍFICO, 
+     * filtrando por uma lista de severidades.
+     */
+    @Query("SELECT re FROM RecentEvents re " +
+           "WHERE re.host.id = :hostId AND re.severity IN :severities " +
+           "ORDER BY re.timestamp DESC")
+    List<RecentEvents> findRecentCriticalEventsForHost(
+        @Param("hostId") Long hostId, 
+        @Param("severities") List<String> severities, 
+        Pageable pageable
+    );
 }

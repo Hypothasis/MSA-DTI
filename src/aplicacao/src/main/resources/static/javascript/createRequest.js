@@ -58,7 +58,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 hostZabbixID: formData.get('hostZabbixID'),
                 hostDescription: formData.get('hostDescription'),
                 hostType: formData.get('hostType'),
-                enabledMetrics: enabledMetrics
+                enabledMetrics: enabledMetrics,
+                
+                // Adiciona os campos que estavam faltando
+                sigaaHttpMetric: formData.get('sigaa-http-metric'),
+                customHttpMetric: formData.get('custom-http-metric')
             };
 
             try {

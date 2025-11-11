@@ -11,8 +11,18 @@ public class MetricCatalog {
 
     // Mapeia o NOME do checkbox do formulário para as METRIC_KEYs do nosso banco
     private static final Map<String, List<String>> CHECKBOX_TO_METRIC_KEYS = Map.ofEntries(
+        // Métricas para Disponibilidade Host Agent
         Map.entry("disponibilidade-global", List.of("disponibilidade-global")),
         Map.entry("disponibilidade-especifica", List.of("disponibilidade-especifica")),
+
+        // Métricas para Disponibilidade SIGAA
+        Map.entry("disponibilidade-global-sigaa", List.of("disponibilidade-global-sigaa")),
+        Map.entry("disponibilidade-especifica-sigaa", List.of("disponibilidade-especifica-sigaa")),
+
+        // Métricas para Disponibilidade HTTP Agent
+        Map.entry("disponibilidade-global-http-agente", List.of("disponibilidade-global-http-agente")),
+        Map.entry("disponibilidade-especifica-http-agente", List.of("disponibilidade-especifica-http-agente")),
+
         Map.entry("latencia-tempo-resposta", List.of("latencia")),
         Map.entry("sistema-operacional", List.of("os-nome", "os-arch")),
         Map.entry("cpu-uso", List.of("cpu-uso")),

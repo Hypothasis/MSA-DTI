@@ -22,15 +22,35 @@ public interface HostRepository extends JpaRepository<Host, Long> {
     );
 
     /**
-     * Busca todas as métricas dos hosts, evitando o problema de N+1 queries.
+     * Busca todos os hosts e já carrega (FETCH) suas configurações de métrica
+     * E as métricas (conceitos) associadas a essas configurações.
+     * Isso resolve o LazyInitializationException.
      */
-    @Query("SELECT h FROM Host h LEFT JOIN FETCH h.metrics")
+    @Query("SELECT h FROM Host h " +
+           "LEFT JOIN FETCH h.metricConfigs mc " +
+           "LEFT JOIN FETCH mc.metric")
     List<Host> findAllWithMetrics();
 
     /**
-     * Busca o Host pela sua publicId.
+     * Busca um Host pelo ID e carrega (FETCH) todas as suas configurações
+     * E as métricas (conceitos) associadas a essas configurações.
+     * Isso resolve o LazyInitializationException.
      */
-    Optional<Host> findByPublicId(String publicId);
+    @Query("SELECT h FROM Host h " +
+           "LEFT JOIN FETCH h.metricConfigs mc " +
+           "LEFT JOIN FETCH mc.metric " + // <-- A MÁGICA ESTÁ AQUI
+           "WHERE h.id = :hostId")
+    Optional<Host> findByIdWithFullMetrics(@Param("hostId") Long hostId);
+
+    /**
+     * Busca o Host pela sua publicId e carrega (FETCH) todas as suas configurações
+     * E as métricas (conceitos) associadas a essas configurações.
+     */
+    @Query("SELECT h FROM Host h " +
+           "LEFT JOIN FETCH h.metricConfigs mc " +
+           "LEFT JOIN FETCH mc.metric " + 
+           "WHERE h.publicId = :publicId")
+    Optional<Host> findByPublicIdWithFullMetrics(@Param("publicId") String publicId);
 
     /**
      * Busca os 5 primeiros hosts cujo nome contém o termo (ignorando maiúsculas/minúsculas)
@@ -44,4 +64,6 @@ public interface HostRepository extends JpaRepository<Host, Long> {
      * Busca hosts que não estão ativos
      */
     List<Host> findByStatusIn(List<Host.HostStatus> statuses);
+
+    boolean existsByZabbixId(Long zabbixId);
 }

@@ -13,19 +13,28 @@ CREATE TABLE hosts (
     created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
 );
 
+
 -- Catálogo de todas as métricas possíveis
 CREATE TABLE metrics (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    metric_key VARCHAR(255) NOT NULL UNIQUE,
-    zabbix_key VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
+    metric_key VARCHAR(255) NOT NULL UNIQUE,  -- Ex: 'cpu-uso', 'memoria-ram'
+    name VARCHAR(255) NOT NULL,               -- Ex: 'Uso de CPU'
     unit VARCHAR(20)
+);
+
+-- Tabela para armazenar a chave Zabbix PADRÃO para cada métrica
+CREATE TABLE default_zabbix_key (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    metric_id INT NOT NULL UNIQUE, -- Garante que cada métrica só tenha uma chave padrão
+    zabbix_key VARCHAR(255) NOT NULL,
+    FOREIGN KEY (metric_id) REFERENCES metrics(id) ON DELETE CASCADE
 );
 
 -- Tabela de ligação para definir quais métricas cada host monitora
 CREATE TABLE host_metric_config (
     host_id INT NOT NULL,
     metric_id INT NOT NULL,
+    zabbix_key VARCHAR(255) NOT NULL, -- <-- A CHAVE ZABBIX
     PRIMARY KEY (host_id, metric_id),
     FOREIGN KEY (host_id) REFERENCES hosts(id) ON DELETE CASCADE,
     FOREIGN KEY (metric_id) REFERENCES metrics(id) ON DELETE CASCADE
@@ -63,4 +72,17 @@ CREATE TABLE zabbix_connection_status (
     `timestamp` DATETIME(6) NOT NULL,
     status ENUM('SUCCESS', 'ERROR') NOT NULL,
     details TEXT
+);
+
+-- Tabela para guardar o valor ATUAL de métricas não-numéricas (texto/JSON)
+CREATE TABLE metric_current_value (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    host_id INT NOT NULL,
+    metric_id INT NOT NULL,
+    current_value TEXT,
+    last_updated DATETIME(6) NOT NULL,
+    -- Garante um único valor por métrica/host
+    UNIQUE KEY uk_host_metric (host_id, metric_id), 
+    FOREIGN KEY (host_id) REFERENCES hosts(id) ON DELETE CASCADE,
+    FOREIGN KEY (metric_id) REFERENCES metrics(id) ON DELETE CASCADE
 );

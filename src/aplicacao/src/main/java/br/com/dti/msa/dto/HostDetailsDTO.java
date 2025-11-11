@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class HostDetailsDTO {
     private Long id;
     private String publicId;
-    private Integer zabbixId;
+    private Long zabbixId;
     private String name;
     private String description;
     private String type;
@@ -48,12 +48,12 @@ public class HostDetailsDTO {
         this.enabledCheckboxes = enabledCheckboxes;
         
         // Preenche a lista para o modal de READ
-        this.metrics = host.getMetrics().stream()
-            .map(metric -> new MetricDTO(
-                metric.getMetricKey(),
-                metric.getName(),
-                metric.getZabbixKey(),
-                metric.getUnit()
+        this.metrics = host.getMetricConfigs().stream() // <-- 1. Mude para getMetricConfigs()
+            .map(config -> new MetricDTO(
+                config.getMetric().getMetricKey(),  // 2. Acesse a métrica dentro da config
+                config.getMetric().getName(),
+                config.getZabbixKey(),              // 3. Pegue a zabbix_key da config
+                config.getMetric().getUnit()
             ))
             .collect(Collectors.toList());
     }
