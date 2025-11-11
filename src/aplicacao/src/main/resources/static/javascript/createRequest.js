@@ -43,16 +43,81 @@ document.addEventListener('DOMContentLoaded', function () {
     const hostForm = document.getElementById('host-form');
     const createButton = document.getElementById('hostCreateBtn');
 
+    //#######################################################################
+    //###        NOVA LÓGICA DE EXCLUSÃO DE DISPONIBILIDADE             ###
+    //#######################################################################
+
+    // Define os grupos de checkboxes de disponibilidade
+    const availabilityGroups = {
+        'health': [
+            'disponibilidade-global-health', 
+            'disponibilidade-especifica-health'
+        ],
+        'http': [
+            'disponibilidade-global-http-agente', 
+            'disponibilidade-especifica-http-agente'
+        ],
+        'standard': [
+            'disponibilidade-global', 
+            'disponibilidade-especifica'
+        ]
+    };
+
+    // Cria um mapa reverso para descobrir a qual grupo um checkbox pertence
+    const checkboxToGroupMap = {};
+    for (const groupName in availabilityGroups) {
+        for (const checkboxName of availabilityGroups[groupName]) {
+            checkboxToGroupMap[checkboxName] = groupName;
+        }
+    }
+
+    // Adiciona um listener de evento a CADA checkbox dentro do formulário
+    hostForm.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', (event) => {
+            const changedCheckboxName = event.target.name;
+            const isChecked = event.target.checked;
+
+            // 4. Verifica se o checkbox alterado pertence a um grupo de disponibilidade
+            const groupName = checkboxToGroupMap[changedCheckboxName];
+            if (!groupName) {
+                return; // Se não for, (ex: 'cpu-uso'), não faz nada.
+            }
+
+            // 5. É um checkbox de disponibilidade. Sincroniza o "parceiro".
+            // (ex: marcar 'global' também marca 'especifica' e vice-versa)
+            const partners = availabilityGroups[groupName];
+            partners.forEach(partnerName => {
+                const partnerCheckbox = hostForm.querySelector(`input[name="${partnerName}"]`);
+                if (partnerCheckbox) partnerCheckbox.checked = isChecked;
+            });
+
+            // 6. Se o grupo foi ATIVADO, desativa todos os OUTROS grupos
+            if (isChecked) {
+                for (const otherGroupName in availabilityGroups) {
+                    if (otherGroupName !== groupName) {
+                        availabilityGroups[otherGroupName].forEach(otherCheckboxName => {
+                            const otherCheckbox = hostForm.querySelector(`input[name="${otherCheckboxName}"]`);
+                            if (otherCheckbox) otherCheckbox.checked = false;
+                        });
+                    }
+                }
+            }
+        });
+    });
+
     if (hostForm && createButton) {
         
         // Adiciona um listener no BOTÃO, não no submit do form
         createButton.addEventListener('click', async function(event) {
             event.preventDefault(); // Previne qualquer comportamento padrão do botão
             
-            // Coleta os dados do formulário
+            // Esta linha agora funciona, pois a lógica acima garante
+            // que apenas as métricas de um grupo de disponibilidade estarão checadas.
             const formData = new FormData(hostForm);
+            
             const enabledMetrics = Array.from(hostForm.querySelectorAll('input[type="checkbox"]:checked')).map(cb => cb.value);
             
+            // Agora, o 'formData.get()' funcionará
             const dataToSend = {
                 hostName: formData.get('hostName'),
                 hostZabbixID: formData.get('hostZabbixID'),
@@ -60,8 +125,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 hostType: formData.get('hostType'),
                 enabledMetrics: enabledMetrics,
                 
-                // Adiciona os campos que estavam faltando
-                sigaaHttpMetric: formData.get('sigaa-http-metric'),
+                // Coleta os valores dos campos de texto customizados
+                healthHttpMetric: formData.get('health-http-metric'),
                 customHttpMetric: formData.get('custom-http-metric')
             };
 

@@ -196,6 +196,41 @@
                     <div class="tabs-content">
 
                         <div id="tab-APPLICATION" class="tab-pane active">
+
+                            <div class="chart-group">
+                                <h3>Disponibilidade (Health Ready)</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="disponibilidade-global-health" value="disponibilidade-global-health"> Disponibilidade Global Health (48h)</label>
+                                                <label><input type="checkbox" name="disponibilidade-especifica-health" value="disponibilidade-especifica-health"> Disponibilidade Específica Health (48h, 24h, 12h, 6h)</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>Metrica especifica do host com <b>Health Ready</b> (Usando <b>HTTP Agent</b>)</strong></p>
+                                        <label><input type="text" name="health-http-metric"></label>
+                                    </details>
+                                </div>
+                            </div>
+
+                            <div class="chart-group">
+                                <h3>Disponibilidade (Usando HTTP Agente)</h3>
+                                <div class="checkbox-group">
+                                    <details>
+                                        <summary>
+                                            <div>
+                                                <label><input type="checkbox" name="disponibilidade-global-http-agente" value="disponibilidade-global-http-agente"> Disponibilidade Global HTTP Agent (48h)</label>
+                                                <label><input type="checkbox" name="disponibilidade-especifica-http-agente" value="disponibilidade-especifica-http-agente"> Disponibilidade Específica HTTP Agent (48h, 24h, 12h, 6h)</label>
+                                            </div>
+                                            <img src="/image/icons/down_black.png" alt="" height="20px">
+                                        </summary>
+                                        <p>Chave Zabbix: <strong>Metrica especifica do host (Usando <b>HTTP Agent</b>)</strong></p>
+                                        <label><input type="text" name="custom-http-metric"></label>
+                                    </details>
+                                </div>
+                            </div>
+
                             <div class="chart-group">
                                 <h3>Disponibilidade</h3>
                                 <div class="checkbox-group">

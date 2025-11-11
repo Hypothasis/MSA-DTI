@@ -14,10 +14,12 @@ import br.com.dti.msa.model.DefaultZabbixKey;
 import br.com.dti.msa.model.Host;
 import br.com.dti.msa.model.HostMetricConfig;
 import br.com.dti.msa.model.Metric;
+import br.com.dti.msa.model.MetricCurrentValue;
 import br.com.dti.msa.model.MetricHistory;
 import br.com.dti.msa.model.RecentEvents;
 import br.com.dti.msa.repository.DefaultZabbixKeyRepository;
 import br.com.dti.msa.repository.HostRepository;
+import br.com.dti.msa.repository.MetricCurrentValueRepository;
 import br.com.dti.msa.repository.MetricHistoryRepository;
 import br.com.dti.msa.repository.MetricRepository;
 import br.com.dti.msa.repository.RecentEventsRepository;
@@ -26,6 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 
@@ -110,29 +116,51 @@ public class HostService {
         LocalDateTime startTime48h = LocalDateTime.now().minusHours(48);
 
         // Lista com as chaves individuais configuradas para o host (ex: "cpu-uso", "memoria-ram-total")
-        List<String> configuredMetricKeys = host.getMetricConfigs().stream() // <-- MUDANÇA AQUI
-                                                .map(config -> config.getMetric().getMetricKey()) // <-- MUDANÇA AQUI
-                                                .collect(Collectors.toList());
+        Set<String> configuredMetricKeys = host.getMetricConfigs().stream()
+                                            .map(config -> config.getMetric().getMetricKey())
+                                            .collect(Collectors.toSet());
 
         // --- CÁLCULO DE STATUS ---
-        // Determina o status geral do host (OK, ALERT, PROBLEM) e o define no DTO
-        dto.setStatus(determineHostStatus(host, configuredMetricKeys));
+        Host.HostStatus statusEnum = host.getStatus(); // Pega o status salvo pelo Coletor
 
+        String statusString;
+        switch (statusEnum) {
+            case ACTIVE:
+                statusString = "OK";
+                break;
+            case ALERT:
+                statusString = "ALERT";
+                break;
+            case INACTIVE:
+            default:
+                statusString = "PROBLEM";
+                break;
+        }
+        dto.setStatus(statusString); // Define o status no DTO (tradução correta)
 
         // --- PREENCHIMENTO DO DTO ---
 
-        // 1. Métricas de Histórico (para gráficos de linha/área)
-        if (configuredMetricKeys.contains("disponibilidade-especifica")) {
-
-            // Use o método que busca o histórico completo, sem agregar.
-            List<HostDashboardDTO.MetricValueDTO> history =
-                fetchMetricHistory(host.getId(), "disponibilidade-especifica", startTime48h);
-
-            // Opcional, mas recomendado: Converte os valores de 1.0 para 100.0
-            // para que o gráfico mostre 100% em vez de 1.
-            history.forEach(point -> point.setY(point.getY() * 100.0));
-
+        // 1. Lógica de Prioridade para Disponibilidade ESPECÍFICA (Gráfico de 96 pontos)
+        String specificKeyToUse = getPriorityKey(configuredMetricKeys, 
+            "disponibilidade-especifica-health", 
+            "disponibilidade-especifica-http-agente", 
+            "disponibilidade-especifica"
+        );
+        if (specificKeyToUse != null) {
+            List<HostDashboardDTO.MetricValueDTO> history = fetchMetricHistory(host.getId(), specificKeyToUse, startTime48h);
+            history.forEach(point -> point.setY(point.getY() * 100.0)); // Converte 1.0 para 100.0
             dto.setAvailabilityHistory(history);
+        }
+
+        // 2. Lógica de Prioridade para Disponibilidade GLOBAL (Cards de 4 períodos)
+        String globalKeyToUse = getPriorityKey(configuredMetricKeys,
+            "disponibilidade-global-health",
+            "disponibilidade-global-http-agente",
+            "disponibilidade-global"
+        );
+
+        if (globalKeyToUse != null) {
+            dto.setGlobalAvailability(calculateGlobalAvailability(host.getId(), globalKeyToUse));
         }
 
         if (configuredMetricKeys.contains("latencia")) {
@@ -148,13 +176,7 @@ public class HostService {
         }
 
         // 2. Métricas de Valor Único, Agregado ou Composto
-
-        // Lógica para Disponibilidade Global (Agregado)
-        if (configuredMetricKeys.containsAll(metricCatalog.getMetricKeysForCheckbox("disponibilidade-global"))) {
-            dto.setGlobalAvailability(calculateGlobalAvailability(host.getId(), "disponibilidade-global"));
-        }
-        
-        // Lógica para Sistema Operacional (Composto)
+        // Lógica para Sistema Operacional (Correto - desde que 'findLastValueAsString' seja corrigido)
         if (configuredMetricKeys.containsAll(metricCatalog.getMetricKeysForCheckbox("sistema-operacional"))) {
             findLastValueAsString(host.getId(), "os-nome").ifPresent(osName -> 
                 findLastValueAsString(host.getId(), "os-arch").ifPresent(arch -> {
@@ -272,15 +294,15 @@ public class HostService {
                 PublicHostStatusDTO dto = new PublicHostStatusDTO(host);
                 
                 // 2. Pega o conjunto de TODAS as chaves de métrica configuradas para este host
-                // (Ex: "cpu-uso", "memoria-ram-total", "disponibilidade-global-sigaa", etc.)
+                // (Ex: "cpu-uso", "memoria-ram-total", "disponibilidade-global-health", etc.)
                 Set<String> configuredMetricKeys = host.getMetricConfigs().stream()
                     .map(config -> config.getMetric().getMetricKey())
                     .collect(Collectors.toSet());
 
                 // 3. Lógica de Prioridade para Disponibilidade GLOBAL (os 4 cards)
                 String globalKeyToUse = null;
-                if (configuredMetricKeys.contains("disponibilidade-global-sigaa")) {
-                    globalKeyToUse = "disponibilidade-global-sigaa";
+                if (configuredMetricKeys.contains("disponibilidade-global-health")) {
+                    globalKeyToUse = "disponibilidade-global-health";
                 } else if (configuredMetricKeys.contains("disponibilidade-global-http-agente")) {
                     globalKeyToUse = "disponibilidade-global-http-agente";
                 } else if (configuredMetricKeys.contains("disponibilidade-global")) {
@@ -294,8 +316,8 @@ public class HostService {
 
                 // 5. Lógica de Prioridade para Disponibilidade ESPECÍFICA (o gráfico de 96 pontos)
                 String specificKeyToUse = null;
-                if (configuredMetricKeys.contains("disponibilidade-especifica-sigaa")) {
-                    specificKeyToUse = "disponibilidade-especifica-sigaa";
+                if (configuredMetricKeys.contains("disponibilidade-especifica-health")) {
+                    specificKeyToUse = "disponibilidade-especifica-health";
                 } else if (configuredMetricKeys.contains("disponibilidade-especifica-http-agente")) {
                     specificKeyToUse = "disponibilidade-especifica-http-agente";
                 } else if (configuredMetricKeys.contains("disponibilidade-especifica")) {
@@ -346,8 +368,8 @@ public class HostService {
 
                 // 5. Lógica de Prioridade para Disponibilidade GLOBAL (o card de %)
                 String globalKeyToUse = null;
-                if (configuredMetricKeys.contains("disponibilidade-global-sigaa")) {
-                    globalKeyToUse = "disponibilidade-global-sigaa";
+                if (configuredMetricKeys.contains("disponibilidade-global-health")) {
+                    globalKeyToUse = "disponibilidade-global-health";
                 } else if (configuredMetricKeys.contains("disponibilidade-global-http-agente")) {
                     globalKeyToUse = "disponibilidade-global-http-agente";
                 } else if (configuredMetricKeys.contains("disponibilidade-global")) {
@@ -362,8 +384,8 @@ public class HostService {
 
                 // 6. Lógica de Prioridade para Disponibilidade ESPECÍFICA (o gráfico de 96 pontos)
                 String specificKeyToUse = null;
-                if (configuredMetricKeys.contains("disponibilidade-especifica-sigaa")) {
-                    specificKeyToUse = "disponibilidade-especifica-sigaa";
+                if (configuredMetricKeys.contains("disponibilidade-especifica-health")) {
+                    specificKeyToUse = "disponibilidade-especifica-health";
                 } else if (configuredMetricKeys.contains("disponibilidade-especifica-http-agente")) {
                     specificKeyToUse = "disponibilidade-especifica-http-agente";
                 } else if (configuredMetricKeys.contains("disponibilidade-especifica")) {
@@ -568,9 +590,8 @@ public class HostService {
     @Transactional
     public Host updateHost(Long hostId, UpdateHostDTO dto) throws ZabbixValidationException {
         
-        // 1. Busca o host existente no banco
-        // O findById já deve carregar as metricConfigs (pois está definido como EAGER no Host.java)
-        Host existingHost = findById(hostId);
+        // 1. Busca o host existente no banco (usando a query otimizada)
+        Host existingHost = findById(hostId); // findById já chama findByIdWithFullMetrics
 
         // 2. Atualiza os campos básicos
         existingHost.setName(dto.getHostName());
@@ -579,48 +600,39 @@ public class HostService {
         existingHost.setType(dto.getHostType());
 
         // 3. CONVERTE NOMES DOS CHECKBOXES (DTO) PARA CHAVES DE MÉTRICAS REAIS (BANCO)
-        List<String> metricKeysToEnable = dto.getEnabledMetrics().stream()
-                .flatMap(checkboxName -> metricCatalog.getMetricKeysForCheckbox(checkboxName).stream())
-                .distinct()
-                .collect(Collectors.toList());
-
-        if (metricKeysToEnable.isEmpty() && !dto.getEnabledMetrics().isEmpty()) {
-            throw new ZabbixValidationException("Nenhuma métrica correspondente encontrada no catálogo para as opções selecionadas.");
-        }
-        
-        // Busca no banco todas as entidades Metric que o usuário realmente selecionou
-        List<Metric> selectedMetrics = metricRepository.findByMetricKeyIn(metricKeysToEnable);
-
-        // 4. LIMPA AS CONFIGURAÇÕES ANTIGAS
-        // Graças ao 'orphanRemoval = true' na entidade Host, 
-        // isso irá deletar as linhas antigas da tabela host_metric_config.
-        existingHost.getMetricConfigs().clear();
-
-        // 5. CRIA E VALIDA AS NOVAS CONFIGURAÇÕES
         Set<HostMetricConfig> newConfigurations = new HashSet<>();
-        for (Metric metric : selectedMetrics) {
+        for (String checkboxName : dto.getEnabledMetrics()) {
             
-            // a. Encontra a chave Zabbix correta (padrão ou customizada)
-            String zabbixKeyToUse = findZabbixKeyForMetric(metric, dto); // Usando um método auxiliar adaptado
-
-            // b. Valida a chave no Zabbix
-            if (zabbixKeyToUse == null || zabbixKeyToUse.equalsIgnoreCase("zabbix_api")) {
-                continue; // Pula métricas que não precisam de validação (como eventos)
-            }
-            if (!zabbixClient.itemExistsOnHost(dto.getHostZabbixID(), zabbixKeyToUse)) {
-                throw new ZabbixValidationException("A chave Zabbix '" + zabbixKeyToUse + 
-                    "' (para a métrica '" + metric.getName() + "') não foi encontrada no host.");
+            List<String> metricKeys = metricCatalog.getMetricKeysForCheckbox(checkboxName);
+            if (metricKeys.isEmpty()) {
+                throw new ZabbixValidationException("O checkbox '" + checkboxName + "' não foi encontrado no MetricCatalog.");
             }
 
-            // c. Cria a nova entidade de "Contrato"
-            HostMetricConfig config = new HostMetricConfig(existingHost, metric, zabbixKeyToUse);
-            newConfigurations.add(config);
+            for (String metricKey : metricKeys) {
+                Metric metric = metricRepository.findByMetricKey(metricKey)
+                    .orElseThrow(() -> new ZabbixValidationException("Métrica '" + metricKey + "' não encontrada no catálogo do banco."));
+
+                // d. Determina qual Zabbix Key usar (usando o DTO de Update)
+                String zabbixKeyToUse = findZabbixKeyForMetric(metric, checkboxName, dto);
+
+                // e. Valida a chave no Zabbix
+                if (zabbixKeyToUse != null && !zabbixKeyToUse.equalsIgnoreCase("zabbix_api")) {
+                    if (!zabbixClient.itemExistsOnHost(dto.getHostZabbixID(), zabbixKeyToUse)) {
+                        throw new ZabbixValidationException("A chave Zabbix '" + zabbixKeyToUse + 
+                            "' (para a métrica '" + metric.getName() + "') não foi encontrada no host.");
+                    }
+                }
+
+                HostMetricConfig config = new HostMetricConfig(existingHost, metric, zabbixKeyToUse);
+                newConfigurations.add(config);
+            }
         }
 
-        // 6. ADICIONA AS NOVAS CONFIGURAÇÕES AO HOST
+        // 4. ATUALIZA A COLEÇÃO (remove as antigas, adiciona as novas)
+        existingHost.getMetricConfigs().clear();
         existingHost.getMetricConfigs().addAll(newConfigurations);
         
-        // 7. Salva o host (O JPA irá deletar as configs antigas e inserir as novas)
+        // 5. Salva o host
         return hostRepository.save(existingHost);
     }
 
@@ -644,13 +656,13 @@ public class HostService {
      */
     private String findZabbixKeyForMetric(Metric metric, String checkboxName, CreateHostDTO dto) throws ZabbixValidationException {
         
-        // Caso 1: Métrica customizada do SIGAA
-        if (checkboxName.equals("disponibilidade-global-sigaa") || 
-            checkboxName.equals("disponibilidade-especifica-sigaa")) {
+        // Caso 1: Métrica customizada do Health Ready
+        if (checkboxName.equals("disponibilidade-global-health") || 
+            checkboxName.equals("disponibilidade-especifica-health")) {
             
-            String httpMetric = dto.getSigaaHttpMetric(); // <-- Busca no campo correto
+            String httpMetric = dto.getHealthHttpMetric(); // <-- Busca no campo correto
             if (httpMetric == null || httpMetric.isBlank()) {
-                throw new ZabbixValidationException("A Métrica de Disponibilidade SIGAA não pode estar vazia.");
+                throw new ZabbixValidationException("A Métrica de Disponibilidade Health Ready não pode estar vazia.");
             }
             return httpMetric;
         }
@@ -671,70 +683,52 @@ public class HostService {
             .map(DefaultZabbixKey::getZabbixKey)
             .orElseThrow(() -> new ZabbixValidationException("A chave Zabbix padrão para '" + metric.getMetricKey() + "' não foi encontrada no banco."));
     }
+    
     /**
-     * Método auxiliar para o UPDATE.
-     * (Assume que UpdateHostDTO tem os mesmos campos de métrica customizada que CreateHostDTO)
+     * MÉTODO AUXILIAR (Sobrecarga) para o UpdateHostDTO
      */
-    private String findZabbixKeyForMetric(Metric metric, UpdateHostDTO dto) throws ZabbixValidationException {
-        String metricKey = metric.getMetricKey();
+    private String findZabbixKeyForMetric(Metric metric, String checkboxName, UpdateHostDTO dto) throws ZabbixValidationException {
         
-        // Se for uma métrica customizada, pega do DTO
-        if (metricKey.contains("-sigaa") || metricKey.contains("-http-agente")) {
-            String httpAgentMetric = dto.getHttpAgentMetric(); 
-            if (httpAgentMetric == null || httpAgentMetric.isBlank()) {
+        // Caso 1: Métrica de Eventos
+        if (metric.getMetricKey().equals("eventos-recentes")) {
+            return "zabbix_api";
+        }
+
+        // Caso 2: Métrica customizada do Health
+        if (checkboxName.equals("disponibilidade-global-health") || 
+            checkboxName.equals("disponibilidade-especifica-health")) {
+            
+            String httpMetric = dto.getHealthHttpMetric(); // <-- Mudei para 'sigaaHttpMetric'
+            if (httpMetric == null || httpMetric.isBlank()) {
+                throw new ZabbixValidationException("A Métrica de Disponibilidade Health não pode estar vazia.");
+            }
+            return httpMetric;
+        }
+
+        // Caso 3: Métrica customizada HTTP Genérica
+        if (checkboxName.equals("disponibilidade-global-http-agente") || 
+            checkboxName.equals("disponibilidade-especifica-http-agente")) {
+            
+            String httpMetric = dto.getCustomHttpMetric(); 
+            if (httpMetric == null || httpMetric.isBlank()) {
                 throw new ZabbixValidationException("A Métrica de Disponibilidade HTTP customizada não pode estar vazia.");
             }
-            return httpAgentMetric;
+            return httpMetric;
         }
 
-        // Se não for customizada, busca a chave padrão no banco
+        // Caso 4: Métrica Padrão (busca no banco)
         return defaultZabbixKeyRepository.findByMetric(metric)
             .map(DefaultZabbixKey::getZabbixKey)
-            .orElseThrow(() -> new ZabbixValidationException("A chave Zabbix padrão para '" + metricKey + "' não foi encontrada no banco."));
+            .orElseThrow(() -> new ZabbixValidationException("A chave Zabbix padrão para '" + metric.getMetricKey() + "' não foi encontrada no banco."));
     }
 
-    private String determineHostStatus(Host host, List<String> configuredMetricKeys) {
-        // NÍVEL 1: CHECAGEM CRÍTICA (PROBLEM)
-        // Se a métrica de disponibilidade estiver configurada, verificamos primeiro.
-        if (configuredMetricKeys.contains("disponibilidade-global")) {
-            Optional<Double> lastAvailability = findLastValue(host.getId(), "disponibilidade-global");
-            
-            // Se o valor for 0, o host está com um problema crítico.
-            if (lastAvailability.isPresent() && lastAvailability.get() == 0.0) {
-                return "PROBLEM";
-            }
-            // Se não houver dados, não podemos determinar o status.
-            if (lastAvailability.isEmpty()) {
-                return "UNKNOWN";
-            }
-        }
-
-        // NÍVEL 2: CHECAGEM DE ALERTAS (ALERT)
-        
-        // Alerta de CPU alta (ex: acima de 90%)
-        if (configuredMetricKeys.contains("cpu-uso")) {
-            Optional<Double> lastCpu = findLastValue(host.getId(), "cpu-uso");
-            if (lastCpu.isPresent() && lastCpu.get() > 90.0) {
-                return "ALERT";
-            }
-        }
-
-        // Alerta de pouca memória RAM (ex: menos de 10% livre)
-        if (configuredMetricKeys.contains("memoria-ram-total") && configuredMetricKeys.contains("memoria-ram-disponivel")) {
-            Optional<Double> totalMem = findLastValue(host.getId(), "memoria-ram-total");
-            Optional<Double> availableMem = findLastValue(host.getId(), "memoria-ram-disponivel");
-            if (totalMem.isPresent() && availableMem.isPresent() && totalMem.get() > 0) {
-                double percentFree = (availableMem.get() / totalMem.get()) * 100;
-                if (percentFree < 10.0) {
-                    return "ALERT";
-                }
-            }
-        }
-        
-        // NÍVEL 3: SE NADA ACIMA OCORREU, ESTÁ TUDO OK
-        return "OK";
+    private String getPriorityKey(Set<String> configuredKeys, String key1, String key2, String key3) {
+        if (configuredKeys.contains(key1)) return key1;
+        if (configuredKeys.contains(key2)) return key2;
+        if (configuredKeys.contains(key3)) return key3;
+        return null;
     }
-
+    
     private List<HostDashboardDTO.MetricValueDTO> fetchMetricHistory(Long hostId, String metricKey, LocalDateTime startTime) {
         List<MetricHistory> history = metricHistoryRepository.findByHostIdAndMetricMetricKeyAndTimestampAfterOrderByTimestampAsc(hostId, metricKey, startTime);
         return history.stream()

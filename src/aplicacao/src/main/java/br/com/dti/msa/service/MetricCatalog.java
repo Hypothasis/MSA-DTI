@@ -15,9 +15,9 @@ public class MetricCatalog {
         Map.entry("disponibilidade-global", List.of("disponibilidade-global")),
         Map.entry("disponibilidade-especifica", List.of("disponibilidade-especifica")),
 
-        // Métricas para Disponibilidade SIGAA
-        Map.entry("disponibilidade-global-sigaa", List.of("disponibilidade-global-sigaa")),
-        Map.entry("disponibilidade-especifica-sigaa", List.of("disponibilidade-especifica-sigaa")),
+        // Métricas para Disponibilidade Health Ready
+        Map.entry("disponibilidade-global-health", List.of("disponibilidade-global-health")),
+        Map.entry("disponibilidade-especifica-health", List.of("disponibilidade-especifica-health")),
 
         // Métricas para Disponibilidade HTTP Agent
         Map.entry("disponibilidade-global-http-agente", List.of("disponibilidade-global-http-agente")),

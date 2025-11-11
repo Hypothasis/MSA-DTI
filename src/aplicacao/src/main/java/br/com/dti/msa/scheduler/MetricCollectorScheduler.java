@@ -168,9 +168,9 @@ public class MetricCollectorScheduler {
         // REGRA 1: CHECAGEM DE DISPONIBILIDADE (A Regra de Ouro)
         // ===================================================================
         
-        // Tenta encontrar a métrica de disponibilidade prioritária (SIGAA ou HTTP)
+        // Tenta encontrar a métrica de disponibilidade prioritária (health ou HTTP)
         Optional<HostMetricConfig> customAvailability = configs.stream()
-            .filter(c -> c.getMetric().getMetricKey().equals("disponibilidade-global-sigaa") ||
+            .filter(c -> c.getMetric().getMetricKey().equals("disponibilidade-global-health") ||
                          c.getMetric().getMetricKey().equals("disponibilidade-global-http-agente"))
             .findFirst();
 
@@ -316,8 +316,8 @@ public class MetricCollectorScheduler {
      * Verifica se uma métrica é do tipo Health Check (JSON).
      */
     private boolean isHealthCheckMetric(String metricKey) {
-        return metricKey.equals("disponibilidade-global-sigaa") ||
-               metricKey.equals("disponibilidade-especifica-sigaa") ||
+        return metricKey.equals("disponibilidade-global-health") ||
+               metricKey.equals("disponibilidade-especifica-health") ||
                metricKey.equals("disponibilidade-global-http-agente") ||
                metricKey.equals("disponibilidade-especifica-http-agente");
     }

@@ -7,9 +7,9 @@ INSERT INTO metrics (metric_key, name, unit) VALUES
 ('disponibilidade-global', 'Disponibilidade Global (48h)', '%'),
 ('disponibilidade-especifica', 'Disponibilidade Específica', '%'),
 
--- Métricas para Disponibilidade SIGAA
-('disponibilidade-global-sigaa', 'Disponibilidade Global (48h)', '%'),
-('disponibilidade-especifica-sigaa', 'Disponibilidade Específica', '%'),
+-- Métricas para Disponibilidade Health Ready
+('disponibilidade-global-health', 'Disponibilidade Global (48h)', '%'),
+('disponibilidade-especifica-health', 'Disponibilidade Específica', '%'),
 
 -- Métricas para Disponibilidade HTTP Agent
 ('disponibilidade-global-http-agente', 'Disponibilidade Global (48h)', '%'),
@@ -84,6 +84,6 @@ INSERT INTO default_zabbix_key (metric_id, zabbix_key) VALUES
 ((SELECT id FROM metrics WHERE metric_key = 'cpu-troca-contextos'), 'system.cpu.switches'),
 ((SELECT id FROM metrics WHERE metric_key = 'memoria-swap-total'), 'system.swap.size[,total]'),
 ((SELECT id FROM metrics WHERE metric_key = 'memoria-swap-livre'), 'system.swap.size[,free]'),
--- Métricas customizadas (SIGAA, HTTP) não têm chave padrão, então não são inseridas aqui.
+-- Métricas customizadas (health, HTTP) não têm chave padrão, então não são inseridas aqui.
 -- 'eventos-recentes' é uma chave especial da API.
 ((SELECT id FROM metrics WHERE metric_key = 'eventos-recentes'), 'zabbix_api');
