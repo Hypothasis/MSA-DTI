@@ -88,6 +88,13 @@ main > header > section{
     color: #e62f2f;
 }
 
+#hostStatusDescription{
+    font-size: 1rem;
+    font-weight: bold;
+    font-family: var(--font-raleway);
+    margin-top: 10px;
+}
+
 /* ------------------------- */
 /* ---- MAIN > ARTICLE ----- */
 

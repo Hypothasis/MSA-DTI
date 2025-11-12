@@ -10,6 +10,7 @@ public class PublicHostStatusDTO {
     private String publicId;
     private String name;
     private Host.HostStatus status;
+    private String statusDescription;
     private String type;
 
     private HostDashboardDTO.AvailabilityDTO globalAvailability;
@@ -20,5 +21,6 @@ public class PublicHostStatusDTO {
         this.name = host.getName();
         this.status = host.getStatus();
         this.type = host.getType();
+        this.statusDescription = host.getStatusDescription();
     }
 }

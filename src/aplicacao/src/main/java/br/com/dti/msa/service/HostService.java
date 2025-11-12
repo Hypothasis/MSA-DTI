@@ -138,6 +138,8 @@ public class HostService {
         }
         dto.setStatus(statusString); // Define o status no DTO (tradução correta)
 
+        dto.setStatusDescription(host.getStatusDescription());
+
         // --- PREENCHIMENTO DO DTO ---
 
         // 1. Lógica de Prioridade para Disponibilidade ESPECÍFICA (Gráfico de 96 pontos)

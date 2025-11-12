@@ -16,42 +16,28 @@ public class CleanupScheduler {
     @Autowired private MetricHistoryRepository metricHistoryRepository;
     @Autowired private ZabbixConnectionStatusRepository zabbixStatusRepository;
 
+    // Define o número máximo de registros a manter por métrica/host
+    private static final int MAX_RECORDS_PER_METRIC = 2880;
+
     // Executa a cada hora, no minuto 0.
     // Ex: "0 0 4 * * ?" para rodar todo dia às 4 da manhã.
     @Scheduled(cron = "0 0 * * * ?") 
-    public void cleanupOldMetricHistory() {
-        System.out.println("--- INICIANDO JOB DE LIMPEZA DE MÉTRICAS ANTIGAS ---");
+    public void cleanupOldData() {
+        System.out.println("--- INICIANDO JOB DE LIMPEZA DE DADOS ANTIGOS ---");
 
-        /* 
-        // VERIFICA O ÚLTIMO REGISTRO
-        Optional<MetricHistory> latestRecord = metricHistoryRepository.findFirstByOrderByTimestampDesc();
-
-        if (latestRecord.isPresent()) {
-            LocalDateTime lastEntryTime = latestRecord.get().getTimestamp();
-            LocalDateTime now = LocalDateTime.now();
-
-            // VERIFICA SE A COLETA ESTÁ ATIVA RECENTEMENTE (ex: nos últimos 2 minutos)
-            if (lastEntryTime.isBefore(now.minusMinutes(2))) {
-                // Se o último registro for muito antigo, aborta a limpeza.
-                System.out.println(" >> Limpeza abortada. O último registro de métrica é antigo (" + lastEntryTime + "). " +
-                                   "A aplicação pode ter acabado de reiniciar após um período offline.");
-                System.out.println("--- JOB DE LIMPEZA FINALIZADO (SEM AÇÃO) ---");
-                return;
-            }
-        }
-        */
-
-        // --- TAREFA 1: Limpar Histórico de Métricas  ---
-        // SE A COLETA ESTIVER OK, PROSSEGUE COM A LIMPEZA
+        // --- TAREFA 1: Limpar Histórico de Métricas (Limpeza Rápida por Tempo) ---
         LocalDateTime cutoffDate = LocalDateTime.now().minusHours(48);
-        System.out.println("Apagando registros de histórico anteriores a: " + cutoffDate);
+        System.out.println("Apagando registros de histórico de métricas anteriores a: " + cutoffDate);
         metricHistoryRepository.deleteOlderThan(cutoffDate);
 
-        // --- TAREFA 2: Limpar Logs de Conexão com o Zabbix ---
-        // Vamos manter os logs dos últimas 48 horas.
+        // --- TAREFA 2: Limpar Logs de Conexão (Limpeza Rápida por Tempo) ---
         LocalDateTime statusCutoffDate = LocalDateTime.now().minusHours(48);
         System.out.println("Apagando registros de status de conexão anteriores a: " + statusCutoffDate);
         zabbixStatusRepository.deleteOlderThan(statusCutoffDate);
+
+        // --- TAREFA 3: Limpar Excesso de Registros (Garantia de Quantidade) ---
+        System.out.println("Garantindo que nenhuma métrica tenha mais que " + MAX_RECORDS_PER_METRIC + " registros...");
+        metricHistoryRepository.enforceCountBasedRetention(MAX_RECORDS_PER_METRIC);
 
         System.out.println("--- JOB DE LIMPEZA FINALIZADO ---");
     }

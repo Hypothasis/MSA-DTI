@@ -43,14 +43,22 @@ public class MetricCollectorScheduler {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    public static class StatusResult {
+        final Host.HostStatus status;
+        final String description;
+
+        public StatusResult(Host.HostStatus status, String description) {
+            this.status = status;
+            this.description = description;
+        }
+    }
+
     @Transactional
     @Scheduled(fixedRate = 60000) // Executa a cada 60 segundos
     public void collectAllMetrics() {
         System.out.println("--- INICIANDO COLETA E ANÁLISE DE STATUS: " + LocalDateTime.now() + " ---");
 
-        // O 'findAllWithMetrics' do repositório precisa ser atualizado para 'findAllWithMetricConfigs'
-        // Por enquanto, 'findAll()' funciona pois a transação está aberta.
-        List<Host> hostsToMonitor = hostRepository.findAll();
+        List<Host> hostsToMonitor = hostRepository.findAllWithMetrics();
         List<MetricHistory> historyBatch = new ArrayList<>();
         List<RecentEvents> eventsBatch = new ArrayList<>();
 
@@ -115,9 +123,13 @@ public class MetricCollectorScheduler {
             }
 
             // DETERMINA O NOVO STATUS DO HOST
-            Host.HostStatus newStatus = determineHostStatus(host, collectedItems);
-            host.setStatus(newStatus);
-            System.out.println("  > Status do host '" + host.getName() + "' definido para: " + newStatus);
+            StatusResult newStatusResult = determineHostStatus(host, collectedItems);
+            
+            host.setStatus(newStatusResult.status);
+            host.setStatusDescription(newStatusResult.description);
+            
+            System.out.println("  > Status do host '" + host.getName() + "' definido para: " + 
+                               newStatusResult.status + " (" + newStatusResult.description + ")");
 
             // LÓGICA PARA COLETAR EVENTOS
             // CORREÇÃO: Verifica as configs
@@ -158,20 +170,15 @@ public class MetricCollectorScheduler {
     }
 
     /**
-     * Método auxiliar que agora entende os 3 tipos de disponibilidade.
+     * CORRIGIDO: Método auxiliar agora retorna a 'StatusResult' (o enum E a descrição).
      */
-    private Host.HostStatus determineHostStatus(Host host, Map<String, String> collectedZabbixMetrics) {
-        // Pega o conjunto de configurações do host UMA VEZ
+    StatusResult determineHostStatus(Host host, Map<String, String> collectedZabbixMetrics) {
         Set<HostMetricConfig> configs = host.getMetricConfigs();
 
-        // ===================================================================
-        // REGRA 1: CHECAGEM DE DISPONIBILIDADE (A Regra de Ouro)
-        // ===================================================================
+        // --- REGRA 1: CHECAGEM DE DISPONIBILIDADE (A Regra de Ouro) ---
         
-        // Tenta encontrar a métrica de disponibilidade prioritária (health ou HTTP)
         Optional<HostMetricConfig> customAvailability = configs.stream()
-            .filter(c -> c.getMetric().getMetricKey().equals("disponibilidade-global-health") ||
-                         c.getMetric().getMetricKey().equals("disponibilidade-global-http-agente"))
+            .filter(c -> isHealthCheckMetric(c.getMetric().getMetricKey()))
             .findFirst();
 
         if (customAvailability.isPresent()) {
@@ -180,30 +187,27 @@ public class MetricCollectorScheduler {
             String rawJson = collectedZabbixMetrics.get(zabbixKey);
 
             if (rawJson == null) {
-                return Host.HostStatus.INACTIVE; // Falha ao coletar o JSON
+                return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Coleta do Health Check falhou)");
             }
             try {
                 JsonNode root = objectMapper.readTree(rawJson);
                 String status = root.path("status").asText();
 
-                if (status.equals("UP")) {
-                    // Aplicação está UP. Verificamos as dependências.
+                if (status.equalsIgnoreCase("UP")) {
                     JsonNode dbStatus = root.path("deps").path("db");
-                    // Se o nó 'db' não existir OU se existir e for "UP", está tudo OK.
-                    if (dbStatus.isMissingNode() || dbStatus.asText().equals("UP")) {
+                    if (dbStatus.isMissingNode() || dbStatus.asText().equalsIgnoreCase("UP")) {
                          // A checagem de CPU/Memória (Regra 2) vai rodar
                         return checkResourceAlerts(host, configs, collectedZabbixMetrics);
                     } else {
                         // A aplicação está UP, mas o banco (deps) está DOWN.
-                        return Host.HostStatus.ALERT; 
+                        return new StatusResult(Host.HostStatus.ALERT, "Alerta: Aplicação 'UP', mas dependência 'db' está 'DOWN'."); 
                     }
                 } else {
-                    // O JSON retornou status "DOWN" ou qualquer outra coisa
-                    return Host.HostStatus.INACTIVE;
+                    // O JSON retornou status "DOWN"
+                    return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Health check reportou 'DOWN')");
                 }
             } catch (Exception e) {
-                System.err.println("Erro ao parsear JSON de health check para o host " + host.getName() + ": " + rawJson);
-                return Host.HostStatus.INACTIVE; // JSON inválido é um problema crítico
+                return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (JSON de Health Check inválido)");
             }
             
         } else {
@@ -217,30 +221,23 @@ public class MetricCollectorScheduler {
                 Double availabilityValue = parseDouble(collectedZabbixMetrics.get(zabbixKey));
                 
                 if (availabilityValue == null || availabilityValue == 0.0) {
-                    return Host.HostStatus.INACTIVE; // Host está inacessível
+                    return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Ping falhou ou agente indisponível)");
                 }
-                // Se o ping for 1.0 (OK), passamos para a Regra 2
             } else {
-                // Se NENHUMA métrica de disponibilidade estiver configurada, marca como inativo
-                return Host.HostStatus.INACTIVE; 
+                return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Nenhuma métrica de disponibilidade configurada)"); 
             }
         }
 
-        // ===================================================================
-        // REGRA 2: CHECAGEM DE ALERTAS DE RECURSO
-        // ===================================================================
-        // Se chegamos aqui, o host é considerado "Acessível" (via JSON ou Ping)
-        // Agora, verificamos se ele está sobrecarregado.
+        // --- REGRA 2: CHECAGEM DE ALERTAS DE RECURSO ---
         return checkResourceAlerts(host, configs, collectedZabbixMetrics);
     }
     
     /**
-     * Novo método auxiliar para checar CPU e Memória (Regras 2 e 3).
-     * Só é chamado se o host for considerado ATIVO pela Regra 1.
+     * CORRIGIDO: Método auxiliar que agora retorna a 'StatusResult'
      */
-    private Host.HostStatus checkResourceAlerts(Host host, Set<HostMetricConfig> configs, Map<String, String> zabbixMetrics) {
+    private StatusResult checkResourceAlerts(Host host, Set<HostMetricConfig> configs, Map<String, String> zabbixMetrics) {
         
-        // Alerta de CPU (acima de 90%)
+        // Alerta de CPU
         Optional<HostMetricConfig> cpuConfig = configs.stream()
                 .filter(c -> c.getMetric().getMetricKey().equals("cpu-uso"))
                 .findFirst();
@@ -248,11 +245,11 @@ public class MetricCollectorScheduler {
             String zabbixKey = cpuConfig.get().getZabbixKey();
             Double cpuValue = parseDouble(zabbixMetrics.get(zabbixKey));
             if (cpuValue != null && cpuValue > 90.0) {
-                return Host.HostStatus.ALERT; // CPU acima de 90%
+                return new StatusResult(Host.HostStatus.ALERT, String.format(java.util.Locale.US, "Host com alto consumo de CPU (%.1f%%)", cpuValue));
             }
         }
         
-        // Alerta de Memória RAM (disponível abaixo de 10%)
+        // Alerta de Memória RAM
         Optional<HostMetricConfig> memTotalConfig = configs.stream().filter(c -> c.getMetric().getMetricKey().equals("memoria-ram-total")).findFirst();
         Optional<HostMetricConfig> memAvailableConfig = configs.stream().filter(c -> c.getMetric().getMetricKey().equals("memoria-ram-disponivel")).findFirst();
         
@@ -266,13 +263,13 @@ public class MetricCollectorScheduler {
             if (total != null && available != null && total > 0) {
                 double percentFree = (available / total) * 100;
                 if (percentFree < 10.0) {
-                    return Host.HostStatus.ALERT; // Menos de 10% de RAM livre
+                     return new StatusResult(Host.HostStatus.ALERT, String.format(java.util.Locale.US, "Host com alto consumo de RAM (%.1f%% livre)", percentFree));
                 }
             }
         }
 
-        // Se passou por todas as checagens de alerta, o host está ATIVO
-        return Host.HostStatus.ACTIVE;
+        // Se passou por tudo, está OK
+        return new StatusResult(Host.HostStatus.ACTIVE, "Tudo certo com o Host.");
     }
 
     /**

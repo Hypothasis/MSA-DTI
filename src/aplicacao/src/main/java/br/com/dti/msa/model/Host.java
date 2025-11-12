@@ -37,6 +37,9 @@ public class Host {
     @Column(nullable = false)
     private HostStatus status = HostStatus.ACTIVE;
 
+    @Column(name = "status_description")
+    private String statusDescription;
+
     // --- RELACIONAMENTO CORRIGIDO ---
     // Um Host tem MUITAS Configurações de Métrica
     @OneToMany(

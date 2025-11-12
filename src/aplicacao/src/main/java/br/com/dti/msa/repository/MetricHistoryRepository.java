@@ -73,4 +73,28 @@ public interface MetricHistoryRepository extends JpaRepository<MetricHistory, Me
            "AND mh.timestamp >= :startTime")
     Double calculateOverallAvailability(@Param("metricKey") String metricKey, 
                                         @Param("startTime") LocalDateTime startTime);
+
+                                        /**
+     * Garante que apenas os 'maxRecords' (ex: 2880) registros mais recentes
+     * para CADA combinação de (host_id, metric_id) sejam mantidos,
+     * deletando todos os mais antigos.
+     */
+    @Modifying
+    @Transactional
+    @Query(value = 
+        "DELETE mh FROM metric_history mh " +
+        "INNER JOIN ( " +
+        "    SELECT " +
+        "        host_id, " +
+        "        metric_id, " +
+        "        `timestamp`, " +
+        "        ROW_NUMBER() OVER (PARTITION BY host_id, metric_id ORDER BY `timestamp` DESC) as rn " +
+        "    FROM metric_history " +
+        ") as ranked " +
+        "ON mh.host_id = ranked.host_id " +
+        "AND mh.metric_id = ranked.metric_id " +
+        "AND mh.timestamp = ranked.timestamp " +
+        "WHERE ranked.rn > :maxRecords", 
+        nativeQuery = true)
+    void enforceCountBasedRetention(@Param("maxRecords") int maxRecords);
 }

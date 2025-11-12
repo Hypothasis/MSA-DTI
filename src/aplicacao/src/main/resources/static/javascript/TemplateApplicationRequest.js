@@ -202,6 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('hostName').textContent = data.name || 'N/A';
         const statusFlag = document.getElementById('hostStatusFlag');
         const statusPoint = document.getElementById('hostStatusPoint');
+        let statusDescription = document.getElementById('hostStatusDescription');
         
         let flagText = 'Desconhecido';
         let flagColorClass = 'empty'; // Uma cor padrão para status desconhecido
@@ -225,6 +226,8 @@ document.addEventListener('DOMContentLoaded', function () {
         // Remove as classes de cor antigas e adiciona a nova
         statusFlag.className = `flag ${flagColorClass}`;
         statusPoint.className = `dot ${flagColorClass}`;
+
+        statusDescription.textContent = data.statusDescription || '';
     }
 
     function updateAvailabilityGraphic(historyData) {

@@ -16,6 +16,7 @@ public class HostDashboardDTO {
     private String description;
     private String type;
     private String status;
+    private String statusDescription;
     private String lastUpdateTime;
 
     // --- Dados para Gráficos e Displays ---

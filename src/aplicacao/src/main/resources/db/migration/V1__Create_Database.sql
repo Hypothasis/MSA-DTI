@@ -10,6 +10,7 @@ CREATE TABLE hosts (
     description TEXT,
     host_type VARCHAR(50) NOT NULL CHECK (host_type IN ('APPLICATION', 'SERVER', 'DATABASE')),
     status ENUM('ACTIVE', 'ALERT', 'INACTIVE') NOT NULL DEFAULT 'ACTIVE',
+    status_description VARCHAR(255) DEFAULT 'Status pendente.',
     created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
 );
 
