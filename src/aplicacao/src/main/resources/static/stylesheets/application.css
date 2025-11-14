@@ -119,7 +119,8 @@ body{
 
 .main-header article {
     position: absolute;
-    width: 1240px;
+    height: 12%;
+    width: clamp(300px, 90% ,1240px);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -127,6 +128,10 @@ body{
     font-family: var(--font-poppins);
     font-size: 0.8rem;
     margin-bottom: 30px;
+}
+
+.main-header article img{
+    height: clamp(10px, 13vw ,120px);
 }
 
 #admin-btn{
@@ -164,6 +169,11 @@ body{
     color: black;
 }
 
+.main-header article section{
+    display: flex;
+    gap: 5px;
+    white-space: nowrap;
+}
 
 .main-header article div {
     display: flex;
@@ -179,6 +189,10 @@ body{
     gap: 5px;
 }
 
+.main-header article div ul p{
+    font-size: clamp(0.65rem, 1.3vw, 0.8rem);
+}
+
 /* ------------------------- */
 /* --------- FOOTER -------- */
 
@@ -190,7 +204,7 @@ footer{
 
 footer article {
     margin: 0 auto;
-    width: 1250px;
+    width: clamp(300px, 96% ,1250px);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -252,4 +266,49 @@ footer article div ul li .actived {
 
 footer article div ul li .actived img {
     filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.8));
+}
+
+/* HEADER RESPONSIVE */
+
+@media screen and (max-width: 599px){
+    .main-header article{
+        flex-direction: column;
+        margin-bottom: unset;
+        justify-content: center;
+        height: 23%;
+    }
+
+    .main-header article img {
+        height: clamp(10px, 26vw ,120px);
+    }
+
+    #admin-btn{
+        position: absolute;
+    }
+}
+
+@media screen and (min-width: 600px) and (max-width: 800px) {
+
+    .main-header article{
+        height: 18%;
+        gap: 5px;
+        font-size: 0.6rem;
+    }
+
+    .main-header article div ul{
+        flex-direction: column;
+        align-items: center;
+        gap: 0px;
+    }
+
+    #separator{
+        display: none;
+    }
+
+}
+
+/* SECTION RESPONSIVE */
+
+@media screen and (max-width: 1000px) {
+    
 }

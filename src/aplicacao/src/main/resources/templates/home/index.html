@@ -29,11 +29,15 @@
                 <h1>Estados de Serviços</h1>
 
                 <ul>
-                    <li><p>Última atualização</p></li>
-                    <li><p id="lastUpdateTime">--:--:--</p></li> 
-                    <li><p>|</p></li>
-                    <li><p>Próxima atualização em</p></li>
-                    <li><p id="countDownTime">00s.</p></li>
+                    <section>
+                        <li><p>Última atualização</p></li>
+                        <li><p id="lastUpdateTime">--:--:--</p></li> 
+                    </section>
+                    <li><p  id="separator">|</p></li>
+                    <section>
+                        <li><p>Próxima atualização em</p></li>
+                        <li><p id="countDownTime">00s.</p></li>
+                    </section>
                 </ul>
             </div>
         </article>    
@@ -43,7 +47,7 @@
         <section>
             <header>
                 <nav>
-                    <h1>Buscar Serviços</h1>
+                    <h1 class="title-section">Buscar Serviços</h1>
                     <img th:src="@{/image/icons/down_black.png}"
                          th:data-hover-src="@{/image/icons/up_black.png}" 
                          alt="" 
@@ -111,21 +115,21 @@
                         <li>
                             <h3>Disponibilidade</h3>
 
-                            <div>
+                            <article id="range-filter">
                                 <p>0%</p>
                                 <input type="range" min="0" max="100" step="0.1" value="100" name="disponibilidade-range" id="disponibilidade-range">
                                 <p>100%</p>
-                            </div>
+                            </article>
                         </li>
+                        <div class="container-btn">
+                            <button id="filtros-btn">Aplicar</button>
+                            <button id="reset-btn">Limpar</button>
+                        </div>
                     </ul>
-                    <div class="container-btn">
-                        <button id="filtros-btn">Aplicar</button>
-                        <button id="reset-btn">Limpar</button>
-                    </div>
                 </aside>
                 
                 <div class="services-outdoor">
-                    <h1>Serviços e Aplicações</h1>
+                    <h1 class="title-section">Serviços e Aplicações</h1>
                     
                     <ul id="services-list-container">
                     </ul>

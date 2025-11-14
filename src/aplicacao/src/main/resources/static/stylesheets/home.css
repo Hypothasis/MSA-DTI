@@ -9,11 +9,15 @@ main section{
     background-color: transparent;
     border-radius: 7px;
     height: auto;
-    width: 1250px;
+    width: clamp(300px, 96% ,1250px);
     margin: -50px auto 0px auto;
     display: flex;
     flex-direction: column;
     gap: 15px;
+}
+
+.title-section{
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
 }
 
 /* ------------------------- */
@@ -43,7 +47,7 @@ main section > header nav{
 }
 
 main section > header form{
-    margin-top: 20px;
+    margin-top: 30px;
     margin-bottom: 20px;
     display: flex;
     gap: 10px;
@@ -344,6 +348,13 @@ main section article > aside > ul li p {
     cursor: pointer;
 }
 
+#range-filter{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 5px;
+}
+
 /* ------------------------- */
 /* ----- MAIN > OUTDOOR ---- */
 
@@ -379,7 +390,7 @@ main section article > aside > ul li p {
 .services-outdoor > ul {
     display: flex;
     flex-direction: column;
-    padding: 50px 20px 20px 20px;
+    padding: 50px 10px 20px 10px;
     gap: 35px;
     height: 900px;
 
@@ -497,6 +508,12 @@ main section article > aside > ul li p {
     color: #ff2e2e;
 }
 
+.services-outdoor ul > li > div {
+    width: 95%;
+    margin: 0 auto;
+    overflow: scroll;
+    height: inherit;
+}
 /* ------------------------- */
 /* -------- ANIMATION ------ */
 
@@ -528,4 +545,62 @@ main section article > aside > ul li p {
   100% {
     box-shadow: 0 0 0 14px #ff6969;
   }
+}
+
+@media screen and (max-width: 1740px) {
+
+    main section article > aside {
+        position: relative;
+        height: 71px;
+        width: 100%;
+        margin-top: unset;
+        left: unset;
+
+        flex-direction: row;
+    }
+
+    main section article > aside:hover{
+        height: 200px;
+    }
+
+    main section article > aside h1{
+        margin-top: unset;
+        margin-left: 20px;
+        color: black;
+        font-size: clamp(1.2rem, 2.5vw, 2rem);
+    }
+
+    main section article > aside > ul {
+        width: unset;
+        
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        white-space: nowrap;
+        gap: 60px;
+        
+        overflow: visible;
+        height: auto;    
+        margin-top: 180px;
+    }
+
+
+    main section article > aside > ul li {
+        justify-content: center;
+        align-items: center;
+        position: relative; 
+    }
+
+    .container-btn{
+        width: 177px;
+        justify-content: unset;
+    }
+
+    #filtros-btn, #reset-btn{
+        margin-bottom: unset;
+    }
+
+    main section article{
+        flex-direction: column;
+    }
 }

@@ -247,9 +247,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         <p class="flag ${statusInfo.color}">${statusInfo.text}</p>
                     </div>
                 </header>
-                <ol class="pointGraphic">
-                    ${generatePointGraphicHTML(host.availabilityHistory)}
-                </ol>
+                <div>
+                    <ol class="pointGraphic">
+                        ${generatePointGraphicHTML(host.availabilityHistory)}
+                    </ol>
+                </div>
             `;
             servicesContainer.appendChild(li);
         });
