@@ -271,23 +271,41 @@ footer article div ul li .actived img {
 /* HEADER RESPONSIVE */
 
 @media screen and (max-width: 599px){
+
+    .flash-message{
+        top: 10%;
+    }
+
     .main-header article{
         flex-direction: column;
         margin-bottom: unset;
-        justify-content: center;
-        height: 23%;
+        justify-content: start;
+        height: 29%;
+        gap: 48px;
     }
 
     .main-header article img {
-        height: clamp(10px, 26vw ,120px);
+        height: clamp(105px, 26vw ,120px);
+        margin-right: 31px;
+    }
+
+    .main-header article div {
+        align-items: center;
     }
 
     #admin-btn{
         position: absolute;
+        top: 41%;
+        right: 50%;
+        transform: translateX(50%);
     }
 }
 
 @media screen and (min-width: 600px) and (max-width: 800px) {
+
+    .flash-message{
+        top: 10%;
+    }
 
     .main-header article{
         height: 18%;
@@ -310,5 +328,5 @@ footer article div ul li .actived img {
 /* SECTION RESPONSIVE */
 
 @media screen and (max-width: 1000px) {
-    
+
 }

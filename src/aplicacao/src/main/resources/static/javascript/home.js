@@ -2,7 +2,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Variaveis para troca de imagem no header
     const navbarIcon = document.getElementById('navbar-icon');
+    const filterIcon = document.getElementById('filter-icon');
     const sectionHeader = document.querySelector('main section header');
+    const aside = document.querySelector('main section article aside');
 
     //#######################################################################
     //###                  FUNÇÕES PARA O IMAGEM HEADER                   ###
@@ -19,6 +21,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
         sectionHeader.addEventListener('mouseout', () => {
             navbarIcon.src = srcOriginal;
+        });
+    }
+
+    // Checa se o elemento existe
+    if (filterIcon && aside) {
+        const srcOriginal = filterIcon.src;
+        const srcHover = filterIcon.getAttribute('data-hover-src');
+
+        aside.addEventListener('mouseover', () => {
+            filterIcon.src = srcHover;
+        });
+
+        aside.addEventListener('mouseout', () => {
+            filterIcon.src = srcOriginal;
         });
     }
 

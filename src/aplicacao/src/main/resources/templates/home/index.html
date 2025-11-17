@@ -69,7 +69,14 @@
             <article>
 
                 <aside>
-                    <h1>Filtros</h1>
+                    <img th:src="@{/image/icons/down_black.png}"
+                         th:data-hover-src="@{/image/icons/up_black.png}" 
+                         alt="" 
+                         height="30px" 
+                         id="filter-icon">
+                    <header>
+                        <h1>Filtros</h1>
+                    </header>
                     <ul>
                         <li>
                             <h3>Categoria</h3>
@@ -121,11 +128,11 @@
                                 <p>100%</p>
                             </article>
                         </li>
-                        <div class="container-btn">
-                            <button id="filtros-btn">Aplicar</button>
-                            <button id="reset-btn">Limpar</button>
-                        </div>
                     </ul>
+                    <div class="container-btn">
+                        <button id="filtros-btn">Aplicar</button>
+                        <button id="reset-btn">Limpar</button>
+                    </div>
                 </aside>
                 
                 <div class="services-outdoor">
