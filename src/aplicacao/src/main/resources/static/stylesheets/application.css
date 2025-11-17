@@ -204,7 +204,7 @@ footer{
 
 footer article {
     margin: 0 auto;
-    width: clamp(300px, 96% ,1250px);
+    width: clamp(300px, 94% ,1250px);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -281,7 +281,7 @@ footer article div ul li .actived img {
         margin-bottom: unset;
         justify-content: start;
         height: 29%;
-        gap: 48px;
+        gap: 45px;
     }
 
     .main-header article img {

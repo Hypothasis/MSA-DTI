@@ -162,3 +162,40 @@ main {
   font-weight: 300;
 }
 
+/* Responsividade ASIDE */
+
+@media screen and (max-width: 599px) {
+
+    body{
+        display: flex;
+        flex-direction: column;
+    }
+
+    aside {
+        width: 100vw;
+        height: 80px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+
+    aside.expanded{
+        width: unset;
+        height: 200px;
+    }
+
+    aside > div {
+        margin: 15px -10px 15px 10px;
+    }
+
+    aside > ul {
+        flex-direction: row;
+    }
+
+    #logoutBtn {
+        position: unset;
+        width: 60px;
+        margin-right: 10px;
+        margin-left: -10px;
+    }
+}

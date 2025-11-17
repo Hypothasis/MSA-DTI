@@ -518,6 +518,7 @@ main section article > aside > ul li p {
     overflow: scroll;
     height: inherit;
 }
+
 /* ------------------------- */
 /* -------- ANIMATION ------ */
 
@@ -731,5 +732,38 @@ main section article > aside > ul li p {
 
     main section article{
         flex-direction: column;
+    }
+
+    /* GRAFICO */
+
+    .services-outdoor{
+        padding: 20px 0px 20px 0px;
+    }
+
+    .services-outdoor > .title-section{
+        padding-left: 20px;
+        text-align: start;
+    }
+
+    .services-outdoor > ul li header{
+        overflow-y: hidden;
+        overflow-x: scroll;
+        scrollbar-width: none;
+    }
+
+    .flag{
+        display: none;
+    }
+
+    .services-outdoor > ul li::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+    }
+
+    .services-outdoor ul > li > div {
+        scrollbar-width: none;
+    }
+
+    .services-outdoor > ul li > div::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
     }
 }
