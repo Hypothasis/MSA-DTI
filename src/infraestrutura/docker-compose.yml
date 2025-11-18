@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: msa
+    ports:
+      - "3306:3306"
+    networks:
+      - rede-local
+    healthcheck:
+      test: ["CMD", "mysqladmin", "-uroot", "-proot", "ping", "-h", "127.0.0.1"]
+      interval: 5s
+      retries: 10
+  msa:
+    image: msa_image
+    container_name: msa
+    env_file:
+      - ../aplicacao/.env
+    ports:
+      - "8080:8080"
+    networks:
+      - rede-local
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+networks:
+  rede-local:
+    driver: bridge
