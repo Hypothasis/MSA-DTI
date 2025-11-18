@@ -15,7 +15,7 @@
 /* --- Formulário Principal --- */
 #host-form {
     height: 75%;
-    width: 100%;
+    width: 98%;
     background-color: var(--color-bg-light); /* Cor de fundo para o formulário */
     padding: 20px;
     border-radius: 8px;
@@ -257,4 +257,36 @@ details[open] summary {
 
 #hostCreateBtn:active  {
   transform: scale(0.97);
+}
+
+@media screen and (max-width: 599px) {
+  #host-form {
+      width: 96%;
+      margin-bottom: 10px;
+  }
+
+  .tabs-nav .tab-button {
+    font-size: clamp(0.3rem , 2vw ,1rem);
+  }
+
+  .form-group textarea {
+    min-height: 50px;
+  }
+
+  .tabs-container {
+    margin-top: 56px;
+  }
+
+  .chart-group h3 {
+    font-size: clamp(0.5rem , 3vw ,1.5rem);
+  }
+
+
+.checkbox-group label {
+    font-size: clamp(0.3rem , 2.5vw ,1rem);
+  }
+
+  details {
+    font-size: clamp(0.3rem , 2.5vw ,1rem);
+  }
 }

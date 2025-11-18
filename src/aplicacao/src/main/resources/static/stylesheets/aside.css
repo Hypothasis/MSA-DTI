@@ -73,8 +73,11 @@ aside > ul {
     list-style: none;
     display: flex;
     flex-direction: column;
+    align-items: center;
     gap: 15px;
 }
+
+/* Botoes */
 
 aside > ul li a {
     box-shadow: 1px 1px 2px rgb(128, 128, 128);
@@ -95,7 +98,7 @@ aside > ul li a {
     transition: background-color 0.3s ease-in-out;
     transition: font-weight 0.2s ease-in;
 
-    width: 100%; 
+    width: 95%; 
 }
 
 aside > ul li {
@@ -181,7 +184,11 @@ main {
 
     aside.expanded{
         width: unset;
-        height: 200px;
+        height: 95px;
+    }
+
+    .title.expanded {
+        display: none;
     }
 
     aside > div {
@@ -192,10 +199,25 @@ main {
         flex-direction: row;
     }
 
+    aside > ul li a {
+        flex-direction: column;
+        white-space: nowrap;
+        padding: 3px 5px 3px 5px;
+    }
+
+    .listTitle {
+        font-size: clamp(0.3rem , 2vw ,1.1rem);
+    }
+
     #logoutBtn {
         position: unset;
-        width: 60px;
+        width: 40px;
         margin-right: 10px;
         margin-left: -10px;
+        flex-direction: column;
+    }
+
+    #logoutBtn img {
+        height: 30px;
     }
 }
