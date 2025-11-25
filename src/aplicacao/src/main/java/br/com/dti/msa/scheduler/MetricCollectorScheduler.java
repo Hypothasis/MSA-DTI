@@ -60,61 +60,54 @@ public class MetricCollectorScheduler {
 
         List<Host> hostsToMonitor = hostRepository.findAllWithMetrics();
         List<MetricHistory> historyBatch = new ArrayList<>();
-        List<RecentEvents> eventsBatch = new ArrayList<>();
-
+        
         for (Host host : hostsToMonitor) {
             System.out.println("Coletando para o host: " + host.getName());
-
-            // Inicializa o mapa para ESTE host
             Map<String, String> collectedItems = new HashMap<>();
-
-            // Itera sobre as CONFIGURAÇÕES, não sobre as Métricas
             Set<HostMetricConfig> configs = host.getMetricConfigs();
 
-            // --- COLETA DE MÉTRICAS (LÓGICA N+1) ---
+            System.out.println("Todas as metricas configuradas: " + host.getMetricConfigs().stream().map(c -> c.getMetric().getMetricKey()).collect(Collectors.joining(", ")));
+
             for (HostMetricConfig config : configs) {
-                Metric metric = config.getMetric(); // Pega o "conceito" (ex: 'cpu-uso')
-                String zabbixKey = config.getZabbixKey(); // Pega a chave Zabbix (ex: 'system.cpu.util')
+                Metric metric = config.getMetric();
+                String zabbixKey = config.getZabbixKey();
+                String metricKey = metric.getMetricKey();
                 
-                if (zabbixKey == null || zabbixKey.equalsIgnoreCase("zabbix_api")) {
-                    continue; 
-                }
+                if (zabbixKey == null || zabbixKey.equalsIgnoreCase("zabbix_api")) continue; 
                 
-                // FAZ UMA CHAMADA DE API PARA CADA MÉTRICA
-                String rawValue = zabbixClient.getSingleItemValue(host.getZabbixId().longValue(), zabbixKey); 
+                String rawValue = zabbixClient.getSingleItemValue(host.getZabbixId(), zabbixKey); 
 
                 if (rawValue != null) {
-                    // Salva o valor bruto (String) no mapa para usar no 'determineHostStatus'
-                    collectedItems.put(zabbixKey, rawValue); // Salva para o 'determineHostStatus'                    
+                    collectedItems.put(zabbixKey, rawValue);              
                     
                     Double numericValue = null;
                     boolean isText = false;
 
-                    // Tenta salvar o valor no histórico se for numérico
                     try {
-                        // 1. Tenta converter para número (ex: "13.5")
+                        // 1. Tenta converter para número (Ping, CPU, RAM)
                         numericValue = Double.parseDouble(rawValue);
-                        
                     } catch (NumberFormatException e) {
-                        // 2. Se falhar, é TEXTO ou JSON.
                         isText = true;
                         
-                        // 3. Verifica se é uma métrica de Health Check (JSON)
-                        if (isHealthCheckMetric(metric.getMetricKey())) {
-                            numericValue = parseHealthCheckJson(rawValue); // Tenta extrair 1.0 ou 0.0 do JSON
-                            isText = (numericValue == null); // Se não conseguiu extrair, trata como texto
+                        // 2. Se falhar, verifica se é Health Check (JSON)
+                        if (isJsonHealthMetric(metricKey)) {
+                            numericValue = parseHealthCheckJson(rawValue);
+                            isText = (numericValue == null); // Se parseou, vira número
+                        }
+                        // 3. Verifica se é HTTP Header (Texto)
+                        else if (isHttpHeaderMetric(metricKey)) {
+                            numericValue = parseHttpHeader(rawValue);
+                            isText = (numericValue == null); // Se parseou, vira número
                         }
                     }
 
-                    // 4. Salva o dado no local correto
+                    // 4. Salva o dado
                     if (!isText) {
-                        // É um número (CPU, RAM, ou Health Check 'UP'/'DOWN')
                         MetricHistory historyRecord = new MetricHistory(host, metric, LocalDateTime.now(), numericValue);
                         historyBatch.add(historyRecord);
                         System.out.println("  > Métrica NUMÉRICA '" + metric.getName() + "' salva no histórico: " + numericValue);
                     } else {
-                        // É um texto puro (ex: "Linux...")
-                        System.out.println("  > Métrica de TEXTO '" + metric.getName() + "' detectada. Salvando valor atual: " + rawValue);
+                        System.out.println("  > Métrica de TEXTO '" + metric.getName() + "' detectada. Salvando valor atual.");
                         saveOrUpdateCurrentTextValue(host, metric, rawValue);
                     }
                 } else {
@@ -122,113 +115,57 @@ public class MetricCollectorScheduler {
                 }
             }
 
-            // DETERMINA O NOVO STATUS DO HOST
-            StatusResult newStatusResult = determineHostStatus(host, collectedItems);
-            
-            host.setStatus(newStatusResult.status);
-            host.setStatusDescription(newStatusResult.description);
-            
-            System.out.println("  > Status do host '" + host.getName() + "' definido para: " + 
-                               newStatusResult.status + " (" + newStatusResult.description + ")");
+            // DETERMINA STATUS E SALVA
+            StatusResult result = determineHostStatus(host, collectedItems);
+            host.setStatus(result.status);
+            host.setStatusDescription(result.description);
+            System.out.println("  > Status: " + result.status + " (" + result.description + ")");
 
-            // LÓGICA PARA COLETAR EVENTOS
-            // CORREÇÃO: Verifica as configs
-            boolean shouldCollectEvents = configs.stream()
-                .anyMatch(config -> config.getMetric().getMetricKey().equals("eventos-recentes"));
-
-            if (shouldCollectEvents) {
-                // Deleta os eventos antigos deste host para inserir os novos
-                recentEventsRepository.deleteByHostId(host.getId());
-
-                List<ZabbixEventDTO> zabbixEvents = zabbixClient.getRecentEvents(host.getZabbixId().longValue());
-                for (ZabbixEventDTO zabbixEvent : zabbixEvents) {
-                    RecentEvents newEvent = new RecentEvents();
-                    newEvent.setHost(host);
-                    newEvent.setTimestamp(LocalDateTime.ofInstant(Instant.ofEpochSecond(zabbixEvent.getClock()), ZoneId.systemDefault()));
-                    newEvent.setSeverity(String.valueOf(zabbixEvent.getSeverity()));
-                    newEvent.setName(zabbixEvent.getName());
-                    eventsBatch.add(newEvent);
-                }
-                if (!zabbixEvents.isEmpty()) {
-                System.out.println("  > " + zabbixEvents.size() + " eventos recentes coletados.");
-                }
-            }
+            // COLETA DE EVENTOS
+            collectEventsForHost(host, configs);
         }
 
-        // Salva todos os lotes no banco de dados DE UMA SÓ VEZ
         if (!historyBatch.isEmpty()) {
             metricHistoryRepository.saveAll(historyBatch);
-            System.out.println(historyBatch.size() + " registros de histórico salvos no banco.");
+            System.out.println(historyBatch.size() + " registros de histórico salvos.");
         }
-        
-        if (!eventsBatch.isEmpty()) {
-            recentEventsRepository.saveAll(eventsBatch);
-            System.out.println(eventsBatch.size() + " eventos recentes salvos no banco.");
-        }
-
-        System.out.println("--- COLETA E ANÁLISE FINALIZADA ---");
+        System.out.println("--- COLETA FINALIZADA ---");
     }
 
-    /**
-     * CORRIGIDO: Método auxiliar agora retorna a 'StatusResult' (o enum E a descrição).
-     */
+    // ===================================================================
+    // MÉTODOS DE DETERMINAÇÃO DE STATUS
+    // ===================================================================
     StatusResult determineHostStatus(Host host, Map<String, String> collectedZabbixMetrics) {
         Set<HostMetricConfig> configs = host.getMetricConfigs();
 
-        // --- REGRA 1: CHECAGEM DE DISPONIBILIDADE (A Regra de Ouro) ---
-        
-        Optional<HostMetricConfig> customAvailability = configs.stream()
-            .filter(c -> isHealthCheckMetric(c.getMetric().getMetricKey()))
-            .findFirst();
-
-        if (customAvailability.isPresent()) {
-            // --- LÓGICA DE HEALTH CHECK (JSON) ---
-            String zabbixKey = customAvailability.get().getZabbixKey();
-            String rawJson = collectedZabbixMetrics.get(zabbixKey);
-
-            if (rawJson == null) {
-                return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Coleta do Health Check falhou)");
-            }
-            try {
-                JsonNode root = objectMapper.readTree(rawJson);
-                String status = root.path("status").asText();
-
-                if (status.equalsIgnoreCase("UP")) {
-                    JsonNode dbStatus = root.path("deps").path("db");
-                    if (dbStatus.isMissingNode() || dbStatus.asText().equalsIgnoreCase("UP")) {
-                         // A checagem de CPU/Memória (Regra 2) vai rodar
-                        return checkResourceAlerts(host, configs, collectedZabbixMetrics);
-                    } else {
-                        // A aplicação está UP, mas o banco (deps) está DOWN.
-                        return new StatusResult(Host.HostStatus.ALERT, "Alerta: Aplicação 'UP', mas dependência 'db' está 'DOWN'."); 
-                    }
-                } else {
-                    // O JSON retornou status "DOWN"
-                    return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Health check reportou 'DOWN')");
-                }
-            } catch (Exception e) {
-                return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (JSON de Health Check inválido)");
-            }
-            
-        } else {
-            // --- LÓGICA DE PING (Fallback) ---
-            Optional<HostMetricConfig> defaultAvailability = configs.stream()
-                    .filter(c -> c.getMetric().getMetricKey().equals("disponibilidade-global"))
-                    .findFirst();
-            
-            if (defaultAvailability.isPresent()) {
-                String zabbixKey = defaultAvailability.get().getZabbixKey();
-                Double availabilityValue = parseDouble(collectedZabbixMetrics.get(zabbixKey));
-                
-                if (availabilityValue == null || availabilityValue == 0.0) {
-                    return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Ping falhou ou agente indisponível)");
-                }
-            } else {
-                return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Nenhuma métrica de disponibilidade configurada)"); 
-            }
+        // 1.1 Verifica Health Check (JSON)
+        Optional<HostMetricConfig> jsonConfig = configs.stream().filter(c -> isJsonHealthMetric(c.getMetric().getMetricKey())).findFirst();
+        if (jsonConfig.isPresent()) {
+            return evaluateJsonHealthStatus(jsonConfig.get(), collectedZabbixMetrics, host, configs);
         }
 
-        // --- REGRA 2: CHECAGEM DE ALERTAS DE RECURSO ---
+        // 1.2 Verifica HTTP Header Check (Texto)
+        Optional<HostMetricConfig> headerConfig = configs.stream().filter(c -> isHttpHeaderMetric(c.getMetric().getMetricKey())).findFirst();
+        if (headerConfig.isPresent()) {
+            return evaluateHttpHeaderStatus(headerConfig.get(), collectedZabbixMetrics);
+        }
+
+        // 2. Verifica Ping Padrão
+        Optional<HostMetricConfig> pingConfig = configs.stream().filter(c -> c.getMetric().getMetricKey().equals("disponibilidade-global")).findFirst();
+        if (pingConfig.isPresent()) {
+            String zabbixKey = pingConfig.get().getZabbixKey();
+            Double val = parseDouble(collectedZabbixMetrics.get(zabbixKey));
+            if (val == null || val == 0.0) {
+                return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Ping falhou)");
+            }
+        } else {
+             // Se não tem nenhuma métrica de disponibilidade, assume INACTIVE se não houver CPU
+             if (configs.stream().noneMatch(c -> c.getMetric().getMetricKey().equals("cpu-uso"))) {
+                 return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Sem métrica de disponibilidade)"); 
+             }
+        }
+
+        // 3. Checa Recursos
         return checkResourceAlerts(host, configs, collectedZabbixMetrics);
     }
     
@@ -336,6 +273,108 @@ public class MetricCollectorScheduler {
         } catch (JsonProcessingException e) {
             System.err.println("  > Falha ao parsear JSON de Health Check: " + rawJson);
             return null; // Retorna nulo se o JSON for inválido
+        }
+    }
+
+    // --- MÉTODOS DE AVALIAÇÃO ESPECÍFICOS ---
+
+    /**
+     * Avalia métricas que retornam JSON (Ex: {"status":"UP"})
+     */
+    private StatusResult evaluateJsonHealthStatus(HostMetricConfig config, Map<String, String> metrics, Host host, Set<HostMetricConfig> allConfigs) {
+        String zabbixKey = config.getZabbixKey();
+        String rawJson = metrics.get(zabbixKey);
+
+        if (rawJson == null) return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Sem dados do Health Check)");
+
+        try {
+            JsonNode root = objectMapper.readTree(rawJson);
+            String status = root.path("status").asText();
+
+            if (status.equalsIgnoreCase("UP")) {
+                JsonNode dbStatus = root.path("deps").path("db");
+                if (dbStatus.isMissingNode() || dbStatus.asText().equalsIgnoreCase("UP")) {
+                    // Se JSON está OK, ainda verificamos CPU/RAM
+                    return checkResourceAlerts(host, allConfigs, metrics);
+                } else {
+                    return new StatusResult(Host.HostStatus.ALERT, "Alerta: Aplicação UP, Banco de Dados DOWN.");
+                }
+            }
+            return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Status: " + status + ")");
+        } catch (Exception e) {
+            return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (JSON inválido)");
+        }
+    }
+
+    /**
+     * Avalia métricas que retornam Cabeçalhos HTTP (Texto Bruto)
+     * Ex: "HTTP/1.1 200 OK ..."
+     */
+    private StatusResult evaluateHttpHeaderStatus(HostMetricConfig config, Map<String, String> metrics) {
+        String zabbixKey = config.getZabbixKey();
+        String rawHeaders = metrics.get(zabbixKey);
+
+        if (rawHeaders == null) {
+            return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Sem resposta HTTP)");
+        }
+
+        // Verifica se contém o código 200 OK
+        // (Pode ser aprimorado para aceitar 2xx)
+        if (rawHeaders.contains("200 OK") || rawHeaders.contains("201 Created")) {
+            // Se HTTP está OK, não checamos recursos aqui (ou poderíamos chamar checkResourceAlerts se quiséssemos)
+            // Para simplificar, se o HTTP responde 200, consideramos OK.
+            return new StatusResult(Host.HostStatus.ACTIVE, "Serviço HTTP respondendo (200 OK).");
+        } 
+        
+        // Se retornou 404, 500, 403, etc.
+        return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Resposta HTTP inválida: " + getFirstLine(rawHeaders) + ")");
+    }
+
+    // --- MÉTODOS AUXILIARES ---
+
+    private boolean isJsonHealthMetric(String key) {
+        // Lista APENAS as métricas que retornam JSON
+        return key.equals("disponibilidade-global-health") ||
+               key.equals("disponibilidade-especifica-health");
+    }
+
+    private boolean isHttpHeaderMetric(String key) {
+        // Lista APENAS as métricas que retornam Texto/Headers
+        return key.equals("disponibilidade-global-http-agente") ||
+               key.equals("disponibilidade-especifica-http-agente");
+    }
+    
+    private String getFirstLine(String text) {
+        if (text == null) return "";
+        int idx = text.indexOf('\n');
+        return idx > -1 ? text.substring(0, idx).trim() : text;
+    }
+
+    // ===================================================================
+    // MÉTODOS DE PARSING E AUXILIARES
+    // ===================================================================
+
+    private Double parseHttpHeader(String rawHeaders) {
+        if (rawHeaders == null) return null;
+        return (rawHeaders.contains("200 OK") || rawHeaders.contains("201 Created")) ? 1.0 : 0.0;
+    }
+
+    private void collectEventsForHost(Host host, Set<HostMetricConfig> configs) {
+        if (configs.stream().anyMatch(c -> c.getMetric().getMetricKey().equals("eventos-recentes"))) {
+             recentEventsRepository.deleteByHostId(host.getId());
+             List<ZabbixEventDTO> events = zabbixClient.getRecentEvents(host.getZabbixId());
+             // ... (salva eventos) ...
+             if (!events.isEmpty()) {
+                 List<RecentEvents> toSave = events.stream().map(e -> {
+                     RecentEvents re = new RecentEvents();
+                     re.setHost(host);
+                     re.setTimestamp(LocalDateTime.ofInstant(Instant.ofEpochSecond(e.getClock()), ZoneId.systemDefault()));
+                     re.setSeverity(String.valueOf(e.getSeverity()));
+                     re.setName(e.getName());
+                     return re;
+                 }).collect(Collectors.toList());
+                 recentEventsRepository.saveAll(toSave);
+             }
         }
     }
 }

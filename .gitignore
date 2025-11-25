@@ -12,6 +12,7 @@ src/aplicacao/.settings/
 src/aplicacao/.classpath
 src/aplicacao/.project
 src/aplicacao/.vscode/
+.vscode
 
 # Arquivos de ambiente local (com senhas e segredos)
 src/aplicacao/.env

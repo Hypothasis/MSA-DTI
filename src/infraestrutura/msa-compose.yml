@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  msa-app:
+    build: ../aplicacao/
+    container_name: msa-app
+    ports:
+      - "8081:8080"
+    env_file:
+      - ../aplicacao/.env
+    environment:
+      - DB_HOST=<IP>
+      - DB_PORT=3306
+      - DB_DATABASE=msa
+      - DB_USER=root
+      - DB_PASSWORD=root
+
+      - KEYCLOAK_CLIENT_ID=MSA
+      - KEYCLOAK_CLIENT_SECRET=<KEYCLOAK>
+      - KEYCLOAK_AUTH_SERVER_URL=http://<IP>:8080
+      - KEYCLOAK_REALM=dev
+
+      - ZABBIX_API_URL=
+      - ZABBIX_API_USER_TOKEN=
