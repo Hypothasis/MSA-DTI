@@ -40,7 +40,6 @@ public class Host {
     @Column(name = "status_description")
     private String statusDescription;
 
-    // --- RELACIONAMENTO CORRIGIDO ---
     // Um Host tem MUITAS Configurações de Métrica
     @OneToMany(
         mappedBy = "host", // Mapeado pelo campo "host" na HostMetricConfig

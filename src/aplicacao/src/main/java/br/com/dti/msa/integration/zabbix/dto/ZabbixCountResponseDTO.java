@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class ZabbixCountResponseDTO {
     private String jsonrpc;
-    private Integer result; // Zabbix retorna a contagem como um número
+    private Integer result;
     private int id;
 }

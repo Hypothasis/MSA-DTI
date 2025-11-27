@@ -4,6 +4,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 /* Layout principal do Dashboard com CSS Grid */
@@ -187,14 +189,34 @@
 }
 
 /* Design Responsivo para Telas Menores */
-@media (max-width: 992px) {
+@media screen and (max-width: 992px) and (min-width: 600px) {
     .dashboard-grid {
         grid-template-columns: 1fr; /* Coluna única */
         grid-template-areas:
             "kpi"
             "main"
             "sidebar";
+
+            overflow-x: hidden;
+            overflow-y: scroll;
     }
+}
+
+/* Responsividade grid */
+
+@media screen and (max-width: 599px) {
+
+    .dashboard-grid {
+        grid-template-columns: 1fr; /* Coluna única */
+        grid-template-areas:
+            "kpi"
+            "main"
+            "sidebar";
+
+            overflow-x: hidden;
+            overflow-y: scroll;
+    }
+
 }
 
 

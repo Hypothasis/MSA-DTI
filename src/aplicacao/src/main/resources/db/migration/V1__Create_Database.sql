@@ -18,8 +18,8 @@ CREATE TABLE hosts (
 -- Catálogo de todas as métricas possíveis
 CREATE TABLE metrics (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    metric_key VARCHAR(255) NOT NULL UNIQUE,  -- Ex: 'cpu-uso', 'memoria-ram'
-    name VARCHAR(255) NOT NULL,               -- Ex: 'Uso de CPU'
+    metric_key VARCHAR(255) NOT NULL UNIQUE, 
+    name VARCHAR(255) NOT NULL,              
     unit VARCHAR(20)
 );
 

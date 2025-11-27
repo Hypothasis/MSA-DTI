@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
+
     // ===================================================================
-    // INICIALIZAÇÃO DOS GRÁFICOS
+    //  INICIALIZAÇÃO DOS GRÁFICOS
     // ===================================================================
-    // Inicializamos cada gráfico uma vez com dados vazios. Guardamos as instâncias em um objeto para fácil acesso.
+
     const charts = {        
         cpu: new ApexCharts(document.querySelector("#cpuChart"), getCpuChartOptions()),
         cpuProcesses: new ApexCharts(document.querySelector("#cpuProcessosChart"), getCpuProcessesChartOptions()),
@@ -12,24 +13,21 @@ document.addEventListener('DOMContentLoaded', function () {
         storage: new ApexCharts(document.querySelector("#armazenamentoChart"), getStorageChartOptions()),
         data: new ApexCharts(document.querySelector("#dadosChart"), getDataChartOptions())
     };
-    // Renderiza todos os gráficos
     Object.values(charts).forEach(chart => chart.render());
 
 
     // ===================================================================
-    // FUNÇÃO PRINCIPAL DE BUSCA E ATUALIZAÇÃO DE DADOS
+    //  FUNÇÃO PRINCIPAL DE BUSCA E ATUALIZAÇÃO DE DADOS
     // ===================================================================
 
     async function getHostData() {
         console.log("Buscando dados do host no backend...");
 
-        // Pega o publicId da URL da página atual
         const pathParts = window.location.pathname.split('/');
         const publicId = pathParts[pathParts.length - 1];
         if (!publicId) return console.error("ID do host não encontrado na URL.");
 
         try {
-            // Faz a chamada fetch para a API
             const response = await fetch(`/host/api/${publicId}`);
             if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
             
@@ -38,11 +36,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.latencyHistory) {
                 data.latencyHistory.forEach(point => {
-                    point.y = point.y * 1000; // Segundos para Milissegundos
+                    point.y = point.y * 1000;
                 });
             }
-
-            // --- ATUALIZA A PÁGINA COM OS NOVOS DADOS ---
             
             updateHeader(data);
 
@@ -66,12 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.processInfoHistory) {
                 charts.cpuProcesses.updateSeries([
-                    // Objeto para a primeira série (processos máximos)
                     {
                         name: 'Número máximo de processos',
                         data: data.processInfoHistory.max || []
                     },
-                    // Objeto para a segunda série (processos atuais)
                     {
                         name: 'Número atual de processos',
                         data: data.processInfoHistory.current || []
@@ -120,7 +114,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         enabled: true,
                         theme: 'dark',
                         y: {
-                            // Novo formatter que usa os dados em GB atuais
                             formatter: function(value, opts) {
                                 const gbValue = memoriaEmGb[opts.seriesIndex];
                                 return `${value.toFixed(0)}% (${gbValue.toFixed(2)} GB)`;
@@ -128,7 +121,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         }
                     },
                     legend: {
-                        // Novo formatter da legenda
                         formatter: function(seriesName, opts) {
                             const percentage = opts.w.globals.series[opts.seriesIndex];
                             const gbValue = memoriaEmGb[opts.seriesIndex];
@@ -142,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
             if (data.storageRootData && data.storageBootData) {
-                // Array com os valores em GB na ordem correta para os tooltips
                 const armazenamentoEmGb = [
                     data.storageRootData.total,
                     data.storageRootData.used,
@@ -150,24 +141,21 @@ document.addEventListener('DOMContentLoaded', function () {
                     data.storageBootData.used
                 ];
 
-                // Array com os percentuais para as séries do gráfico
                 const storagePorcents = [
-                    100, // Total / é sempre 100%
+                    100, 
                     data.storageRootData.percentUsed,
-                    100, // Total /boot é sempre 100%
+                    100,
                     data.storageBootData.percentUsed
                 ];
 
-                // 2. Atualiza o gráfico com as novas séries E os novos formatters
                 charts.storage.updateOptions({
                     series: storagePorcents,
                     labels: ['Total ("/")', 'Usado ("/")', 'Total ("/boot")', 'Usado ("/boot")'],
                     tooltip: {
                         y: {
                             formatter: function(value, opts) {
-                                // Pega o valor absoluto em GB correspondente ao anel
                                 const gbValue = armazenamentoEmGb[opts.seriesIndex];
-                                return `${gbValue.toFixed(2)} GB`; // Mostra o valor em GB, não a porcentagem
+                                return `${gbValue.toFixed(2)} GB`;
                             }
                         }
                     },
@@ -175,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         formatter: function(seriesName, opts) {
                             const percentage = opts.w.globals.series[opts.seriesIndex];
                             const gbValue = armazenamentoEmGb[opts.seriesIndex];
-                            // Mostra a porcentagem e o valor em GB na legenda
                             return `${seriesName}: ${percentage.toFixed(1)}% (${gbValue.toFixed(2)} GB)`;
                         }
                     }
@@ -204,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ===================================================================
-    // FUNÇÕES AUXILIARES PARA ATUALIZAR A UI
+    //  FUNÇÕES AUXILIARES PARA ATUALIZAR A UI
     // ===================================================================
     function updateHeader(data) {
         document.getElementById('hostName').textContent = data.name || 'N/A';
@@ -212,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const statusPoint = document.getElementById('hostStatusPoint');
         
         let flagText = 'Desconhecido';
-        let flagColorClass = 'empty'; // Uma cor padrão para status desconhecido
+        let flagColorClass = 'empty';
 
         switch (data.status) {
             case 'OK':
@@ -230,7 +217,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         statusFlag.textContent = flagText;
-        // Remove as classes de cor antigas e adiciona a nova
         statusFlag.className = `flag ${flagColorClass}`;
         statusPoint.className = `dot ${flagColorClass}`;
     }
@@ -242,29 +228,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
         container.innerHTML = '';
 
-        const intervalMs = 30 * 60 * 1000; // 30 minutos
+        const intervalMs = 30 * 60 * 1000;
         const dataMap = new Map();
         let latestTimestamp = 0;
 
         if (historyData && historyData.length > 0) {
             historyData.forEach(point => {
-                // 🔹 Corrige o fuso horário (UTC → Fortaleza UTC-3)
-                const offsetMs = 3 * 60 * 60 * 1000; // 3 horas
+                const offsetMs = 3 * 60 * 60 * 1000;
                 const fortalezaTimestamp = point.x - offsetMs;
 
-                // Arredonda para o intervalo de 30 min
                 const roundedTimestamp = Math.floor(fortalezaTimestamp / intervalMs) * intervalMs;
 
-                // Armazena no mapa o valor ajustado
                 dataMap.set(roundedTimestamp, point.y);
 
-                // Atualiza o timestamp mais recente
                 if (fortalezaTimestamp > latestTimestamp) {
                     latestTimestamp = fortalezaTimestamp;
                 }
             });
 
-            // Calcula a média geral
             const overallAverage =
                 historyData.reduce((acc, point) => acc + point.y, 0) / historyData.length;
             percentElement.textContent = `${overallAverage.toFixed(2)}%`;
@@ -272,7 +253,6 @@ document.addEventListener('DOMContentLoaded', function () {
             percentElement.textContent = `N/A`;
         }
 
-        // Define a classe visual com base na disponibilidade
         function getStatusClass(availability) {
             if (availability == null) return 'empty';
             if (availability >= 99.9) return 'okay';
@@ -282,13 +262,11 @@ document.addEventListener('DOMContentLoaded', function () {
             return 'disaster';
         }
 
-        const numberOfPoints = 96; // 48h / 0.5h = 96 pontos
+        const numberOfPoints = 96;
 
-        // Define o ponto de referência (último dado ou agora)
         const referenceTime = latestTimestamp > 0 ? latestTimestamp : new Date().getTime();
         const startTimestamp = Math.floor(referenceTime / intervalMs) * intervalMs;
 
-        // Gera os pontos para as últimas 48h
         for (let i = 0; i < numberOfPoints; i++) {
             const pointTimestamp = startTimestamp - i * intervalMs;
             const availability = dataMap.get(pointTimestamp);
@@ -296,10 +274,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const li = document.createElement('li');
             li.className = `point ${getStatusClass(availability)}`;
 
-            // 🔹 Cria objeto Date com o timestamp ajustado
             const date = new Date(pointTimestamp);
 
-            // 🔹 Exibe a data/hora já no fuso de Fortaleza
             const formattedDateTime = date.toLocaleString('pt-BR', {
                 day: '2-digit',
                 month: '2-digit',
@@ -328,7 +304,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function updateUptime(uptimeString) {
         if (!uptimeString) return;
-        // Ex: "37 dias, 4 horas, 24 minutos"
         const parts = uptimeString.match(/(\d+)\s*dias,\s*(\d+)\s*horas,\s*(\d+)\s*minutos/);
         if (parts) {
             document.getElementById('diasUptime').textContent = parts[1];
@@ -347,7 +322,6 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        // Mapeia a severidade para a classe CSS
         const severityMap = {
             '0': 'okay', '1': 'okay', '2': 'important', '3': 'important', '4': 'important', '5': 'error'
         };
@@ -372,13 +346,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // ===================================================================
-    // LÓGICA DO CONTADOR (TIMER)
+    //  LÓGICA DO CONTADOR (TIMER)
     // ===================================================================
     const countdownElement = document.getElementById('countDownTime');
     const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
 
     async function startCountDown() {
-        await getHostData(); // Faz a primeira busca imediatamente
+        await getHostData();
         updateLastRequestTime();
         
         const update_trigger = 60;
@@ -404,15 +378,14 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
     
-    startCountDown(); // Inicia todo o processo
+    startCountDown();
 });
 
 
 // ===================================================================
-// FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS (PARA REUTILIZAÇÃO)
+//  FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS (PARA REUTILIZAÇÃO)
 // ===================================================================
 
-// Opções para gráficos de linha/área genéricos
 function getChartOptions(type, colors, yaxisTitle) {
     return {
         series: [{ data: [] }],
@@ -427,7 +400,6 @@ function getChartOptions(type, colors, yaxisTitle) {
     };
 }
 
-// Opções para o gráfico de Banda Larga
 function getDataChartOptions() {
     const options = getChartOptions('area', ['#008FFB', '#00E396'], 'Tráfego (Mbps)');
     options.title = { text: 'Tráfego de Dados', align: 'left' };
@@ -435,7 +407,6 @@ function getDataChartOptions() {
     return options;
 }
 
-// Opções para gráficos radiais
 function getRadialChartOptions(labels) {
     return {
         series: [],
@@ -448,14 +419,14 @@ function getRadialChartOptions(labels) {
 }
 
 // ===================================================================
-// FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS ESPECÍFICOS
+//  FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS ESPECÍFICOS
 // ===================================================================
 
 function getCpuChartOptions() {
     return {
         series: [{
             name: 'Uso de CPU',
-            data: [] // Começa com dados vazios
+            data: []
         }],
         chart: {
             type: 'area',
@@ -509,7 +480,6 @@ function getCpuChartOptions() {
             labels: {
                 formatter: function (value, timestamp) {
                     const date = new Date(timestamp);
-                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
                     return date.toLocaleString('pt-BR', {
                         day: '2-digit', month: 'short', 
                         hour: '2-digit', minute: '2-digit',
@@ -522,7 +492,6 @@ function getCpuChartOptions() {
             x: {
                 formatter: function (value) {
                     const date = new Date(value);
-                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
                     return date.toLocaleString('pt-BR', {
                         day: '2-digit', month: 'short', year: 'numeric',
                         hour: '2-digit', minute: '2-digit',
@@ -541,7 +510,7 @@ function getCpuChartOptions() {
 
 function getMemoryChartOptions() {
     return {
-        series: [100, 0, 100], // Começa com 0% de uso
+        series: [100, 0, 100],
         chart: {
             height: 390,
             type: 'radialBar',
@@ -565,7 +534,6 @@ function getMemoryChartOptions() {
             enabled: true,
             theme: 'dark',
             y: {
-                // Formatter simples para o estado inicial, mostrando apenas a porcentagem
                 formatter: function(value) {
                     return `${value.toFixed(0)}%`;
                 }
@@ -582,7 +550,6 @@ function getMemoryChartOptions() {
             labels: {
                 useSeriesColors: true,
             },
-            // Formatter simples para o estado inicial
             formatter: function(seriesName, opts) {
                 const percentage = opts.w.globals.series[opts.seriesIndex];
                 return `${seriesName}: ${percentage.toFixed(0)}%`;
@@ -602,7 +569,6 @@ function getMemoryChartOptions() {
 
 function getStorageChartOptions() {
     return {
-        // Começa com 4 séries zeradas
         series: [0, 0, 0, 0], 
         chart: {
             height: 390,
@@ -616,7 +582,6 @@ function getStorageChartOptions() {
                 hollow: { margin: 5, size: '30%', background: 'transparent' }
             }
         },
-        // Cores para: Total /, Usado /, Total /boot, Usado /boot
         colors: ['#4d097aff', '#ff8c00', '#2e8b57', '#ffa500'],
         labels: ['Armazenamento Total ("/")', 'Armazenamento Usado ("/")', 'Armazenamento Total ("/boot")', 'Armazenamento Usado ("/boot")'],
         legend: {
@@ -627,7 +592,6 @@ function getStorageChartOptions() {
             offsetX: 10,
             offsetY: 15,
             labels: { useSeriesColors: true },
-            // Formatter inicial simples
             formatter: (seriesName, opts) => `${seriesName}: ${opts.w.globals.series[opts.seriesIndex].toFixed(0)}%`
         }
     };
@@ -676,7 +640,6 @@ function getDataChartOptions() {
             labels: {
                 formatter: function (value, timestamp) {
                     const date = new Date(timestamp);
-                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
                     return date.toLocaleString('pt-BR', {
                         day: '2-digit', month: 'short', 
                         hour: '2-digit', minute: '2-digit',
@@ -689,7 +652,6 @@ function getDataChartOptions() {
             x: {
                 formatter: function (value) {
                     const date = new Date(value);
-                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
                     return date.toLocaleString('pt-BR', {
                         day: '2-digit', month: 'short', year: 'numeric',
                         hour: '2-digit', minute: '2-digit',
@@ -705,7 +667,7 @@ function getDataChartOptions() {
 }
 
 // ===================================================================
-// FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS ESPECÍFICOS DATABASE
+//  FUNÇÕES DE CONFIGURAÇÃO DOS GRÁFICOS ESPECÍFICOS DATABASE
 // ===================================================================
 
 function getCpuProcessesChartOptions() {
@@ -738,7 +700,7 @@ function getCpuProcessesChartOptions() {
         },
         yaxis: {
             title: {
-                text: 'Contagem' // Adicionei um título para clareza
+                text: 'Contagem'
             }
         },
         xaxis: {
@@ -746,7 +708,6 @@ function getCpuProcessesChartOptions() {
             labels: {
                 formatter: function (value, timestamp) {
                     const date = new Date(timestamp);
-                    // Formata a data para pt-BR FORÇANDO o fuso de Fortaleza
                     return date.toLocaleString('pt-BR', {
                         day: '2-digit', month: 'short', 
                         hour: '2-digit', minute: '2-digit',
@@ -759,7 +720,6 @@ function getCpuProcessesChartOptions() {
             x: {
                 formatter: function (value) {
                     const date = new Date(value);
-                    // Formata o tooltip para pt-BR FORÇANDO o fuso de Fortaleza
                     return date.toLocaleString('pt-BR', {
                         day: '2-digit', month: 'short', year: 'numeric',
                         hour: '2-digit', minute: '2-digit',

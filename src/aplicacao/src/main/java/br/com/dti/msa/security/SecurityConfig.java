@@ -42,11 +42,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 1. Configura o CSRF para ser ignorado apenas nas rotas de API
             .csrf(csrf -> csrf
                 .ignoringRequestMatchers("/token", "/admin/api/**")
             )
-            // 2. Configura as regras de autorização
             .authorizeHttpRequests(auth -> auth
                 // Rotas públicas
                 .requestMatchers("/public/**", "/stylesheets/**", "/javascript/**", "/image/**").permitAll()
@@ -69,15 +67,15 @@ public class SecurityConfig {
                 // Qualquer outra requisição precisa de autenticação
                 .anyRequest().authenticated()
             )
-            // 3. Habilita o login via navegador
+            // Habilita o login via navegador
             .oauth2Login(oauth2 -> oauth2
                 .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcUserService()))
             )
-            // 4. Habilita a validação de Bearer Token
+            // Habilita a validação de Bearer Token
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt
                 .jwtAuthenticationConverter(new KeycloakJwtAuthenticationConverter(keycloakClientId))
             ))
-            // 5. Configura o logout
+            // Configura o logout
             .logout(logout -> logout
                 .logoutSuccessHandler(oidcLogoutSuccessHandler())
             );
@@ -94,7 +92,7 @@ public class SecurityConfig {
             
             // --- INÍCIO DA LÓGICA DE CONVERSÃO DE ROLES ---
             
-            // 1. Extrai o Client ID da própria requisição, sem precisar injetar valor
+            // Extrai o Client ID da própria requisição, sem precisar injetar valor
             String clientId = userRequest.getClientRegistration().getClientId();
             
             // 2. Acessa o objeto 'resource_access' do token
@@ -112,7 +110,7 @@ public class SecurityConfig {
 
             List<String> clientRoles = (List<String>) clientAccess.get("roles");
             
-            // 3. Cria as permissões SEM o prefixo ROLE_, para funcionar com .hasAuthority("...")
+            // Cria as permissões SEM o prefixo ROLE_, para funcionar com .hasAuthority("...")
             Collection<GrantedAuthority> authorities = clientRoles.stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());

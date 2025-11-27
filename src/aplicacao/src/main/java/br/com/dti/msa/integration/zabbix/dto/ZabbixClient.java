@@ -37,14 +37,12 @@ public class ZabbixClient {
         private String lastValue;
     }
 
-    // Injeta as propriedades do application.properties
     @Value("${zabbix.api.url}")
     private String zabbixApiUrl;
 
     @Value("${zabbix.api.token}")
     private String authToken;
 
-    // Cria uma instância do RestTemplate para fazer as chamadas HTTP
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -54,7 +52,7 @@ public class ZabbixClient {
     private String sendRequest(ZabbixRequestDTO requestPayload)
             throws RestClientException, ZabbixApiException {
 
-        // ===== 1️⃣ Validação local da estrutura =====
+        // ===== Validação local da estrutura =====
         if (requestPayload == null) {
             throw new ZabbixApiException("Payload nulo: o corpo da requisição não pode ser vazio.");
         }
@@ -71,7 +69,7 @@ public class ZabbixClient {
             throw new ZabbixApiException("Campo 'id' deve ser um número positivo.");
         }
 
-        // ===== 2️⃣ Serialização manual do JSON =====
+        // ===== Serialização manual do JSON =====
         String jsonBody;
         try {
             jsonBody = objectMapper.writeValueAsString(requestPayload);
@@ -79,16 +77,16 @@ public class ZabbixClient {
             throw new ZabbixApiException("Falha ao serializar o payload em JSON: " + e.getMessage());
         }
 
-        // ===== 3️⃣ Validação sintática do JSON gerado =====
+        // ===== Validação sintática do JSON gerado =====
         try {
             objectMapper.readTree(jsonBody); // tenta parsear o próprio JSON — se falhar, é inválido
         } catch (Exception e) {
             throw new ZabbixApiException("JSON gerado é inválido: " + e.getMessage() + "\nJSON: " + jsonBody);
         }
 
-        // ===== 4️⃣ Cabeçalhos estritos =====
+        // ===== Cabeçalhos estritos =====
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json"); // sem charset
+        headers.set("Content-Type", "application/json");
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         headers.setBearerAuth(authToken);
 
@@ -99,7 +97,7 @@ public class ZabbixClient {
         System.out.println("JSON enviado: " + jsonBody);
 
         try {
-            // ===== 5️⃣ Envio da requisição =====
+            // ===== Envio da requisição =====
             ResponseEntity<String> response = restTemplate.exchange(
                     zabbixApiUrl,
                     HttpMethod.POST,
@@ -110,7 +108,7 @@ public class ZabbixClient {
             String jsonResponse = response.getBody();
             System.out.println("🔹 Resposta do Zabbix (" + response.getStatusCode() + "): " + jsonResponse);
 
-            // ===== 6️⃣ Tratamento de erro no retorno =====
+            // ===== Tratamento de erro no retorno =====
             if (jsonResponse == null || jsonResponse.isBlank()) {
                 throw new ZabbixApiException("Resposta vazia da API Zabbix.");
             }

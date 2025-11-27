@@ -1,10 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Variavel para Botão de Alert
     let alert_flag = false
     let alert_btn = document.getElementById('alert-btn')
 
-    // Variavel para Botão de Fullscreen
     let fullscreen_btn = document.getElementById('fullscreen-btn')
     const fullscreenElement = document.documentElement;
 
@@ -12,14 +10,11 @@ document.addEventListener('DOMContentLoaded', function () {
     //###         FUNÇÕES PARA O BOTÃO DE FULLSCREEN E ALERTSOUND         ###
     //#######################################################################
 
-    // Checa se o elemento existe
     if (fullscreen_btn){
         fullscreen_btn.addEventListener('click', () => {
-            // Serve como um chave para a classe css
             fullscreen_btn.classList.toggle('actived') 
 
             if (!document.fullscreenElement) {
-                // Chama a função para tornar a tag <html> fullscreen
                 startFullscreen(fullscreenElement);
             } else {
                 stopFullscreen();
@@ -27,16 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
         })
     }
 
-    // Checa se o elemento existe
     if (alert_btn){
         alert_btn.addEventListener('click', () => {
             alert_btn.classList.toggle('actived') 
         
             const alert_icon = alert_btn.querySelector('img');
 
-            // Além de checar se o icone existe
-            // verifica se o botao foi clicado
-            // Se sim muda o icone
             if (alert_icon) {
                 if (!alert_flag) {
                     alert_icon.src = '/image/icons/sound_black.png'

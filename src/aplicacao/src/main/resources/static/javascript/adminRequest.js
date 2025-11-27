@@ -19,30 +19,27 @@ document.addEventListener('DOMContentLoaded', function () {
             
             const data = await response.json();
             
-            // 1. Atualiza os KPI Cards
             document.getElementById('kpi-total-hosts').textContent = data.totalHosts;
             document.getElementById('kpi-active-hosts').textContent = data.activeHosts;
             document.getElementById('kpi-problem-hosts').textContent = data.alertHosts;
             document.getElementById('kpi-unreachable-hosts').textContent = data.inactiveHosts;
 
-            // 2. LÓGICA DE COR DINÂMICA
             const mediaDisponibilidade = data.overallAvailability || 0;
             
             let corGrafico = '#474747ff';
 
             if (mediaDisponibilidade < 95) {
-                corGrafico = '#26E7A6'; // Verde (bom)
+                corGrafico = '#26E7A6';
             }
             if (mediaDisponibilidade < 90) {
-                corGrafico = '#ffc65cff'; // Amarelo (ok)
+                corGrafico = '#ffc65cff';
             }
             if (mediaDisponibilidade < 80) {
-                corGrafico = '#FF4560'; // Vermelho (ruim)
+                corGrafico = '#FF4560';
             }
 
             console.log(`Média de Disponibilidade: ${mediaDisponibilidade}%, Cor do Gráfico: ${corGrafico}`);
 
-            // 3. Atualiza o gráfico de Disponibilidade Média com a nova cor e os novos dados
             avgAvailChart.updateOptions({
                 series: [mediaDisponibilidade],
                 fill: {
@@ -50,10 +47,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
 
-            // 4. Atualiza o Feed de Alertas Críticos
             updateAlertFeed(data.latestAlerts);
             
-            // 5. Atualiza os Hosts com Mais Problemas
             updateTopHosts(data.topProblemHosts);
 
         } catch (error) {
@@ -112,7 +107,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
-    // =Gera as opções para o gráfico de disponibilidade
     function getAvgAvailabilityChartOptions() {
         return {
             series: [0],
@@ -192,6 +186,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 1000);
     }
 
-    getDashboardData(); // Chama a primeira vez
-    startTimer(); // Inicia o loop de 60s
+    getDashboardData(); 
+    startTimer();
 });

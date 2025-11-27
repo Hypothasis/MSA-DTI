@@ -48,11 +48,11 @@ public class HostDetailsDTO {
         this.enabledCheckboxes = enabledCheckboxes;
         
         // Preenche a lista para o modal de READ
-        this.metrics = host.getMetricConfigs().stream() // <-- 1. Mude para getMetricConfigs()
+        this.metrics = host.getMetricConfigs().stream()
             .map(config -> new MetricDTO(
-                config.getMetric().getMetricKey(),  // 2. Acesse a métrica dentro da config
+                config.getMetric().getMetricKey(), 
                 config.getMetric().getName(),
-                config.getZabbixKey(),              // 3. Pegue a zabbix_key da config
+                config.getZabbixKey(), 
                 config.getMetric().getUnit()
             ))
             .collect(Collectors.toList());

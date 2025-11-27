@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.*;
-import com.fasterxml.jackson.databind.JsonNode; // Dependência Jackson é necessária
+import com.fasterxml.jackson.databind.JsonNode;
 
 import br.com.dti.msa.dto.ZabbixHealthCheckResponse;
 

@@ -98,12 +98,10 @@ public class AdminController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
 
         } catch (DataIntegrityViolationException e) {
-            // NOVO CATCH: Captura o erro de duplicidade do banco de dados
             String errorMessage = "Erro de integridade dos dados.";
             if (e.getMessage().contains("hosts.zabbix_id")) {
                 errorMessage = "Já existe um host cadastrado com este Zabbix ID.";
             }
-            // Retorna HTTP 409 Conflict, que é o status ideal para duplicidade
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", errorMessage));
 
         } catch (Exception e) {
@@ -137,14 +135,11 @@ public class AdminController {
     @ResponseBody
     public ResponseEntity<List<Host>> getAllHosts() {
         try {
-            // 1. Chama o service para buscar todos os hosts no banco de dados.
             List<Host> hosts = hostService.findAll();
             
-            // 2. Retorna HTTP 200 OK com a lista de hosts no corpo da resposta.
             return ResponseEntity.ok(hosts);
             
         } catch (Exception e) {
-            // Em caso de um erro inesperado no banco de dados, retorna um erro 500.
             System.err.println("Erro ao buscar todos os hosts: " + e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
@@ -158,7 +153,7 @@ public class AdminController {
     public ResponseEntity<Void> updateHost(@PathVariable Long hostId, @RequestBody UpdateHostDTO updateData) {
         try {
             hostService.updateHost(hostId, updateData);
-            return ResponseEntity.ok().build(); // Retorna 200 OK
+            return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build(); // Retorna 404 Not Found
         } catch (Exception e) {
@@ -176,7 +171,6 @@ public class AdminController {
             hostService.deleteHost(hostId);
             return ResponseEntity.ok().build(); // Retorna 200 OK
         } catch (Exception e) {
-            // Pode ser um EntityNotFoundException ou outro erro
             return ResponseEntity.internalServerError().build(); // Retorna 500
         }
     }

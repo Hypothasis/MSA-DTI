@@ -5,6 +5,8 @@
     flex-direction: column;
     align-items: center;
     gap: 30px;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 /*------------- Search Header -------------*/
@@ -36,6 +38,10 @@
     position: relative;
 }
 
+#search-form > div{
+    position: relative;
+}
+
 #filtrosBtn{
     font-size: 0.9rem;
     padding: 7px 10px;
@@ -61,7 +67,7 @@
     display: none;
     flex-direction: column;
     
-    top: 18%;
+    top: 130%;
 }
 
 #filtrosCats.actived{
@@ -161,7 +167,7 @@
     transform: translateX(50%);
     font-size: 1.2rem;
     text-align: center;
-    white-space: nowrap;
+    white-space: normal;
     font-family: var(--font-nunito);
 }
 
@@ -528,4 +534,74 @@ details[open] summary {
 @keyframes fadeIn {
     from {opacity: 0; transform: scale(0.9);}
     to {opacity: 1; transform: scale(1);}
+}
+
+@media screen and (max-width: 599px) {
+    #filtrosCats{
+        top: 130%;
+        right: 0%;
+    }       
+
+    #searchBtn2, #filtrosBtn{
+        font-size: clamp(0.3rem, 3vw, 0.6rem);
+        height: 30px;
+    }
+
+    #search > article {
+        width: 96%;
+    }
+
+    #search > article > ul li h6{
+        font-size: clamp(0.6rem, 4vw, 1.6rem);
+    }
+
+    #search > article > ul li p{
+        font-size: clamp(0.5rem, 2vw, 1rem);
+    }
+
+    #search > article > ul li .access-host, #search > article > ul li div > button{
+        width: 30px;
+    }
+
+    .modal-content {
+        width: 90%;
+        height: fit-content;
+    }
+
+    .modal-content > ul {
+        overflow-y: scroll;
+    }
+
+    .close-btn {
+        left: 92%;
+    }
+
+    .tabs-container{
+        height: 300px;
+    }
+
+    .form-group textarea {
+    min-height: 50px;
+  }
+
+  .tabs-container {
+    margin-top: 56px;
+  }
+
+  .tabs-content {
+    height: 166px;
+  }
+
+  .chart-group h3 {
+    font-size: clamp(0.5rem , 3vw ,1.5rem);
+  }
+
+
+  .checkbox-group label {
+    font-size: clamp(0.3rem , 2.5vw ,1rem);
+  }
+
+  details {
+    font-size: clamp(0.3rem , 2.5vw ,1rem);
+  }
 }
