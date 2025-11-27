@@ -37,7 +37,7 @@ public class MetricCollectorScheduler {
 
     @Autowired private HostRepository hostRepository;
     @Autowired private MetricHistoryRepository metricHistoryRepository;
-    @Autowired private MetricCurrentValueRepository metricCurrentValueRepository; // Adicione o repositório de valores de texto
+    @Autowired private MetricCurrentValueRepository metricCurrentValueRepository;
     @Autowired private ZabbixClient zabbixClient;
     @Autowired private RecentEventsRepository recentEventsRepository;
 
@@ -84,24 +84,24 @@ public class MetricCollectorScheduler {
                     boolean isText = false;
 
                     try {
-                        // 1. Tenta converter para número (Ping, CPU, RAM)
+                        // Tenta converter para número (Ping, CPU, RAM)
                         numericValue = Double.parseDouble(rawValue);
                     } catch (NumberFormatException e) {
                         isText = true;
                         
-                        // 2. Se falhar, verifica se é Health Check (JSON)
+                        // Se falhar, verifica se é Health Check (JSON)
                         if (isJsonHealthMetric(metricKey)) {
                             numericValue = parseHealthCheckJson(rawValue);
                             isText = (numericValue == null); // Se parseou, vira número
                         }
-                        // 3. Verifica se é HTTP Header (Texto)
+                        // Verifica se é HTTP Header (Texto)
                         else if (isHttpHeaderMetric(metricKey)) {
                             numericValue = parseHttpHeader(rawValue);
                             isText = (numericValue == null); // Se parseou, vira número
                         }
                     }
 
-                    // 4. Salva o dado
+                    // Salva o dado
                     if (!isText) {
                         MetricHistory historyRecord = new MetricHistory(host, metric, LocalDateTime.now(), numericValue);
                         historyBatch.add(historyRecord);
@@ -138,19 +138,19 @@ public class MetricCollectorScheduler {
     StatusResult determineHostStatus(Host host, Map<String, String> collectedZabbixMetrics) {
         Set<HostMetricConfig> configs = host.getMetricConfigs();
 
-        // 1.1 Verifica Health Check (JSON)
+        // Verifica Health Check (JSON)
         Optional<HostMetricConfig> jsonConfig = configs.stream().filter(c -> isJsonHealthMetric(c.getMetric().getMetricKey())).findFirst();
         if (jsonConfig.isPresent()) {
             return evaluateJsonHealthStatus(jsonConfig.get(), collectedZabbixMetrics, host, configs);
         }
 
-        // 1.2 Verifica HTTP Header Check (Texto)
+        // Verifica HTTP Header Check (Texto)
         Optional<HostMetricConfig> headerConfig = configs.stream().filter(c -> isHttpHeaderMetric(c.getMetric().getMetricKey())).findFirst();
         if (headerConfig.isPresent()) {
             return evaluateHttpHeaderStatus(headerConfig.get(), collectedZabbixMetrics);
         }
 
-        // 2. Verifica Ping Padrão
+        // Verifica Ping Padrão
         Optional<HostMetricConfig> pingConfig = configs.stream().filter(c -> c.getMetric().getMetricKey().equals("disponibilidade-global")).findFirst();
         if (pingConfig.isPresent()) {
             String zabbixKey = pingConfig.get().getZabbixKey();
@@ -165,7 +165,7 @@ public class MetricCollectorScheduler {
              }
         }
 
-        // 3. Checa Recursos
+        // Checa Recursos
         return checkResourceAlerts(host, configs, collectedZabbixMetrics);
     }
     
@@ -213,23 +213,23 @@ public class MetricCollectorScheduler {
      * Salva ou atualiza o último valor de uma métrica de texto (não numérica)
      * na tabela 'metric_current_value'.
      *
-     * @param host O host ao qual o valor pertence.
-     * @param metric A métrica "conceitual" (ex: 'os-nome').
-     * @param rawValue O valor de texto vindo do Zabbix (ex: "Linux...").
+     * @param host 
+     * @param metric
+     * @param rawValue
      */
     private void saveOrUpdateCurrentTextValue(Host host, Metric metric, String rawValue) {
-        // 1. Procura se já existe um valor salvo para esta combinação de host/métrica
+        // Procura se já existe um valor salvo para esta combinação de host/métrica
         MetricCurrentValue currentValue = metricCurrentValueRepository
             .findByHostIdAndMetricId(host.getId(), metric.getId())
             .orElse(new MetricCurrentValue()); // 2. Se não existir, cria um novo objeto
 
-        // 3. Atualiza os dados do objeto
+        // Atualiza os dados do objeto
         currentValue.setHost(host);
         currentValue.setMetric(metric);
         currentValue.setCurrentValue(rawValue);
         currentValue.setLastUpdated(LocalDateTime.now());
         
-        // 4. Salva no banco (INSERT se for novo, UPDATE se já existia)
+        // Salva no banco (INSERT se for novo, UPDATE se já existia)
         metricCurrentValueRepository.save(currentValue);
     }
 
@@ -319,10 +319,7 @@ public class MetricCollectorScheduler {
         }
 
         // Verifica se contém o código 200 OK
-        // (Pode ser aprimorado para aceitar 2xx)
         if (rawHeaders.contains("200 OK") || rawHeaders.contains("201 Created")) {
-            // Se HTTP está OK, não checamos recursos aqui (ou poderíamos chamar checkResourceAlerts se quiséssemos)
-            // Para simplificar, se o HTTP responde 200, consideramos OK.
             return new StatusResult(Host.HostStatus.ACTIVE, "Serviço HTTP respondendo (200 OK).");
         } 
         

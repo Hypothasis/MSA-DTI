@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 
 @RestController
 public class AuthenticationController {
-    // Injeta as propriedades do application.properties
     @Value("${keycloak.token-uri}")
     private String keycloakTokenUri;
     

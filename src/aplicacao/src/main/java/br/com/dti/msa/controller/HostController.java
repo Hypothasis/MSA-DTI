@@ -36,7 +36,6 @@ public class HostController {
         // ADICIONE O HOST AO MODELO
         model.addAttribute("host", host);
 
-        // O resto da sua lógica de switch continua a mesma
         switch (host.getType()) {
             case "APPLICATION": return "host/application";
             case "SERVER": return "host/server";

@@ -53,7 +53,6 @@ public class PublicApiController {
         if ("OK".equals(response.getStatus())) {
             return ResponseEntity.ok(response);
         } else {
-            // Retorna um status HTTP que indica que um serviço dependente está indisponível
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
         }
     }

@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Variavel para o tempo de requisição Assícrono
     const countdownElement = document.getElementById('countDownTime');
     const lastUpdateTimeElement = document.getElementById('lastUpdateTime');
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -10,48 +9,36 @@ document.addEventListener('DOMContentLoaded', function () {
     //#######################################################################
 
     function updateLastRequestTime() {
-        // Obtém dados no tempo real
         const now = new Date();
 
-        // Parse para Horas, Minutos e Segundos
         const hour = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
         const seconds = String(now.getSeconds()).padStart(2, '0');
         const formattedTime = `${hour}:${minutes}:${seconds}`;
 
         if (lastUpdateTimeElement) {
-            // Modifica o valor no html
             lastUpdateTimeElement.textContent = formattedTime;
         }
     }
 
-    // função assícrona principal para chamar requisição ao backend
     async function startCountDown() {
         const update_trigger = 60; 
         let secs_remaining = update_trigger;
 
-        // Laço de repetição continua
         while (true) {
             try {
-                // Modifica a tag para horarío real no html
                 if (countdownElement) {
                     countdownElement.textContent = `${secs_remaining}s.`;
                 }
 
-                // Se a contagem chega a zero
-                // zera o tempo e chama função de requisição ao backend
                 if (secs_remaining <= 0) {
 
-                    // Registra no elemento do <html> o tempo da última atualização
                     updateLastRequestTime();
 
-                    // Chama função assícrona para backend
                     await getHostData();
 
-                    // Atualiza para 60s 
                     secs_remaining = update_trigger;
 
-                    // Atualiza elemento para 60s
                     if (countdownElement) {
                         countdownElement.textContent = `${secs_remaining}s.`;
                     }
@@ -82,7 +69,6 @@ document.addEventListener('DOMContentLoaded', function () {
     //###        CONFIGURAÇÃO DOS GRÁFICOS USANDO APEXCHARTS.JS           ###
     //#######################################################################
 
-    /* Latência */
     let latencyData = [
         [new Date('2025-08-09T08:10:00').getTime(), 133],
         [new Date('2025-08-10T09:25:00').getTime(), 139],
@@ -168,10 +154,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const responseTimeChart = new ApexCharts(document.querySelector("#responseTimeChart"), options);
     responseTimeChart.render();
 
-    /* MEMORIA RAM */
 
-    const memoriaEmGb = [95.65, 64.09, 22.00]; // Total, Em Uso, Livre
-    const memoriaPorcents = [100, 67, 23]; // Total, Em Uso, Livre
+    const memoriaEmGb = [95.65, 64.09, 22.00]; 
+    const memoriaPorcents = [100, 67, 23];
 
     var options = {
         series: memoriaPorcents,
@@ -236,7 +221,6 @@ document.addEventListener('DOMContentLoaded', function () {
     var memoryChart = new ApexCharts(document.querySelector("#memoriaChart"), options);
     memoryChart.render();
     
-    /* CPU */
 
     let cpuData = [
         [new Date('2025-08-09T10:00:00').getTime(), 23],
@@ -326,7 +310,6 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             y: {
                 formatter: function (val) {
-                    // Usei toFixed(2) para mostrar valores decimais se houver
                     return (val).toFixed(2) + " %";
                 }
             }
@@ -336,7 +319,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const cpuChart = new ApexCharts(document.querySelector("#cpuChart"), options);
     cpuChart.render();
 
-    /* Banda Larga de Dados */
 
     let dadosEnviados = [
         [new Date('2025-09-15T14:00:00').getTime(), 2.5],

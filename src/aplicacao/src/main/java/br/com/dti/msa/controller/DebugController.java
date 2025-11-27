@@ -17,20 +17,20 @@ public class DebugController {
             return Map.of("error", "Nenhum usuário autenticado.");
         }
 
-        // 1. Coleta as 'authorities' que o Spring Security processou (resultado do seu conversor)
+        // Coleta as 'authorities' que o Spring Security processou (resultado do seu conversor)
         var authorities = principal.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        // 2. Coleta TODOS os 'claims' (dados brutos) que vieram do token do Keycloak
+        // Coleta TODOS os 'claims' (dados brutos) que vieram do token do Keycloak
         Map<String, Object> claims = principal.getClaims();
 
-        // 3. Monta uma resposta completa com todas as informações úteis
+        // Monta uma resposta completa com todas as informações úteis
         return Map.of(
-            "username_from_token", principal.getPreferredUsername(), // O login do usuário (ex: 'user2')
-            "user_full_name", principal.getFullName(), // O nome completo (ex: 'user user')
-            "authorities_processed_by_spring", authorities, // O resultado final da sua conversão de roles
-            "all_claims_from_keycloak", claims // Todos os dados brutos do token, incluindo realm_access e resource_access
+            "username_from_token", principal.getPreferredUsername(),
+            "user_full_name", principal.getFullName(),
+            "authorities_processed_by_spring", authorities,
+            "all_claims_from_keycloak", claims
         );
     }
 }

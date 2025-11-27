@@ -1,6 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-    // Variaveis para troca de imagem no header
     const navbarIcon = document.getElementById('navbar-icon');
     const filterIcon = document.getElementById('filter-icon');
     const sectionHeader = document.querySelector('main section header');
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', function () {
     //###                  FUNÇÕES PARA O IMAGEM HEADER                   ###
     //#######################################################################
 
-    // Checa se o elemento existe
     if (navbarIcon && sectionHeader) {
         const srcOriginal = navbarIcon.src;
         const srcHover = navbarIcon.getAttribute('data-hover-src');
@@ -24,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Checa se o elemento existe
     if (filterIcon && aside) {
         const srcOriginal = filterIcon.src;
         const srcHover = filterIcon.getAttribute('data-hover-src');
@@ -46,15 +43,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const estadoCheckboxes = document.querySelectorAll('li:nth-child(2) article input[type="checkbox"]');
 
     function handleSingleChoice(clickedCheckbox, checkboxGroup) {
-        // Se o usuário está desmarcando o checkbox, não fazemos nada.
         if (!clickedCheckbox.checked) {
             return;
         }
 
         checkboxGroup.forEach(checkbox => {
-            // Se o checkbox atual for DIFERENTE do que foi clicado...
             if (checkbox !== clickedCheckbox) {
-                // ...desmarca ele.
                 checkbox.checked = false;
             }
         });

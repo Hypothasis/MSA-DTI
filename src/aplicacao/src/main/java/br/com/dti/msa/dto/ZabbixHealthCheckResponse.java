@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL) 
 public class ZabbixHealthCheckResponse {
 
-    private String status; // "OK" ou "ERROR"
+    private String status;
     private String message;
     private String zabbixVersion;
 
