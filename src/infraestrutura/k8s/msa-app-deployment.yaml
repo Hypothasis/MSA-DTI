@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: msa-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: msa-app
+  template:
+    metadata:
+      labels:
+        app: msa-app
+    spec:
+      containers:
+        - name: msa-app
+        # Usar imagem correta do Docker MSA
+          image: hypothasis/msa:1.0.0 
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: msa-config
+                  key: DB_HOST
+
+            - name: DB_PORT
+              value: "3306"
+
+            - name: DB_DATABASE
+              value: "msa"
+
+            - name: DB_USER
+              value: "root"
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: msa-secret
+                  key: DB_PASSWORD
+
+            - name: KEYCLOAK_CLIENT_ID
+              value: "MSA"
+
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: msa-secret
+                  key: KEYCLOAK_CLIENT_SECRET
+
+            - name: KEYCLOAK_AUTH_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: msa-config
+                  key: KEYCLOAK_AUTH_SERVER_URL
+
+            - name: KEYCLOAK_REALM
+              value: "dev"
+
+            - name: ZABBIX_API_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: msa-config
+                  key: ZABBIX_API_URL
+
+            - name: ZABBIX_API_USER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: msa-secret
+                  key: ZABBIX_API_USER_TOKEN
+

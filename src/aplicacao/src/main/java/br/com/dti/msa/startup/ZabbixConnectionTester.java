@@ -32,7 +32,7 @@ public class ZabbixConnectionTester implements CommandLineRunner {
         } catch (Exception e) {
             System.err.println("--- FALHA CRÍTICA AO CONECTAR COM O ZABBIX NA INICIALIZAÇÃO, O COLETOR DE MÉTRICAS NÃO SERÁ INICIADO. ---");
             System.err.println("Error: " + e.getMessage());
-            System.exit(1); 
+            //System.exit(1); 
         }
     }
 
