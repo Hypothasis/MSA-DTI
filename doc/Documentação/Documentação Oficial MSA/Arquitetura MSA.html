@@ -13,6 +13,11 @@ html,
 body {
 	margin: 0;
 	padding: 0;
+	color: white;
+  background-color: #1a1a1a;
+}
+h1,h2,h3,h4,h5,h6 {
+    color: white;
 }
 @media only screen {
 	body {
@@ -25,9 +30,6 @@ body {
 body {
 	line-height: 1.5;
 	white-space: pre-wrap;
-	background-color: #191919;
-  	color: white;
-	padding: 20px;
 }
 
 a,
@@ -48,6 +50,13 @@ h3 {
 	line-height: 1.2;
 	font-weight: 600;
 	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
 }
 
 .page-title {
@@ -517,14 +526,14 @@ blockquote.quote-large {
 	margin-top: 0.25em;
 }
 
-.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
 .code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
 .serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
 .mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
-.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
-.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
-.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
-.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
 .pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
 .pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
 .pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
@@ -706,12 +715,12 @@ blockquote.quote-large {
 	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
 }
 	
-</style></head><body><article id="2b9092d1-5dad-803f-820b-e5478fc299ce" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="Arquitetura%20MSA/main_icon1.png"/></div><h1 class="page-title">Arquitetura MSA</h1><p class="page-description"></p></header><div class="page-body"><p id="2b9092d1-5dad-80d3-988e-d55e969ce65e" class="">
-</p><p id="2a4092d1-5dad-80cc-97cd-cd7c7efbf591" class="">
-</p><h2 id="268092d1-5dad-8091-a8be-c71f8f78bd36" class="">Estrutura de Software</h2><p id="268092d1-5dad-80d4-b8a0-fb62ef459c86" class="">
-</p><figure id="268092d1-5dad-8028-b396-c8acf4d5834b" class="image"><a href="Arquitetura%20MSA/MSA_Estrutura_Software.png"><img style="width:335px" src="Arquitetura%20MSA/MSA_Estrutura_Software.png"/></a></figure><p id="268092d1-5dad-80e2-ab81-c8e1c075031c" class="">
-</p><h2 id="268092d1-5dad-8021-a59d-c9a7be73c46e" class="">Estrutura de pacotes - Backend</h2><p id="268092d1-5dad-8012-838d-f7dad24408c0" class="">
-</p><figure id="268092d1-5dad-8030-9380-e9d55d2eb77a" class="image"><a href="Arquitetura%20MSA/MSA_Estrutura_Pacotes.png"><img style="width:710px" src="Arquitetura%20MSA/MSA_Estrutura_Pacotes.png"/></a></figure><p id="268092d1-5dad-80f2-8b49-c44509a970d5" class="">
-</p><h2 id="268092d1-5dad-808a-a89e-dec4b5e741c5" class="">Arquitetura do Sistema</h2><p id="268092d1-5dad-80f5-87a6-ccce7d568627" class="">
-</p><figure id="268092d1-5dad-8026-a993-f6de8038c352" class="image"><a href="Arquitetura%20MSA/MSA_Arquitetura_Estrutural.png"><img style="width:710px" src="Arquitetura%20MSA/MSA_Arquitetura_Estrutural.png"/></a></figure><p id="277092d1-5dad-801d-b030-c25b7afc985f" class="">
-</p><h2 id="277092d1-5dad-80fe-bb2a-f4f378bea1b6" class="">Banco de Dados</h2><figure id="2a4092d1-5dad-80bb-9477-f22b35b0c62f" class="image"><a href="Arquitetura%20MSA/image.png"><img style="width:710px" src="Arquitetura%20MSA/image.png"/></a></figure><hr id="269092d1-5dad-80b4-beef-ea6ffe43051a"/></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
+</style></head><body><article id="2b9092d1-5dad-803f-820b-e5478fc299ce" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="Arquitetura%20MSA/main_icon1.png"/></div><h1 class="page-title" dir="auto">Arquitetura MSA</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><div style="display:contents" dir="auto"><p id="2b9092d1-5dad-80d3-988e-d55e969ce65e" class="">
+</p></div><div style="display:contents" dir="auto"><p id="2a4092d1-5dad-80cc-97cd-cd7c7efbf591" class="">
+</p></div><div style="display:contents" dir="auto"><h2 id="268092d1-5dad-8091-a8be-c71f8f78bd36" class="">Estrutura de Software</h2></div><div style="display:contents" dir="auto"><p id="268092d1-5dad-80d4-b8a0-fb62ef459c86" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="268092d1-5dad-8028-b396-c8acf4d5834b" class="image"><a href="Arquitetura%20MSA/MSA_Estrutura_Software.png"><img style="width:335px" src="Arquitetura%20MSA/MSA_Estrutura_Software.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="268092d1-5dad-80e2-ab81-c8e1c075031c" class="">
+</p></div><div style="display:contents" dir="auto"><h2 id="268092d1-5dad-8021-a59d-c9a7be73c46e" class="">Estrutura de pacotes - Backend</h2></div><div style="display:contents" dir="auto"><p id="268092d1-5dad-8012-838d-f7dad24408c0" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="268092d1-5dad-8030-9380-e9d55d2eb77a" class="image"><a href="Arquitetura%20MSA/MSA_Estrutura_Pacotes.png"><img style="width:710px" src="Arquitetura%20MSA/MSA_Estrutura_Pacotes.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="268092d1-5dad-80f2-8b49-c44509a970d5" class="">
+</p></div><div style="display:contents" dir="auto"><h2 id="268092d1-5dad-808a-a89e-dec4b5e741c5" class="">Arquitetura do Sistema</h2></div><div style="display:contents" dir="auto"><p id="268092d1-5dad-80f5-87a6-ccce7d568627" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="268092d1-5dad-8026-a993-f6de8038c352" class="image"><a href="Arquitetura%20MSA/MSA_Arquitetura_Estrutural.png"><img style="width:710px" src="Arquitetura%20MSA/MSA_Arquitetura_Estrutural.png"/></a></figure></div><div style="display:contents" dir="auto"><p id="277092d1-5dad-801d-b030-c25b7afc985f" class="">
+</p></div><div style="display:contents" dir="auto"><h2 id="277092d1-5dad-80fe-bb2a-f4f378bea1b6" class="">Banco de Dados</h2></div><div style="display:contents" dir="ltr"><figure id="2a4092d1-5dad-80bb-9477-f22b35b0c62f" class="image"><a href="Arquitetura%20MSA/image.png"><img style="width:710px" src="Arquitetura%20MSA/image.png"/></a></figure></div><div style="display:contents" dir="auto"><hr id="269092d1-5dad-80b4-beef-ea6ffe43051a"/></div></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

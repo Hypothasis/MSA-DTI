@@ -16,7 +16,7 @@ src/aplicacao/.vscode/
 
 # Arquivos de ambiente local (com senhas e segredos)
 src/aplicacao/.env
-src/aplicacao/.env.*
+src/aplicacao/.env.
 
 # Arquivos do sistema operacional
 src/aplicacao/.DS_Store

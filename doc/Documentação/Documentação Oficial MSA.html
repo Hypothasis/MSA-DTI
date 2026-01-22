@@ -13,6 +13,8 @@ html,
 body {
 	margin: 0;
 	padding: 0;
+	color: white;
+  background-color: #1a1a1a;
 }
 @media only screen {
 	body {
@@ -21,13 +23,17 @@ body {
 		color: rgb(55, 53, 47);
 	}
 }
+h1,h2,h3,h4,h5,h6,p{
+    color: white;
+}
+
+a{
+    color: white !important;
+}
 
 body {
 	line-height: 1.5;
 	white-space: pre-wrap;
-	background-color: #191919;
-  	color: white;
-	padding: 20px;
 }
 
 a,
@@ -48,6 +54,13 @@ h3 {
 	line-height: 1.2;
 	font-weight: 600;
 	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
 }
 
 .page-title {
@@ -517,14 +530,14 @@ blockquote.quote-large {
 	margin-top: 0.25em;
 }
 
-.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
 .code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
 .serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
 .mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
-.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
-.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
-.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
-.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
 .pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
 .pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
 .pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
@@ -706,8 +719,9 @@ blockquote.quote-large {
 	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
 }
 	
-</style></head><body><article id="268092d1-5dad-8046-9e81-ca34bd9ca4ea" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/main_icon1.png"/></div><h1 class="page-title">Documentação Oficial MSA</h1><p class="page-description"></p></header><div class="page-body"><p id="268092d1-5dad-80ae-b2e6-cc561e769f24" class="">MSA (Métricas de Serviços e Aplicações) é uma aplicação de monitoramento para serviços e aplicações, assim o usuário pode adicionar hosts (que podem ser serviços ou aplicações) para o monitoramento completo no sistema.</p><p id="268092d1-5dad-80c5-b1d7-d5835c9af061" class="">
-</p><p id="268092d1-5dad-8016-ab53-e0eff488f798" class="">Essa aplicação utiliza as métricas vinda do <strong>Zabbix </strong>(Então é necessário ter zabbix rodando com a sua aplicação sendo monitorada) e <strong>Keycloak</strong> para autenticação do usuário.</p><p id="2b9092d1-5dad-80aa-9356-ee0000b4ffe6" class="">
-</p><figure id="2b9092d1-5dad-803f-820b-e5478fc299ce" class="link-to-page"><a href="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Arquitetura%20MSA.html"><img class="icon" src="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Arquitetura%20MSA/main_icon1.png"/>Arquitetura MSA</a></figure><p id="2b9092d1-5dad-8031-9985-fe2f26cfb19c" class="">
-</p><figure id="2b9092d1-5dad-801f-b38d-cf488c8a3c39" class="link-to-page"><a href="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Manual%20de%20configura%C3%A7%C3%A3o%20MSA.html"><img class="icon" src="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Manual%20de%20configura%C3%A7%C3%A3o%20MSA/main_icon1.png"/>Manual de configuração MSA</a></figure><p id="2b9092d1-5dad-806b-a5c8-cf2d4b7ed405" class="">
-</p></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
+</style></head><body><article id="268092d1-5dad-8046-9e81-ca34bd9ca4ea" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/main_icon1.png"/></div><h1 class="page-title" dir="auto">Documentação Oficial MSA</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><div style="display:contents" dir="auto"><p id="268092d1-5dad-80ae-b2e6-cc561e769f24" class="">MSA (Métricas de Serviços e Aplicações) é uma aplicação de monitoramento para serviços e aplicações, assim o usuário pode adicionar hosts (que podem ser serviços ou aplicações) para o monitoramento completo no sistema.</p></div><div style="display:contents" dir="auto"><p id="268092d1-5dad-80c5-b1d7-d5835c9af061" class="">
+</p></div><div style="display:contents" dir="auto"><p id="268092d1-5dad-8016-ab53-e0eff488f798" class="">Essa aplicação utiliza as métricas vinda do <strong>Zabbix </strong>(Então é necessário ter zabbix rodando com a sua aplicação sendo monitorada) e <strong>Keycloak</strong> para autenticação do usuário.</p></div><div style="display:contents" dir="auto"><p id="2b9092d1-5dad-80aa-9356-ee0000b4ffe6" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="2b9092d1-5dad-803f-820b-e5478fc299ce" class="link-to-page"><a href="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Arquitetura%20MSA.html"><img class="icon" src="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Arquitetura%20MSA/main_icon1.png"/>Arquitetura MSA</a></figure></div><div style="display:contents" dir="auto"><p id="2b9092d1-5dad-8031-9985-fe2f26cfb19c" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="2b9092d1-5dad-801f-b38d-cf488c8a3c39" class="link-to-page"><a href="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Manual%20de%20configura%C3%A7%C3%A3o%20MSA.html"><img class="icon" src="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Manual%20de%20configura%C3%A7%C3%A3o%20MSA/main_icon1.png"/>Manual de configuração MSA</a></figure></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80cd-97f0-da6541143b8b" class="">
+</p></div><div style="display:contents" dir="ltr"><figure id="2f0092d1-5dad-8094-aa59-f963953ab0c4" class="link-to-page"><a href="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Teste%20de%20execu%C3%A7%C3%A3o%20do%20MSA%20com%20Docker%20Compose.html"><img class="icon" src="Documenta%C3%A7%C3%A3o%20Oficial%20MSA/Teste%20de%20execu%C3%A7%C3%A3o%20do%20MSA%20com%20Docker%20Compose/main_icon1.png"/>Teste de execução do MSA com Docker Compose</a></figure></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-802b-8b7b-c9494e4e875d" class="">
+</p></div></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
