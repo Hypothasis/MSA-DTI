@@ -1,0 +1,795 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Teste de execução do MSA com Docker Compose</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	color: white;
+  background-color: #1a1a1a;
+}
+h1,h2,h3,h4,h5,h6,p, ul li, tr td, ol li {
+    color: white;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="2f0092d1-5dad-8094-aa59-f963953ab0c4" class="page sans"><header><div class="page-header-icon undefined"><img class="icon" src="Teste%20de%20execu%C3%A7%C3%A3o%20do%20MSA%20com%20Docker%20Compose/main_icon1.png"/></div><h1 class="page-title" dir="auto">Teste de execução do MSA com Docker Compose</h1><p class="page-description" dir="auto"></p></header><div class="page-body"><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-8092-94c5-ec45a1d6e0c4" class="">Esta documentação descreve <strong>passo a passo</strong> como subir o ambiente do <strong>MSA</strong> utilizando <strong>Docker Compose</strong>, incluindo <strong>MySQL</strong>, <strong>Keycloak</strong> e a aplicação <strong>MSA</strong>, além das configurações obrigatórias (IP da máquina, Keycloak e Zabbix).</p></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-80c4-bf9c-dd204c9dae6c"/></div><div style="display:contents" dir="auto"><h2 id="2f0092d1-5dad-80bb-a28f-fe232a65147d" class="">📦 Pré-requisitos</h2></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80f8-a378-e64327564640" class="">Antes de iniciar, certifique-se de ter instalado:</p></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8044-baa8-e90adbedf0f6" class="bulleted-list"><li style="list-style-type:disc">Docker (<code>&gt;= 20.x</code>)</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-808f-b4bd-c1174161ed4d" class="bulleted-list"><li style="list-style-type:disc">Docker Compose (<code>docker compose</code>)</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8043-96ee-e2bcbd246a21" class="bulleted-list"><li style="list-style-type:disc">Porta <strong>3306</strong> livre (MySQL)</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80d5-96f4-c8351cec2936" class="bulleted-list"><li style="list-style-type:disc">Porta <strong>8080</strong> livre (Keycloak)</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8007-b8c4-f8c2735f370a" class="bulleted-list"><li style="list-style-type:disc">Porta <strong>8081</strong> livre (MSA)</li></ul></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80f6-8390-dffe73e5d510" class="">Verifique com:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-8016-bed8-cd7e9898127c" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">docker --version
+docker compose version
+</code></pre></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-80fc-b90c-c583b38d5270"/></div><div style="display:contents" dir="auto"><h2 id="2f0092d1-5dad-8020-9e30-cc7f4a4bb1ea" class="">🌐 Descobrir o IP da máquina</h2></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-800b-88ac-d08fa16c40d3" class="">O IP da máquina <strong>é obrigatório</strong> para que o Keycloak e o MSA funcionem corretamente.</p></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80c1-826a-dbd66cc296f6" class="">Execute:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-80c1-9964-ecd9712105d9" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">ip a
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-805e-8dac-d6a70e8cb6fc" class="">Ou:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-8078-bc8c-e12f9d5df7a2" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">hostname -I
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-8021-bbfd-e5c3c60bc6f8" class="">📌 <strong>Anote o IP</strong>, por exemplo:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-801a-acaf-c16029ef5588" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">192.168.0.100
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-8009-a49f-df86a8e79489" class="">Esse IP será usado em <strong>todos os lugares marcados como </strong><code><strong>&lt;IP&gt;</strong></code>.</p></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-8073-93be-d19b08aa1236"/></div><div style="display:contents" dir="auto"><h2 id="2f0092d1-5dad-8046-aaff-c7c972df2afb" class="">🐬 Subindo o MySQL e o Keycloak</h2></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-8095-b079-de520f6539ee" class="">📄 docker-compose (infraestrutura)</h3></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-809f-9b5b-ee602f8fa92a" class="">Arquivo: <code>docker-compose.yml</code></p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-805c-a5ab-c882cbef24c5" class="code code-wrap"><code class="language-YAML" style="white-space:pre-wrap;word-break:break-all">version: &#x27;3.8&#x27;
+
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-msa
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - &quot;3306:3306&quot;
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command:
+      - start-dev
+      - --import-realm
+    volumes:
+      - ./keycloak/realms:/opt/keycloak/data/import
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+
+      # IP DA MAQUINA LOCAL
+      KC_HOSTNAME: &lt;IP&gt;
+      KC_HTTP_PORT: 8080
+      KC_HOSTNAME_STRICT: &quot;false&quot;
+      KC_HOSTNAME_STRICT_HTTPS: &quot;false&quot;
+      KC_PROXY: edge
+      KC_HTTP_ENABLED: &quot;true&quot;
+      KC_HEALTH_ENABLED: &quot;true&quot;
+    ports:
+      - &quot;8080:8080&quot;
+</code></pre></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-806a-9ab7-d9a373994b6f" class="">▶️ Subir os containers</h3></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80c7-96d6-cdff5b3a57e9" class="">No diretório do arquivo:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-800a-a938-d9e1dfa963a9" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">docker compose up -d
+</code></pre></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-804a-877f-f7f04fe82dd0" class="">🔍 Verificar status</h3></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-802a-8a6f-f24a86a3e0f1" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">docker ps
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-808e-b4d8-c4d0900aae02" class="">Você deve ver:</p></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-804b-941b-d836083333ff" class="bulleted-list"><li style="list-style-type:disc"><code>mysql-msa</code></li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80f8-941c-cb531d1b7083" class="bulleted-list"><li style="list-style-type:disc"><code>keycloak</code></li></ul></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-8049-b3ec-c3a5b7f48360"/></div><div style="display:contents" dir="auto"><h2 id="2f0092d1-5dad-8067-86f0-d2c424005fdc" class="">🔐 Acessando o Keycloak</h2></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80ca-99e0-e5b2961ae7a4" class="">Abra no navegador:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-8025-9401-cc8500b6901f" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">http://&lt;IP&gt;:8080
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-8063-81f1-c2e766a72018" class="">Credenciais padrão:</p></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8047-bcbc-caf006b79e02" class="bulleted-list"><li style="list-style-type:disc"><strong>Usuário:</strong> <code>admin</code></li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8057-aec1-e9a033c2726c" class="bulleted-list"><li style="list-style-type:disc"><strong>Senha:</strong> <code>admin</code></li></ul></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-808f-8523-efd0c454bca8"/></div><div style="display:contents" dir="auto"><h2 id="2f0092d1-5dad-801d-ab3e-c755a16a518d" class="">🧩 Configuração do Keycloak</h2></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-80ae-be98-ce460c6f763d" class="">1️⃣ Verificar o Realm <code>dev</code></h3></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8048-9ad5-eb9f9dda17c7" class="bulleted-list"><li style="list-style-type:disc">Caso tenha sido importado automaticamente, ele aparecerá como <strong>dev</strong></li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80e5-b4f2-f3e41e64805b" class="bulleted-list"><li style="list-style-type:disc">Caso não exista, crie manualmente:<div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8044-84f4-f00084ac9955" class="bulleted-list"><li style="list-style-type:circle">Realm name: <code>dev</code></li></ul></div></li></ul></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-800e-8915-f718ea2a1982"/></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-805f-a260-e72e1bfad35e" class="">2️⃣ Criar o Client <code>MSA</code><strong>i</strong></h3></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-8018-80d0-e1ff00e1ede4" class="">Menu:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-80a4-8d04-c47434bc6e6b" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Clients → Create client
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80f9-8abf-dd760a52779a" class="">Configuração básica:</p></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8065-b907-ed1bbf316bf5" class="bulleted-list"><li style="list-style-type:disc"><strong>Client ID:</strong> <code>MSA</code></li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80ce-8d5d-e52c641f26dc" class="bulleted-list"><li style="list-style-type:disc"><strong>Client type:</strong> OpenID Connect</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80c4-92e8-e8029af5d316" class="bulleted-list"><li style="list-style-type:disc"><strong>Access type:</strong> Confidential</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8057-8447-edd27bb49df1" class="bulleted-list"><li style="list-style-type:disc"><strong>Service accounts:</strong> Enabled</li></ul></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80e2-b791-febc8922c5a0" class="">📌 Após criar, copie o:</p></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80c2-ab94-d81cf0ed57f1" class="bulleted-list"><li style="list-style-type:disc"><strong>Client Secret</strong> (será usado no MSA)</li></ul></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-805b-88ed-e661c91720b3"/></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-801b-ab32-eac7f3ed78f1" class="">3️⃣ Criar Roles</h3></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80b5-bccc-e41cf385d4f0" class="">Menu:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-803e-8520-c800901d6642" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Clients → MSA → Roles
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80a9-9e2c-f7b066d0b7a7" class="">Crie as roles necessárias para o sistema.</p></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80bb-aa84-d216d392ad23" class="">Roles de rotas:</p></div><div style="display:contents" dir="ltr"><table id="2f0092d1-5dad-8022-b72c-f07f9ad2fd06" class="simple-table"><tbody><div style="display:contents" dir="ltr"><tr id="2f0092d1-5dad-8027-a65b-ea4e543fbf53"><td id="A:qf" class="" style="width:236.33333333333334px">Nome da Role</td><td id="DSM`" class="" style="width:285.3333435058594px">Descrição</td></tr></div><div style="display:contents" dir="ltr"><tr id="2f0092d1-5dad-808c-af33-c2ce3a8db933"><td id="A:qf" class="" style="width:236.33333333333334px">index_admin</td><td id="DSM`" class="" style="width:285.3333435058594px">Acesso a rota home do portal admin</td></tr></div><div style="display:contents" dir="ltr"><tr id="2f0092d1-5dad-8013-bca9-df41300d4fd8"><td id="A:qf" class="" style="width:236.33333333333334px">search_admin</td><td id="DSM`" class="" style="width:285.3333435058594px">Acesso a rota search do portal admin</td></tr></div><div style="display:contents" dir="ltr"><tr id="2f0092d1-5dad-805d-95af-e11b5ec85362"><td id="A:qf" class="" style="width:236.33333333333334px">create_admin</td><td id="DSM`" class="" style="width:285.3333435058594px">Acesso a rota create do portal admin</td></tr></div></tbody></table></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80f5-8012-c09911728760" class="">Roles de permissão:</p></div><div style="display:contents" dir="ltr"><table id="2f0092d1-5dad-80f9-9082-ec6e5c07d2d0" class="simple-table"><tbody><div style="display:contents" dir="ltr"><tr id="2f0092d1-5dad-80f8-b8ab-f8f8a9860247"><td id="A:qf" class="" style="width:236.33333333333334px">Nome da Role</td><td id="DSM`" class="" style="width:285.3333435058594px">Descrição</td></tr></div><div style="display:contents" dir="ltr"><tr id="2f0092d1-5dad-8047-8ccb-f92b8bf524ad"><td id="A:qf" class="" style="width:236.33333333333334px">ADMIN_CREATE</td><td id="DSM`" class="" style="width:285.3333435058594px">Role de permisão para criar hosts</td></tr></div><div style="display:contents" dir="ltr"><tr id="2f0092d1-5dad-80be-be84-ebf5c18edaf8"><td id="A:qf" class="" style="width:236.33333333333334px">ADMIN_READ</td><td id="DSM`" class="" style="width:285.3333435058594px">Role de permisão para ler hosts</td></tr></div><div style="display:contents" dir="ltr"><tr id="2f0092d1-5dad-8061-9c78-f08befb0f5b8"><td id="A:qf" class="" style="width:236.33333333333334px">ADMIN_UPDATE</td><td id="DSM`" class="" style="width:285.3333435058594px">Role de permisão para editar hosts</td></tr></div><div style="display:contents" dir="ltr"><tr id="2f0092d1-5dad-8082-87b6-cb00e03262a6"><td id="A:qf" class="" style="width:236.33333333333334px">ADMIN_DELETE</td><td id="DSM`" class="" style="width:285.3333435058594px">Role de permisão para excluir hosts</td></tr></div></tbody></table></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-801e-b64b-ea455f7ba1d8"/></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80b2-b46d-de24a2e53982" class="">
+</p></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-8089-b2e7-e1bcc559645c" class="">4️⃣ Criando Mapper</h3></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-801a-a0ea-c6c7fb6e3721" class="">Adicionar Mapper na seção da documentação anterior <strong>“Manual de configuração do MSA”</strong></p></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-802a-91b3-f4f1e2d55b22" class="bulleted-list"><li style="list-style-type:disc"><strong>Configurar o Mapper para Injetar Tokens Corretos no Spring</strong></li></ul></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80f3-bd7e-c5a5938c2066" class="">
+</p></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-807e-80d1-cd5194fd71b1" class="">5️⃣ Criando usuários</h3></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-8003-b37b-d4e4641b23df" class="">Menu:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-80b2-935d-d6d441b5dff1" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Users → Add user
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80d0-918a-f7fd4a6b477d" class="">Preencha:</p></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80a2-8ed0-e74ebfb25265" class="bulleted-list"><li style="list-style-type:disc">Username</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80f4-bea6-fea43dedd43f" class="bulleted-list"><li style="list-style-type:disc">Email</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80f6-b5bb-f69e059e4f7f" class="bulleted-list"><li style="list-style-type:disc">Enabled: ✅</li></ul></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-8079-ba06-db8cb2c7b015" class="">🔑 Definir senha</h3></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-8009-90e5-d240d9374c7c" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Credentials → Set password
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-8006-b97b-c828b8efb07d" class="">Desative <strong>Temporary</strong>.</p></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-8020-b615-cc404108ea1b"/></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-80dd-afd6-e311edb64a51" class="">6️⃣ Associar Roles ao Usuário</h3></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-806c-a7dc-e0936657b1fe" class="">Menu:</p></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-8046-951d-c222735fe216" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">Users → &lt;usuário&gt; → Role mapping
+</code></pre></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-803a-bf11-d5128b30e997" class="bulleted-list"><li style="list-style-type:disc">Realm Roles / Client Roles</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8089-8b01-d8a62f7a93af" class="bulleted-list"><li style="list-style-type:disc">Adicione as roles do client <strong>MSA</strong></li></ul></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-80f8-b256-d6e64b0e537d"/></div><div style="display:contents" dir="auto"><h2 id="2f0092d1-5dad-80b1-91d2-fad92de01555" class="">🚀 Subindo a aplicação MSA</h2></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-80d2-a901-eae97275df43" class="">📄 docker-compose (aplicação)</h3></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-8036-a71c-f8451932be63" class="code code-wrap"><code class="language-YAML" style="white-space:pre-wrap;word-break:break-all">version: &#x27;3.8&#x27;
+
+services:
+  msa-app:
+    build: ~/MSA-DTI/src/aplicacao/
+    container_name: msa-app
+    ports:
+      - &quot;8081:8080&quot;
+    env_file:
+      - ~/MSA-DTI/src/aplicacao/.env
+    environment:
+      - DB_HOST=&lt;IP&gt;
+      - DB_PORT=3306
+      - DB_DATABASE=msa
+      - DB_USER=root
+      - DB_PASSWORD=root
+
+      - KEYCLOAK_CLIENT_ID=MSA
+      - KEYCLOAK_CLIENT_SECRET=&lt;SECRET KEYCLOAK&gt;
+      - KEYCLOAK_AUTH_SERVER_URL=http://&lt;IP&gt;:8080
+      - KEYCLOAK_REALM=dev
+
+      - ZABBIX_API_URL=
+      - ZABBIX_API_USER_TOKEN=
+</code></pre></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-8049-9a52-df67e03d4c82" class="">📌 <strong>Substitua obrigatoriamente:</strong></p></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80d0-8f90-da4c21576863" class="bulleted-list"><li style="list-style-type:disc"><code>&lt;IP&gt;</code> → IP da máquina</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8009-8a97-c1ebe346a69c" class="bulleted-list"><li style="list-style-type:disc"><code>&lt;SECRET KEYCLOAK&gt;</code> → Client Secret do Keycloak</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-808d-a550-dd4f9edec691" class="bulleted-list"><li style="list-style-type:disc"><code>ZABBIX_API_URL</code></li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8016-8cda-d4803ed2dcca" class="bulleted-list"><li style="list-style-type:disc"><code>ZABBIX_API_USER_TOKEN</code></li></ul></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-8072-a9d9-f9764d5542c5"/></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-80e7-be1f-e41ea1d86d43" class="">▶️ Subir o MSA</h3></div><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-8011-8f9e-e7359d9e939d" class="code code-wrap"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">docker compose up -d --build
+</code></pre></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-8014-96ad-f51a880b344a"/></div><div style="display:contents" dir="auto"><h2 id="2f0092d1-5dad-8048-bbbb-c4ddbd2fdbec" class="">⏳ Ordem correta de inicialização</h2></div><div style="display:contents" dir="auto"><ol type="1" id="2f0092d1-5dad-80cf-aa01-e2137405e82b" class="numbered-list" start="1"><li><strong>MySQL</strong></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2f0092d1-5dad-80a1-9749-d639cb207a3e" class="numbered-list" start="2"><li><strong>Keycloak</strong></li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2f0092d1-5dad-803d-a6cf-ddcfb548551f" class="numbered-list" start="3"><li>Aguardar Keycloak ficar acessível</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2f0092d1-5dad-80f2-814c-dd07aa9474a3" class="numbered-list" start="4"><li>Criar usuário + roles</li></ol></div><div style="display:contents" dir="auto"><ol type="1" id="2f0092d1-5dad-8075-b60a-c67be07108c5" class="numbered-list" start="5"><li>Subir o <strong>MSA</strong></li></ol></div><div style="display:contents" dir="auto"><p id="2f0092d1-5dad-80cd-a609-d6eb9779e05f" class="">📌 Se o MSA subir antes do Keycloak estar pronto, ocorrerá erro de autenticação.</p></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-8005-b9c2-e68b1e401073"/></div><div style="display:contents" dir="auto"><h2 id="2f0092d1-5dad-8090-9455-fb29be9b252e" class="">🌍 Acessos finais</h2></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8039-8f41-cf6e3e188b8a" class="bulleted-list"><li style="list-style-type:disc"><strong>Keycloak:</strong><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-8041-a61c-efa8aea72f20" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">http://&lt;IP&gt;:8080
+</code></pre></div></li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80e1-9c14-ff462a26e1e3" class="bulleted-list"><li style="list-style-type:disc"><strong>MSA:</strong><div style="display:contents" dir="auto"><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="2f0092d1-5dad-80d0-8d33-db4a2a186ec6" class="code code-wrap"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">http://&lt;IP&gt;:8081
+</code></pre></div></li></ul></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-809e-bfad-f47b2a05cb87"/></div><div style="display:contents" dir="auto"><h2 id="2f0092d1-5dad-80c2-9911-d5bea0c4eb57" class="">🛠️ Troubleshooting</h2></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-8035-af72-c6db26de8a73" class="">❌ Erro de conexão com Keycloak</h3></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8019-a2da-e53b999841ce" class="bulleted-list"><li style="list-style-type:disc">Verifique se <code>KC_HOSTNAME</code> está com o IP correto</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-800a-bc95-c9fa4fb5a096" class="bulleted-list"><li style="list-style-type:disc">Verifique se o Realm e Client existem</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80cf-ac00-f08af72af18a" class="bulleted-list"><li style="list-style-type:disc">Confira o <code>CLIENT_SECRET</code></li></ul></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-8048-8ce8-d2103be64419" class="">❌ Erro MySQL</h3></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80ff-81c0-de985ef243de" class="bulleted-list"><li style="list-style-type:disc">Verifique se a porta 3306 está livre</li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80c6-ba3f-cc1f602a42b5" class="bulleted-list"><li style="list-style-type:disc">Confira <code>init.sql</code></li></ul></div><div style="display:contents" dir="auto"><h3 id="2f0092d1-5dad-803d-9ea7-fe037aa37249" class="">❌ Erro Zabbix</h3></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-8084-b465-fa3d3bbbc3cf" class="bulleted-list"><li style="list-style-type:disc">Verifique <code>ZABBIX_API_URL</code></li></ul></div><div style="display:contents" dir="auto"><ul id="2f0092d1-5dad-80ea-b3cd-e9a08e5b5449" class="bulleted-list"><li style="list-style-type:disc">Verifique <code>ZABBIX_API_USER_TOKEN</code></li></ul></div><div style="display:contents" dir="auto"><hr id="2f0092d1-5dad-801a-a065-f0dc88bf2d7b"/></div></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

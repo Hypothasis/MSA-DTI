@@ -2,12 +2,12 @@ version: '3.8'
 
 services:
   msa-app:
-    build: ../aplicacao/
+    build: ../../aplicacao/.env
     container_name: msa-app
     ports:
       - "8081:8080"
     env_file:
-      - ../aplicacao/.env
+      - ../../aplicacao/.env
     environment:
       - DB_HOST=<IP>
       - DB_PORT=3306
@@ -16,7 +16,7 @@ services:
       - DB_PASSWORD=root
 
       - KEYCLOAK_CLIENT_ID=MSA
-      - KEYCLOAK_CLIENT_SECRET=<SECRET KEYCLOAK>
+      - KEYCLOAK_CLIENT_SECRET=<CLIENT_SECRET>
       - KEYCLOAK_AUTH_SERVER_URL=http://<IP>:8080
       - KEYCLOAK_REALM=dev
 

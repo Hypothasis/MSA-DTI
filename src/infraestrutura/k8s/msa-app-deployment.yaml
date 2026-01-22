@@ -15,7 +15,7 @@ spec:
       containers:
         - name: msa-app
         # Usar imagem correta do Docker MSA
-          image: hypothasis/msa:1.0.0 
+          image: <IMAGEM DO MSA>
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
