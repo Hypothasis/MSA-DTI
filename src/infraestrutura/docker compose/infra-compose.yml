@@ -1,4 +1,4 @@
-version: '3.8'
+name: InfraestruturaMSA
 
 services:
   mysql-db:
@@ -22,7 +22,6 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
-
       # IP DA MAQUINA LOCAL
       KC_HOSTNAME: <IP>
       KC_HTTP_PORT: 8080
@@ -33,4 +32,35 @@ services:
       KC_HEALTH_ENABLED: "true"
     ports:
       - "8080:8080"
+
+  zabbix-server:
+    image: zabbix/zabbix-server-mysql:latest
+    container_name: zabbix-server
+    environment:
+      - DB_SERVER_HOST=mysql-db
+      - MYSQL_USER=zabbix
+      - MYSQL_PASSWORD=root
+      - MYSQL_DATABASE=zabbix
+      - ZBX_CACHESIZE=256M
+    ports:
+      - "10051:10051"
+    depends_on:
+      - mysql-db
+    restart: always
+
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-mysql:latest
+    container_name: zabbix-web
+    environment:
+      - ZBX_SERVER_HOST=zabbix-server
+      - DB_SERVER_HOST=mysql-db
+      - MYSQL_USER=zabbix
+      - MYSQL_PASSWORD=root
+      - MYSQL_DATABASE=zabbix
+      - PHP_TZ=America/Sao_Paulo
+    ports:
+      - "8090:8080"
+      - mysql-db
+      - zabbix-server
+    restart: always
 
