@@ -1,0 +1,20 @@
+<section>
+  <h3>Health Checking Mockado</h3>
+  <div>
+    <p>Server</p>
+    <button
+      data-type="server"
+      data-status="<%= @AppStatus.server %>"
+      class="<%= 'active' if @AppStatus.server == 'UP' %>"
+    >
+    </button>
+
+    <p>Database</p>
+    <button
+      data-type="database"
+      data-status="<%= @AppStatus.db %>"
+      class="<%= 'active' if @AppStatus.db == 'UP' %>"
+    >
+    </button>
+  </div>
+</section>

@@ -1,0 +1,865 @@
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:24:48 -0300
+  [1m[35m (8.8ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 410.0ms | GC: 96.0ms)
+Completed 200 OK in 459ms (Views: 414.8ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 107.6ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:24:58 -0300
+Processing by HomeController#index as */*
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 9.4ms | GC: 0.0ms)
+Completed 200 OK in 12ms (Views: 10.0ms | ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (171.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (10.6ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 20:30:42.967689', '2026-06-02 20:30:42.967694') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateApps (20260602202721)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (2.4ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "status" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260602202721') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."status" = ? AND "apps"."db" = ? LIMIT ?[0m  [["status", "UP"], ["db", "UP"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[36mApp Create (0.2ms)[0m  [1m[32mINSERT INTO "apps" ("status", "db", "created_at", "updated_at") VALUES (?, ?, ?, ?) RETURNING "id"[0m  [["status", "UP"], ["db", "UP"], ["created_at", "2026-06-02 20:30:50.332209"], ["updated_at", "2026-06-02 20:30:50.332209"]]
+  [1m[36mTRANSACTION (7.9ms)[0m  [1m[36mcommit transaction[0m
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:33:57 -0300
+  [1m[36mActiveRecord::SchemaMigration Load (0.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+AppStatus: UP, DB: UP
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 35.2ms | GC: 7.3ms)
+Completed 200 OK in 63ms (Views: 36.4ms | ActiveRecord: 2.4ms (1 query, 0 cached) | GC: 7.6ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:39:42 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 19.9ms | GC: 1.7ms)
+Completed 200 OK in 35ms (Views: 21.3ms | ActiveRecord: 1.5ms (1 query, 0 cached) | GC: 7.3ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 17:39:47 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"on", "home"=>{"type"=>"server", "status"=>"on"}}
+Changing App status to on and type to server
+Redirected to http://localhost:3000/
+Completed 302 Found in 3ms (ActiveRecord: 0.0ms (0 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:39:47 -0300
+Processing by HomeController#index as */*
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 82.5ms | GC: 0.0ms)
+Completed 200 OK in 84ms (Views: 83.0ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:41:20 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.3ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 11.9ms | GC: 8.0ms)
+Completed 200 OK in 16ms (Views: 12.6ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 8.0ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 17:41:22 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"on", "home"=>{"type"=>"server", "status"=>"on"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:10:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/home_controller.rb:10:in `change'
+  [1m[36mApp Update (1.4ms)[0m  [1m[33mUPDATE "apps" SET "status" = ?, "updated_at" = ? WHERE "apps"."id" = ?[0m  [["status", "on"], ["updated_at", "2026-06-02 20:41:22.535309"], ["id", 1]]
+  ↳ app/controllers/home_controller.rb:10:in `change'
+  [1m[36mTRANSACTION (7.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/home_controller.rb:10:in `change'
+Redirected to http://localhost:3000/
+Completed 302 Found in 20ms (ActiveRecord: 10.0ms (2 queries, 0 cached) | GC: 0.1ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:41:22 -0300
+Processing by HomeController#index as */*
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 35.9ms | GC: 8.4ms)
+Completed 200 OK in 41ms (Views: 37.7ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 8.4ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:41:25 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 475.2ms | GC: 0.0ms)
+Completed 200 OK in 479ms (Views: 475.9ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:43:10 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (1.3ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 41.9ms | GC: 5.9ms)
+Completed 200 OK in 47ms (Views: 42.7ms | ActiveRecord: 1.2ms (1 query, 0 cached) | GC: 5.9ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 17:43:12 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"UP", "home"=>{"type"=>"server", "status"=>"UP"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:10:in `change'
+Redirected to http://localhost:3000/
+Completed 302 Found in 5ms (ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:43:12 -0300
+Processing by HomeController#index as */*
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.4ms | GC: 0.0ms)
+Completed 200 OK in 7ms (Views: 4.0ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.2ms)
+
+
+  [1m[35m (15.7ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 20:44:58.282483', '2026-06-02 20:44:58.282490') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateApps (20260602202721)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (2.8ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260602202721') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."server" = ? AND "apps"."db" = ? LIMIT ?[0m  [["server", "UP"], ["db", "UP"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[36mApp Create (0.2ms)[0m  [1m[32mINSERT INTO "apps" ("server", "db", "created_at", "updated_at") VALUES (?, ?, ?, ?) RETURNING "id"[0m  [["server", "UP"], ["db", "UP"], ["created_at", "2026-06-02 20:45:01.757227"], ["updated_at", "2026-06-02 20:45:01.757227"]]
+  [1m[36mTRANSACTION (7.9ms)[0m  [1m[36mcommit transaction[0m
+  [1m[35m (9.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 20:46:22.599858', '2026-06-02 20:46:22.599865') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateApps (20260602202721)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (2.1ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260602202721') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (7.5ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 20:49:52.369952', '2026-06-02 20:49:52.369956') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateApps (20260602202721)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260602202721') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:50:29 -0300
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 3.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.6ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 78ms (ActiveRecord: 1.0ms (1 query, 0 cached) | GC: 1.9ms)
+
+
+  
+ActionView::Template::Error (undefined method `status' for nil):
+
+Causes:
+NoMethodError (undefined method `status' for nil)
+    4:     <p>Server</p>
+    5:     <button
+    6:       data-type="server"
+    7:       data-status="<%= @AppStatus.status %>"
+    8:     ></button>
+    9:     <p>Database</p>
+   10:     <button
+  
+app/views/home/index.html.erb:7
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-06-02 17:50:31 -0300
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:50:47 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 0.8ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 9ms (ActiveRecord: 0.5ms (1 query, 0 cached) | GC: 3.2ms)
+
+
+  
+ActionView::Template::Error (undefined method `server' for nil):
+
+Causes:
+NoMethodError (undefined method `server' for nil)
+    4:     <p>Server</p>
+    5:     <button
+    6:       data-type="server"
+    7:       data-status="<%= @AppStatus.server %>"
+    8:     ></button>
+    9:     <p>Database</p>
+   10:     <button
+  
+app/views/home/index.html.erb:7
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:51:23 -0300
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 5.0ms | GC: 3.7ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.3ms | GC: 3.7ms)
+Completed 500 Internal Server Error in 56ms (ActiveRecord: 1.2ms (1 query, 0 cached) | GC: 33.8ms)
+
+
+  
+ActionView::Template::Error (undefined method `server' for nil):
+
+Causes:
+NoMethodError (undefined method `server' for nil)
+    4:     <p>Server</p>
+    5:     <button
+    6:       data-type="server"
+    7:       data-status="<%= @AppStatus.server %>"
+    8:     ></button>
+    9:     <p>Database</p>
+   10:     <button
+  
+app/views/home/index.html.erb:7
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Reverting CreateApps (20260602202721)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (1.1ms)[0m  [1m[35mDROP TABLE "apps"[0m
+  [1m[36mActiveRecord::SchemaMigration Destroy (0.1ms)[0m  [1m[31mDELETE FROM "schema_migrations" WHERE "schema_migrations"."version" = '20260602202721'[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateApps (20260602202721)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (1.0ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260602202721') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[35m (9.2ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 20:53:17.988268', '2026-06-02 20:53:17.988277') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateApps (20260602202721)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (2.4ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260602202721') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:53:30 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.9ms | GC: 0.3ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.2ms | GC: 0.3ms)
+Completed 500 Internal Server Error in 6ms (ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.4ms)
+
+
+  
+ActionView::Template::Error (undefined method `server' for nil):
+
+Causes:
+NoMethodError (undefined method `server' for nil)
+    4:     <p>Server</p>
+    5:     <button
+    6:       data-type="server"
+    7:       data-status="<%= @AppStatus.server %>"
+    8:     ></button>
+    9:     <p>Database</p>
+   10:     <button
+  
+app/views/home/index.html.erb:7
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[35m (22.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "apps"[0m
+  [1m[35m (8.4ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20260602202721)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 20:55:14.540092', '2026-06-02 20:55:14.540099') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '0da08183ff2bb33d4edb36da6d010101752d0041', '2026-06-02 20:55:14.547440', '2026-06-02 20:55:14.547446') RETURNING "key"[0m
+  [1m[35m (1.3ms)[0m  [1m[35mDROP TABLE IF EXISTS "apps"[0m
+  [1m[35m (8.8ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20260602202721)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 20:55:14.594490', '2026-06-02 20:55:14.594497') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Update (0.2ms)[0m  [1m[33mUPDATE "ar_internal_metadata" SET "value" = 'test', "updated_at" = '2026-06-02 20:55:14.599131' WHERE "ar_internal_metadata"."key" = 'environment'[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "schema_sha1"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '0da08183ff2bb33d4edb36da6d010101752d0041', '2026-06-02 20:55:14.603598', '2026-06-02 20:55:14.603604') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."server" = ? AND "apps"."db" = ? LIMIT ?[0m  [["server", "UP"], ["db", "UP"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[36mApp Create (0.2ms)[0m  [1m[32mINSERT INTO "apps" ("server", "db", "created_at", "updated_at") VALUES (?, ?, ?, ?) RETURNING "id"[0m  [["server", "UP"], ["db", "UP"], ["created_at", "2026-06-02 20:55:14.664363"], ["updated_at", "2026-06-02 20:55:14.664363"]]
+  [1m[36mTRANSACTION (74.4ms)[0m  [1m[36mcommit transaction[0m
+Started GET "/" for 127.0.0.1 at 2026-06-02 17:55:22 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 1.1ms | GC: 0.0ms)
+Completed 500 Internal Server Error in 4ms (ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::Template::Error (undefined method `server' for nil):
+
+Causes:
+NoMethodError (undefined method `server' for nil)
+    4:     <p>Server</p>
+    5:     <button
+    6:       data-type="server"
+    7:       data-status="<%= @AppStatus.server %>"
+    8:     ></button>
+    9:     <p>Database</p>
+   10:     <button
+  
+app/views/home/index.html.erb:7
+  [1m[35m (8.4ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 20:58:50.123703', '2026-06-02 20:58:50.123710') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateApps (20260602202721)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (2.1ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260602202721') RETURNING "version"[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."server" = ? AND "apps"."db" = ? LIMIT ?[0m  [["server", "UP"], ["db", "UP"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[36mbegin transaction[0m
+  [1m[36mApp Create (0.2ms)[0m  [1m[32mINSERT INTO "apps" ("server", "db", "created_at", "updated_at") VALUES (?, ?, ?, ?) RETURNING "id"[0m  [["server", "UP"], ["db", "UP"], ["created_at", "2026-06-02 20:59:22.639449"], ["updated_at", "2026-06-02 20:59:22.639449"]]
+  [1m[36mTRANSACTION (429.9ms)[0m  [1m[36mcommit transaction[0m
+  [1m[35m (8.6ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.4ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 21:00:47.046181', '2026-06-02 21:00:47.046190') RETURNING "key"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateApps (20260602210154)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (1.1ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260602210154') RETURNING "version"[0m
+  [1m[36mTRANSACTION (37.2ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (11.5ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-06-02 21:03:09.307734', '2026-06-02 21:03:09.307738') RETURNING "key"[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = ? ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1[0m  [[nil, "environment"]]
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Migrating to CreateApps (20260602210329)
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[35m (1.2ms)[0m  [1m[35mCREATE TABLE "apps" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "server" varchar, "db" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL)[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260602210329') RETURNING "version"[0m
+  [1m[36mTRANSACTION (8.0ms)[0m  [1m[36mcommit transaction[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."server" = ? AND "apps"."db" = ? LIMIT ?[0m  [["server", "UP"], ["db", "UP"], ["LIMIT", 1]]
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  [1m[36mApp Create (0.2ms)[0m  [1m[32mINSERT INTO "apps" ("server", "db", "created_at", "updated_at") VALUES (?, ?, ?, ?) RETURNING "id"[0m  [["server", "UP"], ["db", "UP"], ["created_at", "2026-06-02 21:04:30.931209"], ["updated_at", "2026-06-02 21:04:30.931209"]]
+  [1m[36mTRANSACTION (7.7ms)[0m  [1m[36mcommit transaction[0m
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:04:41 -0300
+  [1m[36mActiveRecord::SchemaMigration Load (1.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 401.8ms | GC: 135.5ms)
+Completed 200 OK in 433ms (Views: 405.2ms | ActiveRecord: 1.5ms (1 query, 0 cached) | GC: 135.5ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 18:05:01 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"UP", "home"=>{"type"=>"server", "status"=>"UP"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:10:in `change'
+Redirected to http://localhost:3000/
+Completed 302 Found in 6ms (ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:05:01 -0300
+Processing by HomeController#index as */*
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.0ms | GC: 0.0ms)
+Completed 200 OK in 7ms (Views: 4.7ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:05:04 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 3.2ms | GC: 0.0ms)
+Completed 200 OK in 6ms (Views: 3.8ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:07:10 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 10.9ms | GC: 1.4ms)
+Completed 200 OK in 18ms (Views: 11.8ms | ActiveRecord: 0.9ms (1 query, 0 cached) | GC: 1.9ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 18:07:12 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"UP", "home"=>{"type"=>"server", "status"=>"UP"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:10:in `change'
+Completed 200 OK in 5ms (ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:07:14 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.4ms | GC: 0.5ms)
+Completed 200 OK in 8ms (Views: 5.1ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.5ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 18:07:16 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"UP", "home"=>{"type"=>"server", "status"=>"UP"}}
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:10:in `change'
+Completed 200 OK in 2ms (ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.2ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 18:07:22 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"database", "status"=>"UP", "home"=>{"type"=>"database", "status"=>"UP"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:12:in `change'
+Completed 200 OK in 5ms (ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.4ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:08:18 -0300
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.4ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 97.5ms | GC: 15.6ms)
+Completed 200 OK in 122ms (Views: 99.7ms | ActiveRecord: 1.5ms (1 query, 0 cached) | GC: 15.7ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 18:08:20 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"UP", "home"=>{"type"=>"server", "status"=>"UP"}}
+  [1m[36mApp Load (0.3ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+Completed 200 OK in 7ms (ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 18:08:22 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"database", "status"=>"UP", "home"=>{"type"=>"database", "status"=>"UP"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+Completed 200 OK in 6ms (ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:08:37 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.0ms | GC: 1.7ms)
+Completed 200 OK in 7ms (Views: 4.4ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 2.4ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:09:21 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 10.5ms | GC: 0.5ms)
+Completed 200 OK in 17ms (Views: 11.3ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:10:53 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 11.1ms | GC: 0.2ms)
+  Rendered layout layouts/application.html.erb (Duration: 11.4ms | GC: 0.2ms)
+Completed 500 Internal Server Error in 18ms (ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 0.5ms)
+
+
+  
+ActionView::Template::Error (undefined method `server' for nil):
+
+Causes:
+NoMethodError (undefined method `server' for nil)
+    4:     <p>Server</p>
+    5:     <button
+    6:       data-type="server"
+    7:       data-status="<%= @app_status.server %>"
+    8:       class="<%= 'active' if @app_status.server == 'UP' %>"
+    9:     >
+   10:       Servidor
+  
+app/views/home/index.html.erb:7
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:11:08 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 13.7ms | GC: 3.7ms)
+Completed 200 OK in 21ms (Views: 14.7ms | ActiveRecord: 0.8ms (1 query, 0 cached) | GC: 4.1ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:11:30 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.3ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 12.3ms | GC: 0.0ms)
+Completed 200 OK in 19ms (Views: 13.2ms | ActiveRecord: 0.7ms (1 query, 0 cached) | GC: 0.2ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-02 18:11:31 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"DOWN", "home"=>{"type"=>"server", "status"=>"DOWN"}}
+  [1m[36mApp Load (0.3ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/home_controller.rb:13:in `change'
+  [1m[36mApp Update (1.9ms)[0m  [1m[33mUPDATE "apps" SET "server" = ?, "updated_at" = ? WHERE "apps"."id" = ?[0m  [["server", "DOWN"], ["updated_at", "2026-06-02 21:11:31.882738"], ["id", 1]]
+  ↳ app/controllers/home_controller.rb:13:in `change'
+  [1m[36mTRANSACTION (500.6ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/home_controller.rb:13:in `change'
+Completed 200 OK in 512ms (ActiveRecord: 502.8ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-02 18:11:33 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.1ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.1ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 2.0ms | GC: 0.0ms)
+Completed 200 OK in 4ms (Views: 2.5ms | ActiveRecord: 0.1ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-06-20 20:43:40 -0300
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.3ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 184.4ms | GC: 26.5ms)
+Completed 200 OK in 276ms (Views: 191.5ms | ActiveRecord: 3.7ms (1 query, 0 cached) | GC: 26.6ms)
+
+
+Started GET "/health" for 127.0.0.1 at 2026-06-20 20:43:49 -0300
+Processing by HomeController#health as HTML
+  [1m[36mApp Load (51.4ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:22:in `health'
+  Rendering text template
+  Rendered text template (Duration: 0.2ms | GC: 0.0ms)
+Completed 503 Service Unavailable in 61ms (Views: 4.8ms | ActiveRecord: 51.3ms (1 query, 0 cached) | GC: 0.3ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-06-20 20:43:49 -0300
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started GET "/" for 127.0.0.1 at 2026-06-20 20:43:59 -0300
+Processing by HomeController#index as HTML
+  [1m[36mApp Load (0.3ms)[0m  [1m[34mSELECT "apps".* FROM "apps" WHERE "apps"."id" = ? LIMIT ?[0m  [["id", 1], ["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:3:in `index'
+  Rendering layout layouts/application.html.erb
+  Rendering home/index.html.erb within layouts/application
+  Rendered home/index.html.erb within layouts/application (Duration: 0.2ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 4.9ms | GC: 0.0ms)
+Completed 200 OK in 9ms (Views: 5.6ms | ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-20 20:44:12 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"UP", "home"=>{"type"=>"server", "status"=>"UP"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/home_controller.rb:13:in `change'
+  [1m[36mApp Update (2.2ms)[0m  [1m[33mUPDATE "apps" SET "server" = ?, "updated_at" = ? WHERE "apps"."id" = ?[0m  [["server", "UP"], ["updated_at", "2026-06-20 23:44:12.887915"], ["id", 1]]
+  ↳ app/controllers/home_controller.rb:13:in `change'
+  [1m[36mTRANSACTION (8.8ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/home_controller.rb:13:in `change'
+Completed 200 OK in 21ms (ActiveRecord: 11.2ms (2 queries, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/health" for 127.0.0.1 at 2026-06-20 20:44:16 -0300
+Processing by HomeController#health as HTML
+  [1m[36mApp Load (0.3ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:22:in `health'
+Completed 500 Internal Server Error in 5ms (ActiveRecord: 0.3ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+  
+ActionView::MissingTemplate (Missing template home/health, application/health with {:locale=>[:en], :formats=>[:html], :variants=>[], :handlers=>[:raw, :erb, :html, :builder, :ruby, :jbuilder]}.
+
+Searched in:
+  * "/home/hypotasis/RubymineProjects/SIGAA_HEALTH_CHECK/app/views"
+  * "/home/hypotasis/.asdf/installs/ruby/3.3.3/lib/ruby/gems/3.3.0/gems/turbo-rails-2.0.23/app/views"
+  * "/home/hypotasis/.asdf/installs/ruby/3.3.3/lib/ruby/gems/3.3.0/gems/actiontext-7.2.3/app/views"
+  * "/home/hypotasis/.asdf/installs/ruby/3.3.3/lib/ruby/gems/3.3.0/gems/actionmailbox-7.2.3/app/views"
+):
+  
+app/controllers/home_controller.rb:24:in `health'
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-06-20 20:44:18 -0300
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started GET "/health" for 127.0.0.1 at 2026-06-20 20:44:43 -0300
+  
+SyntaxError (/home/hypotasis/RubymineProjects/SIGAA_HEALTH_CHECK/app/controllers/home_controller.rb:24: syntax error, unexpected ':', expecting `end' or dummy end
+        return status: "UP", deps: { db: "UP" }
+                     ^
+/home/hypotasis/RubymineProjects/SIGAA_HEALTH_CHECK/app/controllers/home_controller.rb:26: syntax error, unexpected ':', expecting `end' or dummy end
+        return status: "UP", deps: { db: "DOWN" }
+                     ^
+):
+  
+app/controllers/home_controller.rb:24: syntax error, unexpected ':', expecting `end' or dummy end
+app/controllers/home_controller.rb:26: syntax error, unexpected ':', expecting `end' or dummy end
+Started GET "/health" for 127.0.0.1 at 2026-06-20 20:48:19 -0300
+Processing by HomeController#health as HTML
+  [1m[36mApp Load (1.6ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:22:in `health'
+Completed 200 OK in 29ms (Views: 0.4ms | ActiveRecord: 7.6ms (1 query, 0 cached) | GC: 12.9ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-06-20 20:48:19 -0300
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/home/change" for 127.0.0.1 at 2026-06-20 20:48:28 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"database", "status"=>"DOWN", "home"=>{"type"=>"database", "status"=>"DOWN"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/home_controller.rb:15:in `change'
+  [1m[36mApp Update (2.0ms)[0m  [1m[33mUPDATE "apps" SET "db" = ?, "updated_at" = ? WHERE "apps"."id" = ?[0m  [["db", "DOWN"], ["updated_at", "2026-06-20 23:48:28.309419"], ["id", 1]]
+  ↳ app/controllers/home_controller.rb:15:in `change'
+  [1m[36mTRANSACTION (344.5ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/home_controller.rb:15:in `change'
+Completed 200 OK in 356ms (ActiveRecord: 346.8ms (2 queries, 0 cached) | GC: 0.7ms)
+
+
+Started GET "/health" for 127.0.0.1 at 2026-06-20 20:48:30 -0300
+Processing by HomeController#health as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:22:in `health'
+Completed 200 OK in 3ms (Views: 0.2ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-06-20 20:48:30 -0300
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/home/change" for 127.0.0.1 at 2026-06-20 20:48:34 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"DOWN", "home"=>{"type"=>"server", "status"=>"DOWN"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/home_controller.rb:13:in `change'
+  [1m[36mApp Update (1.8ms)[0m  [1m[33mUPDATE "apps" SET "server" = ?, "updated_at" = ? WHERE "apps"."id" = ?[0m  [["server", "DOWN"], ["updated_at", "2026-06-20 23:48:34.335020"], ["id", 1]]
+  ↳ app/controllers/home_controller.rb:13:in `change'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/home_controller.rb:13:in `change'
+Completed 200 OK in 10ms (ActiveRecord: 2.3ms (2 queries, 0 cached) | GC: 0.6ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-20 20:48:35 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"database", "status"=>"UP", "home"=>{"type"=>"database", "status"=>"UP"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/home_controller.rb:15:in `change'
+  [1m[36mApp Update (1.5ms)[0m  [1m[33mUPDATE "apps" SET "db" = ?, "updated_at" = ? WHERE "apps"."id" = ?[0m  [["db", "UP"], ["updated_at", "2026-06-20 23:48:35.198919"], ["id", 1]]
+  ↳ app/controllers/home_controller.rb:15:in `change'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/home_controller.rb:15:in `change'
+Completed 200 OK in 9ms (ActiveRecord: 2.0ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/health" for 127.0.0.1 at 2026-06-20 20:48:37 -0300
+Processing by HomeController#health as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:22:in `health'
+Completed 200 OK in 3ms (Views: 0.2ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-06-20 20:48:37 -0300
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/home/change" for 127.0.0.1 at 2026-06-20 20:48:41 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"database", "status"=>"DOWN", "home"=>{"type"=>"database", "status"=>"DOWN"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/home_controller.rb:15:in `change'
+  [1m[36mApp Update (1.6ms)[0m  [1m[33mUPDATE "apps" SET "db" = ?, "updated_at" = ? WHERE "apps"."id" = ?[0m  [["db", "DOWN"], ["updated_at", "2026-06-20 23:48:41.348117"], ["id", 1]]
+  ↳ app/controllers/home_controller.rb:15:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/home_controller.rb:15:in `change'
+Completed 200 OK in 9ms (ActiveRecord: 2.0ms (2 queries, 0 cached) | GC: 0.5ms)
+
+
+Started GET "/health" for 127.0.0.1 at 2026-06-20 20:48:45 -0300
+Processing by HomeController#health as HTML
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:22:in `health'
+Completed 200 OK in 3ms (Views: 0.2ms | ActiveRecord: 0.2ms (1 query, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/favicon.ico" for 127.0.0.1 at 2026-06-20 20:48:45 -0300
+  
+ActionController::RoutingError (No route matches [GET] "/favicon.ico"):
+  
+Started POST "/home/change" for 127.0.0.1 at 2026-06-20 20:48:48 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"server", "status"=>"UP", "home"=>{"type"=>"server", "status"=>"UP"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/home_controller.rb:13:in `change'
+  [1m[36mApp Update (2.5ms)[0m  [1m[33mUPDATE "apps" SET "server" = ?, "updated_at" = ? WHERE "apps"."id" = ?[0m  [["server", "UP"], ["updated_at", "2026-06-20 23:48:48.243956"], ["id", 1]]
+  ↳ app/controllers/home_controller.rb:13:in `change'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/home_controller.rb:13:in `change'
+Completed 200 OK in 11ms (ActiveRecord: 2.9ms (2 queries, 0 cached) | GC: 0.0ms)
+
+
+Started POST "/home/change" for 127.0.0.1 at 2026-06-20 20:48:49 -0300
+Processing by HomeController#change as */*
+  Parameters: {"type"=>"database", "status"=>"UP", "home"=>{"type"=>"database", "status"=>"UP"}}
+  [1m[36mApp Load (0.2ms)[0m  [1m[34mSELECT "apps".* FROM "apps" ORDER BY "apps"."id" ASC LIMIT ?[0m  [["LIMIT", 1]]
+  ↳ app/controllers/home_controller.rb:7:in `change'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[36mbegin transaction[0m
+  ↳ app/controllers/home_controller.rb:15:in `change'
+  [1m[36mApp Update (1.7ms)[0m  [1m[33mUPDATE "apps" SET "db" = ?, "updated_at" = ? WHERE "apps"."id" = ?[0m  [["db", "UP"], ["updated_at", "2026-06-20 23:48:49.206550"], ["id", 1]]
+  ↳ app/controllers/home_controller.rb:15:in `change'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[36mcommit transaction[0m
+  ↳ app/controllers/home_controller.rb:15:in `change'
+Completed 200 OK in 9ms (ActiveRecord: 2.1ms (2 queries, 0 cached) | GC: 0.0ms)
+
+

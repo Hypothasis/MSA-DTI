@@ -1,0 +1,9 @@
+name:  HostMSA
+
+services:
+  sigaa_health_check:
+    build: Hosts/SIGAA_HEALTH_CHECK/.
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:migrate && bundle exec rails db:seed && bundle exec rails s -b '0.0.0.0'"
+    ports:
+      - "3000:3000"
+

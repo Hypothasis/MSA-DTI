@@ -3,7 +3,7 @@ name: InfraestruturaMSA
 services:
   mysql-db:
     image: mysql:8.0
-    container_name: mysql-msa
+    container_name: mysql-db
     environment:
       MYSQL_ROOT_PASSWORD: root
     ports:
@@ -38,6 +38,7 @@ services:
     container_name: zabbix-server
     environment:
       - DB_SERVER_HOST=mysql-db
+      - MYSQL_ROOT_PASSWORD=root 
       - MYSQL_USER=zabbix
       - MYSQL_PASSWORD=root
       - MYSQL_DATABASE=zabbix
@@ -60,7 +61,7 @@ services:
       - PHP_TZ=America/Sao_Paulo
     ports:
       - "8090:8080"
+    depends_on:
       - mysql-db
       - zabbix-server
     restart: always
-
