@@ -1,9 +1,76 @@
-name:  HostMSA
+name: Host_MSA
 
 services:
   sigaa_health_check:
+    container_name: sigaa-health-check
     build: Hosts/SIGAA_HEALTH_CHECK/.
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:migrate && bundle exec rails db:seed && bundle exec rails s -b '0.0.0.0'"
     ports:
       - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - msa-network
 
+  zabbix-agent-sigaa:
+    image: zabbix/zabbix-agent2:latest
+    container_name: zabbix-agent-sigaa
+    hostname: HostSigaa
+    environment:
+      ZBX_HOSTNAME: HostSigaa
+      ZBX_SERVER_HOST: zabbix-server
+    ports:
+      - "10052:10050"
+    restart: unless-stopped
+    networks:
+      - msa-network
+
+  server_http_agent:
+    container_name: server-http-agent
+    build: Hosts/SIMPLE_SERVER/.
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails db:migrate && bundle exec rails s -b '0.0.0.0'"
+    ports:
+      - "3001:3000"
+    restart: unless-stopped
+    networks:
+      - msa-network
+
+  zabbix-agent-http-agent:
+    image: zabbix/zabbix-agent2:latest
+    container_name: zabbix-agent-http-agent
+    hostname: HostHttpAgent
+    environment:
+      ZBX_HOSTNAME: HostHttpAgent
+      ZBX_SERVER_HOST: zabbix-server
+    ports:
+      - "10053:10050"
+    restart: unless-stopped
+    networks:
+      - msa-network
+
+  mysql_teste:
+    container_name: mysql-teste
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    restart: unless-stopped
+    networks:
+      - msa-network
+
+  zabbix-agent-db:
+    image: zabbix/zabbix-agent2:latest
+    container_name: zabbix-agent-db
+    hostname: HostDatabase
+    environment:
+      ZBX_HOSTNAME: HostDatabase
+      ZBX_SERVER_HOST: zabbix-server
+    ports:
+      - "10054:10050"
+    restart: unless-stopped
+    networks:
+      - msa-network
+
+networks:
+  msa-network:
+    external: true

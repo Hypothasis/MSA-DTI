@@ -1,0 +1,159 @@
+{
+    "zabbix_export": {
+        "version": "7.4",
+        "template_groups": [
+            {
+                "uuid": "7df96b18c230490a9a0a9e2307226338",
+                "name": "Templates"
+            }
+        ],
+        "templates": [
+            {
+                "uuid": "45139025c710467cbbdbfd9627279470",
+                "template": "MSA Aplications",
+                "name": "MSA Aplications",
+                "description": "MSA defaults metrics/items",
+                "groups": [
+                    {
+                        "name": "Templates"
+                    }
+                ],
+                "items": [
+                    {
+                        "uuid": "ea7de70ace3e4dcda3eb812f5c98986e",
+                        "name": "Agent Ping",
+                        "key": "agent.ping"
+                    },
+                    {
+                        "uuid": "d992f2eadec24ef0a6aff5475b6e50bb",
+                        "name": "ICMP response time",
+                        "type": "SIMPLE",
+                        "key": "icmppingsec",
+                        "value_type": "FLOAT"
+                    },
+                    {
+                        "uuid": "6732fda0b874452e8d5a70a1527ace42",
+                        "name": "Maximum number of processes",
+                        "key": "kernel.maxproc"
+                    },
+                    {
+                        "uuid": "926fbfc796fb4c8eb494cc6397e14fcf",
+                        "name": "Interface eth0: Bits received",
+                        "key": "net.if.in[\"eth0\"]"
+                    },
+                    {
+                        "uuid": "f6a57aa0ba3d4f18ba74b25f7b413648",
+                        "name": "Interface eth0: Bits sent",
+                        "key": "net.if.out[\"eth0\"]"
+                    },
+                    {
+                        "uuid": "d01e242adede4772b9d4ab583969ed32",
+                        "name": "Number of processes",
+                        "key": "proc.num"
+                    },
+                    {
+                        "uuid": "d0c7f46c8a7e43418a26a9b68105c3b0",
+                        "name": "Sigaa health Check",
+                        "type": "HTTP_AGENT",
+                        "key": "sigaa.health.check",
+                        "value_type": "TEXT",
+                        "url": "http://<WIFI IP>:3000/health"
+                    },
+                    {
+                        "uuid": "b005e924f1e04571a031d848f449a15a",
+                        "name": "Context switches per second",
+                        "key": "system.cpu.switches"
+                    },
+                    {
+                        "uuid": "2cab860e38a948cfa1b9909d01f07206",
+                        "name": "CPU utilization",
+                        "key": "system.cpu.util",
+                        "value_type": "FLOAT"
+                    },
+                    {
+                        "uuid": "ffee7c75f6014517a76a417dd1e2024f",
+                        "name": "Operating system architecture",
+                        "key": "system.sw.arch",
+                        "value_type": "CHAR"
+                    },
+                    {
+                        "uuid": "5334f51d04bd46529c9604ef03664b5f",
+                        "name": "Operating system",
+                        "key": "system.sw.os",
+                        "value_type": "CHAR"
+                    },
+                    {
+                        "uuid": "8d5ae4d64c95472189b39b62a152d6c4",
+                        "name": "Free swap space",
+                        "key": "system.swap.size[,free]"
+                    },
+                    {
+                        "uuid": "1b67a6c1364a4fa981efe22677cdd513",
+                        "name": "Total swap space",
+                        "key": "system.swap.size[,total]"
+                    },
+                    {
+                        "uuid": "6b561787504343b597f083c798468c02",
+                        "name": "System uptime",
+                        "key": "system.uptime"
+                    },
+                    {
+                        "uuid": "91252b00a87e4e8d81c5ffc62fea1e24",
+                        "name": "Total space",
+                        "key": "vfs.fs.size[/,total]"
+                    },
+                    {
+                        "uuid": "1de03629c63946019a0b35414c79fec9",
+                        "name": "Used space",
+                        "key": "vfs.fs.size[/,used]"
+                    },
+                    {
+                        "uuid": "570bcb876f284dc49a202c3624f20fe5",
+                        "name": "/boot Total space",
+                        "key": "vfs.fs.size[/boot,total]"
+                    },
+                    {
+                        "uuid": "4b90809957ae499c9a3f3fa166c56bde",
+                        "name": "/boot Used space",
+                        "key": "vfs.fs.size[/boot,used]"
+                    },
+                    {
+                        "uuid": "2ea5e5ca70eb4e0299465f35d35008e6",
+                        "name": "Available memory",
+                        "key": "vm.memory.size[available]"
+                    },
+                    {
+                        "uuid": "a5d25e0c8ace4805b93998f180b010bb",
+                        "name": "Available memory in %",
+                        "key": "vm.memory.size[pavailable]"
+                    },
+                    {
+                        "uuid": "95919350118c4390a1304bfe5ac6a3dd",
+                        "name": "Available memory Total",
+                        "key": "vm.memory.size[total]"
+                    },
+                    {
+                        "uuid": "bcfd2b5f14284f76968b189a132bc564",
+                        "name": "Memory utilization",
+                        "key": "vm.memory.utilization"
+                    },
+                    {
+                        "uuid": "2e765dacbdc6444f83237e5702c6283a",
+                        "name": "HTTP Agent",
+                        "type": "HTTP_AGENT",
+                        "key": "web.status.check",
+                        "value_type": "FLOAT",
+                        "url": "http://<WIFI IP>:3001",
+                        "retrieve_mode": "HEADERS"
+                    },
+                    {
+                        "uuid": "474fe4ec7a4042a895bc490c22bc5cc5",
+                        "name": "Zabbix agent availability",
+                        "type": "INTERNAL",
+                        "key": "zabbix[host,agent,available]"
+                    }
+                ]
+            }
+        ]
+    }
+}
