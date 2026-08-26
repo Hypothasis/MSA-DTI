@@ -14,8 +14,6 @@ import java.time.LocalDateTime;
 @IdClass(MetricHistoryId.class)
 public class MetricHistory {
 
-    // --- Início da Chave Primária Composta ---
-
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_id")
@@ -30,8 +28,6 @@ public class MetricHistory {
     @Column(name = "timestamp")
     private LocalDateTime timestamp;
     
-    // --- Fim da Chave Primária Composta ---
-
     @Column(name = "value", nullable = false)
     private Double value;
 }

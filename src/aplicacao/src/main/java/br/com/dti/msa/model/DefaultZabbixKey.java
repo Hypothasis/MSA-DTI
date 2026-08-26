@@ -12,7 +12,6 @@ public class DefaultZabbixKey {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Relacionamento 1-para-1: Uma Métrica (conceito) tem uma chave padrão.
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "metric_id", nullable = false)
     private Metric metric;

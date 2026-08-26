@@ -15,15 +15,10 @@ public class HostDetailsDTO {
     private String description;
     private String type;
     
-    // Lista para o modal de UPDATE (nomes dos checkboxes)
     private List<String> enabledCheckboxes; 
     
-    // Lista para o modal de READ (métricas individuais)
     private List<MetricDTO> metrics; 
 
-    /**
-     * DTO aninhado para as métricas, para não expor a entidade JPA.
-     */
     @Data
     @AllArgsConstructor
     public static class MetricDTO {
@@ -33,9 +28,6 @@ public class HostDetailsDTO {
         private String unit;
     }
 
-    /**
-     * Construtor que preenche AMBAS as listas.
-     */
     public HostDetailsDTO(Host host, List<String> enabledCheckboxes) {
         this.id = host.getId();
         this.publicId = host.getPublicId();
@@ -44,10 +36,8 @@ public class HostDetailsDTO {
         this.description = host.getDescription();
         this.type = host.getType();
         
-        // Preenche a lista para o modal de UPDATE
         this.enabledCheckboxes = enabledCheckboxes;
         
-        // Preenche a lista para o modal de READ
         this.metrics = host.getMetricConfigs().stream()
             .map(config -> new MetricDTO(
                 config.getMetric().getMetricKey(), 

@@ -33,7 +33,6 @@ public class PublicApiController {
 
     /**
      * Retorna o status da última tentativa de conexão com o Zabbix.
-     * URL: GET /api/public/status/zabbix
      */
     @GetMapping("/zabbix/status")
     public ResponseEntity<ZabbixConnectionStatus> getZabbixConnectionStatus() {
@@ -44,7 +43,6 @@ public class PublicApiController {
 
     /**
      * Realiza um teste de conexão em TEMPO REAL com o Zabbix e retorna o resultado.
-     * URL: GET /api/public/zabbix/health-check
      */
     @GetMapping("/zabbix/health-check")
     public ResponseEntity<ZabbixHealthCheckResponse> checkZabbixHealth() {
@@ -60,7 +58,6 @@ public class PublicApiController {
 
     /**
      * Retorna uma lista com o status atual de todos os hosts.
-     * URL: GET /api/public/hosts/status
      */
     @GetMapping("/hosts/status")
     public ResponseEntity<List<PublicHostStatusDTO>> getAllHostStatuses() {
@@ -70,7 +67,6 @@ public class PublicApiController {
 
     /**
      * Retorna uma lista com o status atual de todos os hosts com PROBLEMAS, com availabilityGlobal.
-     * URL: GET /api/public/home/status
      */
     @GetMapping("/home/status")
     public ResponseEntity<List<HomepageHostDTO>> getHomepageHostStatus() {

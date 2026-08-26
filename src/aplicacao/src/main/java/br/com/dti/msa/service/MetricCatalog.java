@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class MetricCatalog {
 
-    // Mapeia o NOME do checkbox do formulário para as METRIC_KEYs do nosso banco
     private static final Map<String, List<String>> CHECKBOX_TO_METRIC_KEYS = Map.ofEntries(
         // Métricas para Disponibilidade Host Agent
         Map.entry("disponibilidade-global", List.of("disponibilidade-global")),
@@ -46,12 +45,10 @@ public class MetricCatalog {
     public List<String> getCheckboxesForMetricKeys(List<String> savedKeys) {
         List<String> checkboxes = new ArrayList<>();
         
-        // Itera sobre o catálogo (ex: "memoria-ram" -> ["memoria-ram-total", ...])
         for (Map.Entry<String, List<String>> entry : CHECKBOX_TO_METRIC_KEYS.entrySet()) {
             String checkboxName = entry.getKey();
             List<String> keysForThisCheckbox = entry.getValue();
 
-            // Se a lista de chaves salvas contém TODAS as chaves deste checkbox...
             if (savedKeys.containsAll(keysForThisCheckbox)) {
                 checkboxes.add(checkboxName);
             }

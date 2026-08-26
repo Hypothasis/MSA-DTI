@@ -12,7 +12,7 @@ import java.util.HashSet;
 @Data
 @Entity
 @Table(name = "hosts")
-@EqualsAndHashCode(exclude = "metricConfigs") // Evita loops de referência
+@EqualsAndHashCode(exclude = "metricConfigs")
 public class Host {
 
     @Id
@@ -40,7 +40,6 @@ public class Host {
     @Column(name = "status_description")
     private String statusDescription;
 
-    // Um Host tem MUITAS Configurações de Métrica
     @OneToMany(
         mappedBy = "host", // Mapeado pelo campo "host" na HostMetricConfig
         cascade = CascadeType.ALL, // Salva/deleta as configs junto com o host

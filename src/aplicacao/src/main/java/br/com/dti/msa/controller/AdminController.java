@@ -27,8 +27,6 @@ public class AdminController {
     @Autowired
     private HostService hostService;
     
-    // --- MÉTODOS PARA RENDERIZAR AS PÁGINAS HTML (VIEWS) ---
-
     @GetMapping({"", "/"})
     public String showAdminIndex() {
         return "admin/index";
@@ -43,7 +41,6 @@ public class AdminController {
 
     @GetMapping("/search")
     public String showSearchPage(Model model) {
-        // Carrega a página de busca inicialmente com uma lista vazia.
         model.addAttribute("listaHosts", new ArrayList<Host>());
         model.addAttribute("initialLoadMessage", "Use a barra de busca para encontrar hosts.");
         return "admin/search";
@@ -57,7 +54,6 @@ public class AdminController {
         @RequestParam(value = "DATABASE", required = false) String typeDb,
         Model model
     ) {
-        // Monta uma lista apenas com os tipos que foram selecionados
         List<String> selectedTypes = new ArrayList<>();
         if (typeApp != null) selectedTypes.add("APPLICATION");
         if (typeServer != null) selectedTypes.add("SERVER");
@@ -66,7 +62,6 @@ public class AdminController {
         System.out.println("Termo de busca: " + searchTerm);
         System.out.println("Tipos selecionados: " + selectedTypes);
         
-        // Chama o SERVICE para fazer a busca
         List<Host> filteredHosts = hostService.searchHosts(searchTerm, selectedTypes);
         
         model.addAttribute("listaHosts", filteredHosts);
@@ -80,8 +75,6 @@ public class AdminController {
         return "admin/create";
     }
 
-    // --- ENDPOINTS DA API RESTful PARA OPERAÇÕES CRUD ---
-
     /**
      * Endpoint para criar um novo host.
      * Usado pelo JavaScript via fetch.
@@ -94,7 +87,6 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.CREATED).body(novoHost);
 
         } catch (ZabbixValidationException e) {
-            // Erro de validação customizado (ex: host não encontrado no Zabbix)
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
 
         } catch (DataIntegrityViolationException e) {
@@ -105,7 +97,6 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", errorMessage));
 
         } catch (Exception e) {
-            // Erro genérico para qualquer outra falha
             return ResponseEntity.internalServerError().body(Map.of("error", "Ocorreu um erro inesperado."));
         }
     }
@@ -114,7 +105,6 @@ public class AdminController {
      * Busca um host específico por ID e retorna um DTO completo
      * com os dados do host, a lista de métricas individuais (para Read)
      * e a lista de checkboxes agrupados (para Update).
-     * Rota: GET /admin/api/hosts/{id}
      */
     @GetMapping("/api/hosts/{id}")
     @ResponseBody
@@ -129,7 +119,6 @@ public class AdminController {
     
     /**
      * Endpoint para listar todos os hosts cadastrados.
-     * Rota: GET /admin/api/hosts
      */
     @GetMapping("/api/hosts")
     @ResponseBody
@@ -155,9 +144,9 @@ public class AdminController {
             hostService.updateHost(hostId, updateData);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build(); // Retorna 404 Not Found
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build(); // Retorna 500 Internal Server Error
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -169,9 +158,9 @@ public class AdminController {
     public ResponseEntity<Void> deleteHost(@PathVariable Long hostId) {
         try {
             hostService.deleteHost(hostId);
-            return ResponseEntity.ok().build(); // Retorna 200 OK
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build(); // Retorna 500
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

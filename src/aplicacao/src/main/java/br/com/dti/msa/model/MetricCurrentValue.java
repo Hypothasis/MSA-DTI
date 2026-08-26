@@ -10,13 +10,12 @@ import java.time.LocalDateTime;
 /**
  * Representa a tabela 'metric_current_value'.
  * Armazena o último valor conhecido de métricas que não são séries temporais,
- * como métricas de texto (ex: nome do SO) ou JSONs (ex: health checks).
+ * como métricas de texto.
  */
 @Data
 @Entity
 @Table(name = "metric_current_value",
     uniqueConstraints = {
-        // Garante que só pode haver um valor por combinação de host/métrica
         @UniqueConstraint(columnNames = {"host_id", "metric_id"})
     }
 )
@@ -26,9 +25,7 @@ public class MetricCurrentValue {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * O Host ao qual este valor pertence.
-     */
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "host_id", nullable = false)
     @ToString.Exclude // Evita recursão no log

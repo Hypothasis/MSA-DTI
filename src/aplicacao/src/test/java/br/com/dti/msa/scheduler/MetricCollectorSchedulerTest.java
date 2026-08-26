@@ -1,131 +1,123 @@
 package br.com.dti.msa.scheduler;
 
+import br.com.dti.msa.integration.zabbix.dto.ZabbixClient;
 import br.com.dti.msa.model.Host;
 import br.com.dti.msa.model.HostMetricConfig;
 import br.com.dti.msa.model.Metric;
+import br.com.dti.msa.repository.HostRepository;
+import br.com.dti.msa.repository.MetricCurrentValueRepository;
+import br.com.dti.msa.repository.MetricHistoryRepository;
+import br.com.dti.msa.repository.RecentEventsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-// Importa a classe de resultado (você precisará torná-la 'public' ou 'default' (sem private))
-import br.com.dti.msa.scheduler.MetricCollectorScheduler.StatusResult; 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class MetricCollectorSchedulerTest {
+@ExtendWith(MockitoExtension.class)
+public class MetricCollectorSchedulerTest {
 
-    // Cria uma instância real da classe que queremos testar
+    @Mock private HostRepository hostRepository;
+    @Mock private MetricHistoryRepository metricHistoryRepository;
+    @Mock private MetricCurrentValueRepository metricCurrentValueRepository;
+    @Mock private ZabbixClient zabbixClient;
+    @Mock private RecentEventsRepository recentEventsRepository;
+
     @InjectMocks
     private MetricCollectorScheduler scheduler;
 
-    // Métricas "falsas" que usaremos nos testes
-    private Metric metricHealth;
-    private Metric metricCpu;
-    private Metric metricPing;
+    private Host mockHost;
+    private Set<HostMetricConfig> configs;
 
     @BeforeEach
-    void setUp() {
-        // Inicializa o 'scheduler'
-        MockitoAnnotations.openMocks(this);
+    public void setUp() {
+        mockHost = new Host();
+        mockHost.setName("Servidor Linux 1");
+        configs = new HashSet<>();
+    }
+
+    private void addMetricConfig(String metricKey, String zabbixKey) {
+        Metric metric = new Metric();
+        metric.setMetricKey(metricKey);
         
-        // Configura nossos "conceitos" de métricas falsas
-        metricHealth = new Metric();
-        metricHealth.setMetricKey("disponibilidade-global-health");
+        HostMetricConfig config = new HostMetricConfig();
+        config.setHost(mockHost);
+        config.setMetric(metric);
+        config.setZabbixKey(zabbixKey);
         
-        metricCpu = new Metric();
-        metricCpu.setMetricKey("cpu-uso");
-        
-        metricPing = new Metric();
-        metricPing.setMetricKey("disponibilidade-global");
+        configs.add(config);
     }
 
     @Test
-    void testDetermineHostStatus_HealthCheckOK_DeveRetornarActive() {
-        // 1. ARRANGE (Organizar)
-        Host host = new Host();
-        String zabbixKey = "sigaa.health.ready";
-        
-        // Cria a "configuração" que liga o host à métrica
-        HostMetricConfig config = new HostMetricConfig(host, metricHealth, zabbixKey);
-        host.setMetricConfigs(Set.of(config));
+    public void testDetermineHostStatus_CpuHigh_ReturnsAlert() {
+        addMetricConfig("cpu-uso", "system.cpu.util");
+        addMetricConfig("disponibilidade-global", "icmpping");
+        mockHost.setMetricConfigs(configs);
 
-        // Cria o mapa de dados coletados (o que o ZabbixClient retornaria)
-        Map<String, String> collectedItems = Map.of(
-            zabbixKey, "{\"status\":\"UP\",\"deps\":{\"db\":\"UP\"}}"
-        );
+        Map<String, String> collectedMetrics = new HashMap<>();
+        collectedMetrics.put("system.cpu.util", "95.5");
+        collectedMetrics.put("icmpping", "1"); // Ping OK
 
-        // 2. ACT (Agir)
-        StatusResult resultado = scheduler.determineHostStatus(host, collectedItems);
+        MetricCollectorScheduler.StatusResult result = scheduler.determineHostStatus(mockHost, collectedMetrics);
 
-        // 3. ASSERT (Verificar)
-        assertEquals(Host.HostStatus.ACTIVE, resultado.status);
-        assertEquals("Tudo certo com o Host.", resultado.description);
-    }
-    
-    @Test
-    void testDetermineHostStatus_HealthCheckDBDown_DeveRetornarAlert() {
-        // 1. ARRANGE
-        Host host = new Host();
-        String zabbixKey = "sigaa.health.ready";
-        HostMetricConfig config = new HostMetricConfig(host, metricHealth, zabbixKey);
-        host.setMetricConfigs(Set.of(config));
-        
-        Map<String, String> collectedItems = Map.of(
-            zabbixKey, "{\"status\":\"UP\",\"deps\":{\"db\":\"DOWN\"}}"
-        );
-
-        // 2. ACT
-        StatusResult resultado = scheduler.determineHostStatus(host, collectedItems);
-
-        // 3. ASSERT
-        assertEquals(Host.HostStatus.ALERT, resultado.status);
-        assertEquals("Alerta: Aplicação 'UP', mas dependência 'db' está 'DOWN'.", resultado.description);
+        assertEquals(Host.HostStatus.ALERT, result.status);
+        assertEquals("Host com alto consumo de CPU (95.5%)", result.description);
     }
 
     @Test
-    void testDetermineHostStatus_PingFalhou_DeveRetornarInactive() {
-        // 1. ARRANGE
-        Host host = new Host();
-        String zabbixKey = "zabbix[host,agent,available]";
-        HostMetricConfig config = new HostMetricConfig(host, metricPing, zabbixKey);
-        host.setMetricConfigs(Set.of(config));
-        
-        Map<String, String> collectedItems = Map.of(
-            zabbixKey, "0.0" // Ping falhou
-        );
+    public void testDetermineHostStatus_RamHigh_ReturnsAlert() {
+        addMetricConfig("memoria-ram-total", "vm.memory.size[total]");
+        addMetricConfig("memoria-ram-disponivel", "vm.memory.size[available]");
+        addMetricConfig("disponibilidade-global", "icmpping");
+        mockHost.setMetricConfigs(configs);
 
-        // 2. ACT
-        StatusResult resultado = scheduler.determineHostStatus(host, collectedItems);
+        Map<String, String> collectedMetrics = new HashMap<>();
+        collectedMetrics.put("vm.memory.size[total]", "16000000000"); // 16GB
+        collectedMetrics.put("vm.memory.size[available]", "1000000000"); // 1GB (6.25% livre)
+        collectedMetrics.put("icmpping", "1");
 
-        // 3. ASSERT
-        assertEquals(Host.HostStatus.INACTIVE, resultado.status);
-        assertEquals("Host parado! (Ping falhou ou agente indisponível)", resultado.description);
+        MetricCollectorScheduler.StatusResult result = scheduler.determineHostStatus(mockHost, collectedMetrics);
+
+        assertEquals(Host.HostStatus.ALERT, result.status);
+        assertEquals("Host com alto consumo de RAM (6.3% livre)", result.description);
     }
-    
+
     @Test
-    void testDetermineHostStatus_CPUAlta_DeveRetornarAlert() {
-        // 1. ARRANGE
-        Host host = new Host();
-        String pingKey = "zabbix[host,agent,available]";
-        String cpuKey = "system.cpu.util";
-        
-        HostMetricConfig pingConfig = new HostMetricConfig(host, metricPing, pingKey);
-        HostMetricConfig cpuConfig = new HostMetricConfig(host, metricCpu, cpuKey);
-        host.setMetricConfigs(Set.of(pingConfig, cpuConfig)); // Host tem 2 métricas
-        
-        Map<String, String> collectedItems = Map.of(
-            pingKey, "1.0", // Ping OK
-            cpuKey, "95.5"   // CPU Alta!
-        );
+    public void testDetermineHostStatus_PingFailed_ReturnsInactive() {
+        addMetricConfig("disponibilidade-global", "icmpping");
+        mockHost.setMetricConfigs(configs);
 
-        // 2. ACT
-        StatusResult resultado = scheduler.determineHostStatus(host, collectedItems);
+        Map<String, String> collectedMetrics = new HashMap<>();
+        collectedMetrics.put("icmpping", "0"); // Ping falhou (0)
 
-        // 3. ASSERT
-        assertEquals(Host.HostStatus.ALERT, resultado.status);
-        assertEquals("Host com alto consumo de CPU (95.5%)", resultado.description);
+        MetricCollectorScheduler.StatusResult result = scheduler.determineHostStatus(mockHost, collectedMetrics);
+
+        assertEquals(Host.HostStatus.INACTIVE, result.status);
+        assertEquals("Host parado! (Ping falhou)", result.description);
+    }
+
+    @Test
+    public void testDetermineHostStatus_AllOk_ReturnsActive() {
+        addMetricConfig("cpu-uso", "system.cpu.util");
+        addMetricConfig("disponibilidade-global", "icmpping");
+        mockHost.setMetricConfigs(configs);
+
+        // Ping OK e CPU em 40%
+        Map<String, String> collectedMetrics = new HashMap<>();
+        collectedMetrics.put("system.cpu.util", "40.0");
+        collectedMetrics.put("icmpping", "1");
+
+        MetricCollectorScheduler.StatusResult result = scheduler.determineHostStatus(mockHost, collectedMetrics);
+
+        assertEquals(Host.HostStatus.ACTIVE, result.status);
+        assertEquals("Tudo certo com o Host.", result.description);
     }
 }

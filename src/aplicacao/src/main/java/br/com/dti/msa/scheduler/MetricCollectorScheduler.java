@@ -54,7 +54,7 @@ public class MetricCollectorScheduler {
     }
 
     @Transactional
-    @Scheduled(fixedRate = 60000) // Executa a cada 60 segundos
+    @Scheduled(fixedRate = 60000)
     public void collectAllMetrics() {
         System.out.println("--- INICIANDO COLETA E ANÁLISE DE STATUS: " + LocalDateTime.now() + " ---");
 
@@ -132,9 +132,7 @@ public class MetricCollectorScheduler {
         System.out.println("--- COLETA FINALIZADA ---");
     }
 
-    // ===================================================================
-    // MÉTODOS DE DETERMINAÇÃO DE STATUS
-    // ===================================================================
+
     StatusResult determineHostStatus(Host host, Map<String, String> collectedZabbixMetrics) {
         Set<HostMetricConfig> configs = host.getMetricConfigs();
 
@@ -169,12 +167,8 @@ public class MetricCollectorScheduler {
         return checkResourceAlerts(host, configs, collectedZabbixMetrics);
     }
     
-    /**
-     * CORRIGIDO: Método auxiliar que agora retorna a 'StatusResult'
-     */
     private StatusResult checkResourceAlerts(Host host, Set<HostMetricConfig> configs, Map<String, String> zabbixMetrics) {
         
-        // Alerta de CPU
         Optional<HostMetricConfig> cpuConfig = configs.stream()
                 .filter(c -> c.getMetric().getMetricKey().equals("cpu-uso"))
                 .findFirst();
@@ -186,7 +180,6 @@ public class MetricCollectorScheduler {
             }
         }
         
-        // Alerta de Memória RAM
         Optional<HostMetricConfig> memTotalConfig = configs.stream().filter(c -> c.getMetric().getMetricKey().equals("memoria-ram-total")).findFirst();
         Optional<HostMetricConfig> memAvailableConfig = configs.stream().filter(c -> c.getMetric().getMetricKey().equals("memoria-ram-disponivel")).findFirst();
         
@@ -205,7 +198,6 @@ public class MetricCollectorScheduler {
             }
         }
 
-        // Se passou por tudo, está OK
         return new StatusResult(Host.HostStatus.ACTIVE, "Tudo certo com o Host.");
     }
 
@@ -218,18 +210,15 @@ public class MetricCollectorScheduler {
      * @param rawValue
      */
     private void saveOrUpdateCurrentTextValue(Host host, Metric metric, String rawValue) {
-        // Procura se já existe um valor salvo para esta combinação de host/métrica
         MetricCurrentValue currentValue = metricCurrentValueRepository
             .findByHostIdAndMetricId(host.getId(), metric.getId())
-            .orElse(new MetricCurrentValue()); // 2. Se não existir, cria um novo objeto
+            .orElse(new MetricCurrentValue());
 
-        // Atualiza os dados do objeto
         currentValue.setHost(host);
         currentValue.setMetric(metric);
         currentValue.setCurrentValue(rawValue);
         currentValue.setLastUpdated(LocalDateTime.now());
         
-        // Salva no banco (INSERT se for novo, UPDATE se já existia)
         metricCurrentValueRepository.save(currentValue);
     }
 
@@ -242,7 +231,7 @@ public class MetricCollectorScheduler {
         try {
             return Double.parseDouble(rawValue);
         } catch (NumberFormatException e) {
-            return null; // Retorna nulo se não for um número
+            return null;
         }
     }
 
@@ -268,18 +257,18 @@ public class MetricCollectorScheduler {
             if (status.equalsIgnoreCase("UP")) {
                 return 1.0;
             } else {
-                return 0.0; // Qualquer coisa que não seja "UP" é considerado 0 (DOWN)
+                return 0.0;
             }
         } catch (JsonProcessingException e) {
             System.err.println("  > Falha ao parsear JSON de Health Check: " + rawJson);
-            return null; // Retorna nulo se o JSON for inválido
+            return null;
         }
     }
 
     // --- MÉTODOS DE AVALIAÇÃO ESPECÍFICOS ---
 
     /**
-     * Avalia métricas que retornam JSON (Ex: {"status":"UP"})
+     * Avalia métricas que retornam JSON
      */
     private StatusResult evaluateJsonHealthStatus(HostMetricConfig config, Map<String, String> metrics, Host host, Set<HostMetricConfig> allConfigs) {
         String zabbixKey = config.getZabbixKey();
@@ -308,7 +297,6 @@ public class MetricCollectorScheduler {
 
     /**
      * Avalia métricas que retornam Cabeçalhos HTTP (Texto Bruto)
-     * Ex: "HTTP/1.1 200 OK ..."
      */
     private StatusResult evaluateHttpHeaderStatus(HostMetricConfig config, Map<String, String> metrics) {
         String zabbixKey = config.getZabbixKey();
@@ -327,16 +315,18 @@ public class MetricCollectorScheduler {
         return new StatusResult(Host.HostStatus.INACTIVE, "Host parado! (Resposta HTTP inválida: " + getFirstLine(rawHeaders) + ")");
     }
 
-    // --- MÉTODOS AUXILIARES ---
+
+    // ===================================================================
+    // MÉTODOS DE PARSING E AUXILIARES
+    // ===================================================================
+
 
     private boolean isJsonHealthMetric(String key) {
-        // Lista APENAS as métricas que retornam JSON
         return key.equals("disponibilidade-global-health") ||
                key.equals("disponibilidade-especifica-health");
     }
 
     private boolean isHttpHeaderMetric(String key) {
-        // Lista APENAS as métricas que retornam Texto/Headers
         return key.equals("disponibilidade-global-http-agente") ||
                key.equals("disponibilidade-especifica-http-agente");
     }
@@ -347,10 +337,6 @@ public class MetricCollectorScheduler {
         return idx > -1 ? text.substring(0, idx).trim() : text;
     }
 
-    // ===================================================================
-    // MÉTODOS DE PARSING E AUXILIARES
-    // ===================================================================
-
     private Double parseHttpHeader(String rawHeaders) {
         if (rawHeaders == null) return null;
         return (rawHeaders.contains("200 OK") || rawHeaders.contains("201 Created")) ? 1.0 : 0.0;
@@ -360,7 +346,6 @@ public class MetricCollectorScheduler {
         if (configs.stream().anyMatch(c -> c.getMetric().getMetricKey().equals("eventos-recentes"))) {
              recentEventsRepository.deleteByHostId(host.getId());
              List<ZabbixEventDTO> events = zabbixClient.getRecentEvents(host.getZabbixId());
-             // ... (salva eventos) ...
              if (!events.isEmpty()) {
                  List<RecentEvents> toSave = events.stream().map(e -> {
                      RecentEvents re = new RecentEvents();

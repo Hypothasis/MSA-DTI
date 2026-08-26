@@ -9,7 +9,7 @@ import java.util.HashSet;
 @Data
 @Entity
 @Table(name = "metrics")
-@EqualsAndHashCode(exclude = "hostConfigs") // Evita loops de referência
+@EqualsAndHashCode(exclude = "hostConfigs")
 public class Metric {
     
     @Id 
@@ -22,8 +22,6 @@ public class Metric {
     private String name;
     private String unit;
 
-    // --- RELACIONAMENTO CORRIGIDO ---
-    // Uma Métrica (conceito) pode estar em MUITAS Configurações de Host
     @OneToMany(mappedBy = "metric", fetch = FetchType.LAZY)
     private Set<HostMetricConfig> hostConfigs = new HashSet<>();
 }

@@ -20,19 +20,13 @@
     cursor: pointer;
 }
 
-/* 2. Estiliza a caixa do tooltip (usando ::before) */
 .point::before {
-    /* Puxa o conteúdo dos dois atributos e insere uma quebra de linha (\A) */
     content: attr(data-line1) "\A" attr(data-line2);
-
-    /* Essencial para que a quebra de linha funcione */
     white-space: pre-wrap;
 
-    /* Para alinhar o texto no centro */
     text-align: center;
     font-family: var(--font-ubuntu);
     
-    /* O resto do seu estilo continua o mesmo... */
     position: absolute;
     bottom: 140%;
     left: 50%;
@@ -47,29 +41,24 @@
     z-index: 10;
 }
 
-/* 3. Cria a setinha do tooltip (usando ::after) */
 .point::after {
-    content: ''; /* Conteúdo vazio, pois é um elemento visual */
+    content: '';
     
-    /* Posicionamento da seta */
     position: absolute;
     bottom: 140%;
-    margin-bottom: -13px; /* Posiciona a seta um pouco abaixo da caixa */
+    margin-bottom: -13px;
     left: 50%;
     transform: translateX(-50%);
 
-    /* A mágica da seta com bordas */
     border: 7px solid transparent;
-    border-top-color: #2c3e50; /* A cor da borda de cima define a cor da seta */
+    border-top-color: #2c3e50;
     
-    /* Efeito de fade (inicialmente escondido) */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
     z-index: 10;
 }
 
-/* 4. Mostra o tooltip e a seta no hover */
 .point:hover::before,
 .point:hover::after {
     opacity: 1;

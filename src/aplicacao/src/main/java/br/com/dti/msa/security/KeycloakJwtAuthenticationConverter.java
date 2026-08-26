@@ -24,7 +24,7 @@ public class KeycloakJwtAuthenticationConverter implements Converter<Jwt, Abstra
 
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
-        // Primeiro, usa o conversor padrão para pegar os 'scopes' (SCOPE_email, etc.)
+        // Primeiro, usa o conversor padrão para pegar os 'scopes'
         JwtGrantedAuthoritiesConverter defaultConverter = new JwtGrantedAuthoritiesConverter();
         Collection<GrantedAuthority> authorities = defaultConverter.convert(jwt);
 

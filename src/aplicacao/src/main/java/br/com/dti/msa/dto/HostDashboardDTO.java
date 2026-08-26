@@ -11,7 +11,6 @@ import java.util.Map;
 @NoArgsConstructor
 public class HostDashboardDTO {
 
-    // --- Dados Básicos do Host (preenchidos a partir da entidade Host) ---
     private String name;
     private String description;
     private String type;
@@ -19,9 +18,6 @@ public class HostDashboardDTO {
     private String statusDescription;
     private String lastUpdateTime;
 
-    // --- Dados para Gráficos e Displays ---
-
-    // Métricas de Histórico (para gráficos de linha/área)
     private List<MetricValueDTO> availabilityHistory;
     private List<MetricValueDTO> latencyHistory;
     private List<MetricValueDTO> cpuUsageHistory;
@@ -29,7 +25,6 @@ public class HostDashboardDTO {
     private List<MetricValueDTO> dataBandwidthInHistory;
     private List<MetricValueDTO> dataBandwidthOutHistory;
 
-    // Métricas de Estado Atual (para gauges, radiais ou valores únicos)
     private AvailabilityDTO globalAvailability;
     private OsInfoDTO osInfo;
     private ProcessInfoHistoryDTO processInfoHistory;
@@ -40,9 +35,6 @@ public class HostDashboardDTO {
     private String uptime;
     private List<EventDTO> recentEvents;
 
-    // --- Classes Aninhadas para Estruturação ---
-
-    // Para séries temporais [timestamp, valor]
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -58,7 +50,6 @@ public class HostDashboardDTO {
         }
     }
     
-    // Para métricas de armazenamento/memória
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -69,7 +60,6 @@ public class HostDashboardDTO {
         private double percentUsed;
     }
 
-    // Para informações do SO
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -78,7 +68,6 @@ public class HostDashboardDTO {
         private String arch;
     }
 
-    // Para informações de processos
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -87,7 +76,6 @@ public class HostDashboardDTO {
         private List<MetricValueDTO> max;
     }
     
-    // Para cálculos de disponibilidade
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -98,7 +86,6 @@ public class HostDashboardDTO {
         private double last6h;
     }
 
-    // Para Eventos recentes
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

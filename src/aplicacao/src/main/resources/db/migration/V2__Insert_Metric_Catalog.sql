@@ -1,7 +1,4 @@
--- Popula a tabela de catálogo com todas as métricas disponíveis no formulário
 INSERT INTO metrics (metric_key, name, unit) VALUES
-
--- ##### Métricas Comuns (presentes em todas as abas) #####
 
 -- Métricas para Disponibilidade - 'zabbix[host,agent,available]'
 ('disponibilidade-global', 'Disponibilidade Global (48h)', '%'),
@@ -35,14 +32,9 @@ INSERT INTO metrics (metric_key, name, unit) VALUES
 
 -- Métrica para Tempo Ativo - 'system.uptime'
 ('tempo-ativo', 'Tempo de Servidor Ativo', 'uptime'),
-    -- A métrica "eventos-recentes" não entra aqui pois é tratada de forma diferente.
-
--- ##### Métricas da Aba "Aplicação/Serviço" #####
 
 -- Métrica para Latencia - 'icmppingsec'
 ('latencia', 'Tempo de Resposta ICMP', 's'),
-
--- ##### Métricas da Aba "Servidores" #####
 
 -- Métricas para Sistema Operacional - 'system.sw.os', 'system.sw.arch'
 ('os-nome', 'Sistema Operacional', ''),
@@ -84,6 +76,4 @@ INSERT INTO default_zabbix_key (metric_id, zabbix_key) VALUES
 ((SELECT id FROM metrics WHERE metric_key = 'cpu-troca-contextos'), 'system.cpu.switches'),
 ((SELECT id FROM metrics WHERE metric_key = 'memoria-swap-total'), 'system.swap.size[,total]'),
 ((SELECT id FROM metrics WHERE metric_key = 'memoria-swap-livre'), 'system.swap.size[,free]'),
--- Métricas customizadas (health, HTTP) não têm chave padrão, então não são inseridas aqui.
--- 'eventos-recentes' é uma chave especial da API.
 ((SELECT id FROM metrics WHERE metric_key = 'eventos-recentes'), 'zabbix_api');

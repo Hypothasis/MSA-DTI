@@ -81,13 +81,13 @@ body{
 }
 
 .flash-message.success {
-    background-color: var(--main-blue-color); /* Cor para sucesso, se precisar */
+    background-color: var(--main-blue-color); 
 }
 
 .flash-message.hidden {
     opacity: 0;
-    transform: translateX(-50%) translateY(-50px); /* Move para cima ao esconder */
-    pointer-events: none; /* Impede cliques quando invisível */
+    transform: translateX(-50%) translateY(-50px);
+    pointer-events: none;
 }
 
 .flash-message p {
@@ -104,7 +104,7 @@ body{
     font-size: 1.5em;
     cursor: pointer;
     padding: 0;
-    line-height: 1; /* Alinha o 'x' verticalmente */
+    line-height: 1; 
 }
 
 /* -------- HEADER -------- */
@@ -214,7 +214,6 @@ footer article {
 }
 
 footer article header{
-    /* border-bottom: 1px solid black; */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;

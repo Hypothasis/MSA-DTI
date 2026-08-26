@@ -12,7 +12,6 @@ import java.util.Optional;
 
 public interface ZabbixConnectionStatusRepository extends JpaRepository<ZabbixConnectionStatus, Long> {
     
-    // Busca o registro de status mais recente
     Optional<ZabbixConnectionStatus> findTopByOrderByTimestampDesc();
 
     @Modifying

@@ -74,7 +74,7 @@ public interface MetricHistoryRepository extends JpaRepository<MetricHistory, Me
     Double calculateOverallAvailability(@Param("metricKey") String metricKey, 
                                         @Param("startTime") LocalDateTime startTime);
 
-                                        /**
+    /**
      * Garante que apenas os 'maxRecords' (ex: 2880) registros mais recentes
      * para CADA combinação de (host_id, metric_id) sejam mantidos,
      * deletando todos os mais antigos.

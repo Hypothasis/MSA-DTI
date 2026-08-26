@@ -7,6 +7,5 @@ import java.util.Optional;
 
 public interface DefaultZabbixKeyRepository extends JpaRepository<DefaultZabbixKey, Long> {
     
-    // Busca uma chave padrão usando a entidade Métrica
     Optional<DefaultZabbixKey> findByMetric(Metric metric);
 }

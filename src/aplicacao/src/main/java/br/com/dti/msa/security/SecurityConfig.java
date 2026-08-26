@@ -28,14 +28,12 @@ import java.util.stream.Collectors;
 @Configuration
 public class SecurityConfig {
 
-    // Injeta o repositório de clientes OAuth2
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     public SecurityConfig(ClientRegistrationRepository clientRegistrationRepository) {
         this.clientRegistrationRepository = clientRegistrationRepository;
     }
 
-    // Injeta o client-id do seu application.properties
     @Value("${keycloak.client-id}")
     private String keycloakClientId;
 
@@ -90,12 +88,9 @@ public class SecurityConfig {
         return (userRequest) -> {
             OidcUser oidcUser = delegate.loadUser(userRequest);
             
-            // --- INÍCIO DA LÓGICA DE CONVERSÃO DE ROLES ---
             
-            // Extrai o Client ID da própria requisição, sem precisar injetar valor
             String clientId = userRequest.getClientRegistration().getClientId();
             
-            // 2. Acessa o objeto 'resource_access' do token
             Map<String, Object> resourceAccess = oidcUser.getClaimAsMap("resource_access");
 
             if (resourceAccess == null || resourceAccess.isEmpty() || !resourceAccess.containsKey(clientId)) {
@@ -117,20 +112,16 @@ public class SecurityConfig {
             
             // Adiciona as authorities originais para não perder outras permissões padrão
             authorities.addAll(oidcUser.getAuthorities());
-            
-            // --- FIM DA LÓGICA DE CONVERSÃO ---
 
             return new DefaultOidcUser(authorities, oidcUser.getIdToken(), oidcUser.getUserInfo());        
         };
     }
 
-    //Cria o bean do manipulador de logout
     private LogoutSuccessHandler oidcLogoutSuccessHandler() {
         OidcClientInitiatedLogoutSuccessHandler successHandler = 
                 new OidcClientInitiatedLogoutSuccessHandler(this.clientRegistrationRepository);
 
-        // Define para qual URL o Keycloak deve redirecionar o usuário APÓS o logout
-        successHandler.setPostLogoutRedirectUri("{baseUrl}"); // Redireciona para a raiz da aplicação
+        successHandler.setPostLogoutRedirectUri("{baseUrl}");
 
         return successHandler;
     }

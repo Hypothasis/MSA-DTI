@@ -40,15 +40,15 @@ public class AuthenticationController {
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
         try {
-            // Envia a requisição para o Keycloak
             ResponseEntity<KeycloakTokenResponseDTO> response = restTemplate.postForEntity(
                 keycloakTokenUri, request, KeycloakTokenResponseDTO.class);
             
-            // Retorna o corpo da resposta do Keycloak para o cliente (Postman)
             return ResponseEntity.ok(response.getBody());
         } catch (HttpClientErrorException e) {
-            // Se o Keycloak retornar um erro (ex: 401 Unauthorized), repassa o erro
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("Erro de comunicação com o servidor de autenticação: " + e.getMessage());
         }
     }
 }

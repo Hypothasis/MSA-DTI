@@ -12,10 +12,9 @@ import lombok.ToString;
 @Data
 @Entity
 @Table(name = "host_metric_config")
-@IdClass(HostMetricConfigId.class) // Aponta para a classe de ID auxiliar
+@IdClass(HostMetricConfigId.class)
 public class HostMetricConfig {
 
-    // --- Chave Primária Composta ---
     
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,13 +32,9 @@ public class HostMetricConfig {
     @EqualsAndHashCode.Exclude
     private Metric metric;
     
-    // --- Fim da Chave Composta ---
-
-    // Este é o dado extra que justifica esta ser uma entidade
     @Column(name = "zabbix_key", nullable = false)
     private String zabbixKey;
 
-    // --- Construtores ---
     
     public HostMetricConfig() {}
 
@@ -54,14 +49,12 @@ public class HostMetricConfig {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         HostMetricConfig that = (HostMetricConfig) o;
-        // Compara com base no Host e na Métrica (as chaves primárias)
         return Objects.equals(host, that.host) &&
                Objects.equals(metric, that.metric);
     }
 
     @Override
     public int hashCode() {
-        // Usa o Host e a Métrica para gerar o hash
         return Objects.hash(host, metric);
     }
 }

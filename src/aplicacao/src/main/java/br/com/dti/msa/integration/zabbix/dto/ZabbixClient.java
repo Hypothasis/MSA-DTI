@@ -47,12 +47,11 @@ public class ZabbixClient {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * MÉTODO CENTRAL: Envia a requisição para a API do Zabbix com o Bearer Token.
+     *  Envia a requisição para a API do Zabbix com o Bearer Token.
      */
     private String sendRequest(ZabbixRequestDTO requestPayload)
             throws RestClientException, ZabbixApiException {
 
-        // ===== Validação local da estrutura =====
         if (requestPayload == null) {
             throw new ZabbixApiException("Payload nulo: o corpo da requisição não pode ser vazio.");
         }
@@ -69,7 +68,6 @@ public class ZabbixClient {
             throw new ZabbixApiException("Campo 'id' deve ser um número positivo.");
         }
 
-        // ===== Serialização manual do JSON =====
         String jsonBody;
         try {
             jsonBody = objectMapper.writeValueAsString(requestPayload);
@@ -77,14 +75,12 @@ public class ZabbixClient {
             throw new ZabbixApiException("Falha ao serializar o payload em JSON: " + e.getMessage());
         }
 
-        // ===== Validação sintática do JSON gerado =====
         try {
-            objectMapper.readTree(jsonBody); // tenta parsear o próprio JSON — se falhar, é inválido
+            objectMapper.readTree(jsonBody);
         } catch (Exception e) {
             throw new ZabbixApiException("JSON gerado é inválido: " + e.getMessage() + "\nJSON: " + jsonBody);
         }
 
-        // ===== Cabeçalhos estritos =====
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -97,7 +93,6 @@ public class ZabbixClient {
         System.out.println("JSON enviado: " + jsonBody);
 
         try {
-            // ===== Envio da requisição =====
             ResponseEntity<String> response = restTemplate.exchange(
                     zabbixApiUrl,
                     HttpMethod.POST,
@@ -108,7 +103,6 @@ public class ZabbixClient {
             String jsonResponse = response.getBody();
             System.out.println("🔹 Resposta do Zabbix (" + response.getStatusCode() + "): " + jsonResponse);
 
-            // ===== Tratamento de erro no retorno =====
             if (jsonResponse == null || jsonResponse.isBlank()) {
                 throw new ZabbixApiException("Resposta vazia da API Zabbix.");
             }
@@ -132,11 +126,9 @@ public class ZabbixClient {
             throw new ZabbixApiException("Falha ao conectar à API do Zabbix: " + e.getMessage(), e);
 
         } catch (ZabbixApiException e) {
-            // Repassa exceções tratadas internamente
             throw e;
 
         } catch (Exception e) {
-            // Fallback genérico
             System.err.println("❌ Erro inesperado ao enviar requisição: " + e.getMessage());
             throw new ZabbixApiException("Erro inesperado ao processar requisição Zabbix: " + e.getMessage(), e);
         }
@@ -195,13 +187,13 @@ public class ZabbixClient {
         Map<String, Object> params = Map.of(
             "hostids", zabbixHostId,
             "output", new String[]{"key_", "lastvalue"},
-            "search", Map.of("key_", itemKey), // 'search' funciona para uma única chave
+            "search", Map.of("key_", itemKey),
             "limit", 1
         );
         ZabbixRequestDTO request = new ZabbixRequestDTO("item.get", params, 3);
 
         try {
-            String jsonResponse = sendRequest(request); // Usa o método de envio com Bearer Token
+            String jsonResponse = sendRequest(request);
             
             JsonNode resultNode = objectMapper.readTree(jsonResponse).get("result");
             if (resultNode == null || !resultNode.isArray() || resultNode.isEmpty()) {
@@ -250,7 +242,6 @@ public class ZabbixClient {
         System.out.println("--- INICIANDO TESTE DE CONEXÃO COM A API DO ZABBIX ---");
         System.out.println("URL da API do Zabbix: " + zabbixApiUrl);
 
-        // Monta o JSON exatamente como JSON Puro
         String jsonBody = """
             {
             "jsonrpc": "2.0",

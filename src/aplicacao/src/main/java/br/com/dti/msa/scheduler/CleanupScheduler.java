@@ -16,26 +16,24 @@ public class CleanupScheduler {
     @Autowired private MetricHistoryRepository metricHistoryRepository;
     @Autowired private ZabbixConnectionStatusRepository zabbixStatusRepository;
 
-    // Define o número máximo de registros a manter por métrica/host
     private static final int MAX_RECORDS_PER_METRIC = 2880;
 
     // Executa a cada hora, no minuto 0.
-    // Ex: "0 0 4 * * ?" para rodar todo dia às 4 da manhã.
     @Scheduled(cron = "0 0 * * * ?") 
     public void cleanupOldData() {
         System.out.println("--- INICIANDO JOB DE LIMPEZA DE DADOS ANTIGOS ---");
 
-        // --- TAREFA 1: Limpar Histórico de Métricas (Limpeza Rápida por Tempo) ---
+        // --- TAREFA 1: Limpar Histórico de Métricas ---
         LocalDateTime cutoffDate = LocalDateTime.now().minusHours(48);
         System.out.println("Apagando registros de histórico de métricas anteriores a: " + cutoffDate);
         metricHistoryRepository.deleteOlderThan(cutoffDate);
 
-        // --- TAREFA 2: Limpar Logs de Conexão (Limpeza Rápida por Tempo) ---
+        // --- TAREFA 2: Limpar Logs de Conexão  ---
         LocalDateTime statusCutoffDate = LocalDateTime.now().minusHours(48);
         System.out.println("Apagando registros de status de conexão anteriores a: " + statusCutoffDate);
         zabbixStatusRepository.deleteOlderThan(statusCutoffDate);
 
-        // --- TAREFA 3: Limpar Excesso de Registros (Garantia de Quantidade) ---
+        // --- TAREFA 3: Limpar Excesso de Registros ---
         System.out.println("Garantindo que nenhuma métrica tenha mais que " + MAX_RECORDS_PER_METRIC + " registros...");
         metricHistoryRepository.enforceCountBasedRetention(MAX_RECORDS_PER_METRIC);
 

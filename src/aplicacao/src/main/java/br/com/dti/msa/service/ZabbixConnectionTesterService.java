@@ -21,7 +21,7 @@ public class ZabbixConnectionTesterService {
     private final RestTemplate restTemplate;
 
     public ZabbixConnectionTesterService() {
-        this.restTemplate = new RestTemplate(); // Para simplicidade. O ideal é injetar como um Bean.
+        this.restTemplate = new RestTemplate();
     }
 
     public ZabbixHealthCheckResponse testConnection() {
@@ -43,7 +43,6 @@ public class ZabbixConnectionTesterService {
 
             HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
-            // Executa a chamada POST
             ResponseEntity<JsonNode> response = restTemplate.postForEntity(zabbixApiUrl, requestEntity, JsonNode.class);
 
             if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && response.getBody().has("result")) {
@@ -56,7 +55,6 @@ public class ZabbixConnectionTesterService {
             }
 
         } catch (Exception e) {
-            // Captura qualquer erro de conexão, timeout, DNS, etc.
             log.error("Falha ao conectar com o Zabbix: {}", e.getMessage());
             return new ZabbixHealthCheckResponse("ERROR", "Não foi possível conectar ao Zabbix: " + e.getMessage());
         }

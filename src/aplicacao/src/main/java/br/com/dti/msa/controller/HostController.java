@@ -27,13 +27,11 @@ public class HostController {
 
     /**
      * SERVE A PÁGINA HTML "ESQUELETO".
-     * Rota: GET /host/{publicId}
      */
     @GetMapping("/{publicId}")
     public String getHostPage(@PathVariable String publicId, Model model) {
         Host host = hostService.findByPublicId(publicId);
 
-        // ADICIONE O HOST AO MODELO
         model.addAttribute("host", host);
 
         switch (host.getType()) {
@@ -46,7 +44,6 @@ public class HostController {
 
     /**
      * ENDPOINT DA API: Retorna todos os dados dinâmicos para a página do host.
-     * Rota: GET /host/api/{publicId}
      */
     @GetMapping("/api/{publicId}")
     @ResponseBody
@@ -61,7 +58,6 @@ public class HostController {
 
     /**
      * ENDPOINT PARA HOME: Retorna 5 hosts pelo nome
-     * Rota: GET /host/api/search
      */
     @GetMapping("/api/search")
     public ResponseEntity<List<HostSearchResultDTO>> searchHosts(@RequestParam("term") String term) {

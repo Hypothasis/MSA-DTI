@@ -11,7 +11,6 @@ public interface HostRepository extends JpaRepository<Host, Long> {
 
     /**
      * Busca hosts filtrando por um termo no nome ou descrição E/OU por uma lista de tipos.
-     * JPQL (Java Persistence Query Language) nos dá flexibilidade para lidar com parâmetros opcionais.
      */
     @Query("SELECT h FROM Host h WHERE " +
            "(:term IS NULL OR LOWER(h.name) LIKE LOWER(CONCAT('%', :term, '%')) OR LOWER(h.description) LIKE LOWER(CONCAT('%', :term, '%'))) " +
@@ -24,7 +23,6 @@ public interface HostRepository extends JpaRepository<Host, Long> {
     /**
      * Busca todos os hosts e já carrega (FETCH) suas configurações de métrica
      * E as métricas (conceitos) associadas a essas configurações.
-     * Isso resolve o LazyInitializationException.
      */
     @Query("SELECT h FROM Host h " +
            "LEFT JOIN FETCH h.metricConfigs mc " +
@@ -34,7 +32,6 @@ public interface HostRepository extends JpaRepository<Host, Long> {
     /**
      * Busca um Host pelo ID e carrega (FETCH) todas as suas configurações
      * E as métricas (conceitos) associadas a essas configurações.
-     * Isso resolve o LazyInitializationException.
      */
     @Query("SELECT h FROM Host h " +
            "LEFT JOIN FETCH h.metricConfigs mc " +

@@ -20,10 +20,9 @@ public class SchedulerManager {
     public void startMetricCollection() {
         System.out.println("Agendando o coletor de métricas para rodar a cada 60 segundos.");
         
-        // Esta linha é o equivalente programático de @Scheduled(fixedRate = 60000)
         taskScheduler.scheduleAtFixedRate(
-            metricCollector::collectAllMetrics, // O método que será executado
-            Duration.ofMillis(60000)            // O intervalo
+            metricCollector::collectAllMetrics, 
+            Duration.ofMillis(60000)          
         );
     }
 }

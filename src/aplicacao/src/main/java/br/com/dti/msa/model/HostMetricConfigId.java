@@ -16,6 +16,6 @@ import java.io.Serializable;
 @AllArgsConstructor
 @EqualsAndHashCode
 public class HostMetricConfigId implements Serializable {
-    private Long host;    // Corresponde ao campo 'private Host host;'
-    private Long metric;  // Corresponde ao campo 'private Metric metric;'
+    private Long host;   
+    private Long metric; 
 }

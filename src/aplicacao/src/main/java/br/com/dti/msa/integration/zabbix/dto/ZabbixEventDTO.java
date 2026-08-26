@@ -13,18 +13,17 @@ public class ZabbixEventDTO {
     private String eventId;
 
     @JsonProperty("objectid")
-    private String objectId; // ID do trigger
+    private String objectId;
 
     @JsonProperty("clock")
-    private long clock; // Timestamp do evento
+    private long clock; 
 
     @JsonProperty("name")
-    private String name; // Descrição do problema
+    private String name; 
 
     @JsonProperty("severity")
     private int severity;
     
-    // O campo "hosts" na resposta do Zabbix é um array
     @JsonProperty("hosts")
     private List<HostInfo> hosts;
 

@@ -8,11 +8,10 @@
     overflow-y: scroll;
 }
 
-/* Layout principal do Dashboard com CSS Grid */
 .dashboard-grid {
     width: 95%;
     display: grid;
-    grid-template-columns: 2fr 1fr; /* 2/3 para conteúdo principal, 1/3 para sidebar */
+    grid-template-columns: 2fr 1fr;
     grid-template-areas:
         "kpi kpi"
         "main sidebar";
@@ -41,7 +40,6 @@
     gap: 20px;
 }
 
-/* Estilo dos Cards de KPI */
 .kpi-card {
     background-color: var(--card-bg);
     border-radius: 8px;
@@ -65,12 +63,10 @@
     font-weight: 500;
 }
 
-/* Cores para os textos dos KPIs */
 .text-success { color: var(--success-color); }
 .text-danger { color: var(--danger-color); }
 .text-warning { color: var(--warning-color); }
 
-/* Estilo base para os Widgets do Dashboard */
 .dashboard-widget {
     background-color: var(--card-bg);
     border-radius: 8px;
@@ -94,7 +90,6 @@
     font-family: var(--font-ubuntu);
 }
 
-/* Estilo do Feed de Alertas */
 #alert-feed-container {
     height: 270px;
     overflow-y: scroll;
@@ -128,14 +123,9 @@
     align-self: flex-end;
 }
 
-/* Cores de Severidade para os Alertas */
 .severity-disaster { border-left-color: #e40000; }
 .severity-high { border-left-color: #ff5656; }
 .severity-warning { border-left-color: #ffc107; }
-/* Adicione outras cores se precisar */
-
-
-/* Estilo da Lista de Top Hosts */
 
 .problem-host-item a{
     text-decoration: none;
@@ -188,10 +178,9 @@
     color: var(--danger-color);
 }
 
-/* Design Responsivo para Telas Menores */
 @media screen and (max-width: 992px) and (min-width: 600px) {
     .dashboard-grid {
-        grid-template-columns: 1fr; /* Coluna única */
+        grid-template-columns: 1fr;
         grid-template-areas:
             "kpi"
             "main"
@@ -202,12 +191,11 @@
     }
 }
 
-/* Responsividade grid */
 
 @media screen and (max-width: 599px) {
 
     .dashboard-grid {
-        grid-template-columns: 1fr; /* Coluna única */
+        grid-template-columns: 1fr;
         grid-template-areas:
             "kpi"
             "main"
