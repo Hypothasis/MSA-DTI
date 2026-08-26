@@ -106,13 +106,6 @@ docker compose -f infra-compose.yml up -d
 docker ps
 ```
 
-Após a inicialização, os serviços estarão disponíveis em:
-
-| Serviço | URL |
-|----------|------|
-| Keycloak | http://<IP>:8080 |
-| Zabbix | http://<IP>:8090 |
-
 ---
 
 ## Passo 2: Configurações de Segurança e Integração
@@ -124,7 +117,7 @@ Antes de iniciar o MSA, é necessário obter as credenciais geradas pela infraes
 1. Acesse:
 
 ```text
-http://<IP>:8080
+http://localhost:8080
 ```
 
 2. Faça login:
@@ -163,7 +156,7 @@ Users → Create User
 1. Acesse:
 
 ```text
-http://<IP>:8090
+http://localhost:8090
 ```
 
 2. Faça login:
@@ -173,23 +166,97 @@ Usuário: Admin
 Senha: zabbix
 ```
 
-3. Navegue até:
+### Importação do Template
+
+O projeto disponibiliza um template Zabbix pré-configurado em:
+
+```text
+infraestrutura/docker compose/Zabbix Template/
+```
+
+Para importá-lo:
+
+1. Navegue até:
+
+```text
+Data collection → Templates → Import
+```
+
+2. Selecione o arquivo:
+
+```text
+zbx_MSA_default_template.json
+```
+
+3. Conclua a importação.
+
+4. Associe o template aos hosts monitorados:
+
+```text
+HostSigaa
+HostHttpAgent
+HostDatabase
+```
+
+### ⚠️ Configuração obrigatória dos itens HTTP
+
+Após importar o template, localize os itens:
+
+```text
+SIGAA Health Check
+HTTP Agent
+```
+
+e substitua todas as ocorrências de:
+
+```text
+<WIFI IP>
+```
+
+pelo endereço IP da máquina do usuário na rede local.
+
+Exemplo:
+
+```text
+192.168.0.11
+```
+
+As URLs configuradas nos itens devem ficar semelhantes a:
+
+```text
+http://192.168.0.11:3000/health
+http://192.168.0.11:3001
+```
+
+> O valor de `<WIFI IP>` varia de acordo com a rede utilizada. Utilize o IP retornado por `ipconfig` (Windows) ou `ifconfig` / `ip addr` (Linux).
+
+### 🔑 API Token
+
+1. Navegue até:
 
 ```text
 Administration → General → API Tokens
 ```
 
-4. Crie um novo token para o usuário **Admin**.
+2. Crie um novo token para o usuário **Admin**.
 
-5. Copie o token gerado.
+3. Copie o token gerado.
 
-#### Opcional
+4. Configure o token na variável:
 
-Cadastre hosts e configure os itens de monitoramento utilizando:
+```text
+ZABBIX_API_USER_TOKEN
+```
 
-- Zabbix Agent
-- Chaves personalizadas
-- Monitoramento via HTTP Headers
+do serviço `msa-app`.
+
+### Monitoramentos incluídos no Template
+
+- Disponibilidade dos agentes Zabbix
+- Monitoramento da aplicação SIGAA Health Check
+- Monitoramento via HTTP Agent
+- Monitoramento do banco de dados MySQL
+- Itens personalizados utilizados pela aplicação MSA
 
 ---
 
@@ -232,7 +299,7 @@ Substitua os seguintes valores:
 #### Endereços IP
 
 ```text
-<IP>
+<WIFI IP>
 ```
 
 pelo IP da sua máquina.
@@ -276,7 +343,7 @@ docker ps
 Após a inicialização, o MSA estará disponível em:
 
 ```text
-http://<IP>:8081
+http://localhost:8081
 ```
 
 Utilize o usuário criado no Keycloak para realizar o login.
