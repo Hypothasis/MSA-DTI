@@ -1,7 +1,5 @@
--- Garante que estamos usando o banco de dados correto
 USE msa;
 
--- Tabela principal para todos os hosts
 CREATE TABLE hosts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     public_id CHAR(36) NOT NULL UNIQUE,
@@ -12,7 +10,6 @@ CREATE TABLE hosts (
     created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6)
 );
 
--- Catálogo de todas as métricas possíveis
 CREATE TABLE metrics (
     id INT AUTO_INCREMENT PRIMARY KEY,
     metric_key VARCHAR(255) NOT NULL UNIQUE,
@@ -20,7 +17,6 @@ CREATE TABLE metrics (
     unit VARCHAR(20)
 );
 
--- Tabela de ligação para definir quais métricas cada host monitora
 CREATE TABLE host_metric_config (
     host_id INT NOT NULL,
     metric_id INT NOT NULL,
@@ -29,7 +25,6 @@ CREATE TABLE host_metric_config (
     FOREIGN KEY (metric_id) REFERENCES metrics(id) ON DELETE CASCADE
 );
 
--- Tabela para guardar o histórico de valores de todas as métricas
 CREATE TABLE metric_history (
     host_id INT NOT NULL,
     metric_id INT NOT NULL,
@@ -40,7 +35,6 @@ CREATE TABLE metric_history (
     FOREIGN KEY (metric_id) REFERENCES metrics(id) ON DELETE CASCADE
 );
 
--- Tabela para guardar eventos/alertas
 CREATE TABLE recent_events (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     host_id INT NOT NULL,
@@ -51,6 +45,5 @@ CREATE TABLE recent_events (
     FOREIGN KEY (host_id) REFERENCES hosts(id) ON DELETE CASCADE
 );
 
--- Índices para acelerar as consultas
 CREATE INDEX idx_metric_history_timestamp ON metric_history (`timestamp` DESC);
 CREATE INDEX idx_events_timestamp ON recent_events (`timestamp` DESC);
