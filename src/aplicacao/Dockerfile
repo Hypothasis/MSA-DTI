@@ -1,6 +1,4 @@
-# ==========================================
-# ESTÁGIO 1: BUILD (Compilação com Maven)
-# ==========================================
+# Build
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
@@ -9,9 +7,7 @@ COPY src ./src
 
 RUN mvn clean package -DskipTests
 
-# ==========================================
-# ESTÁGIO 2: RUNTIME (Execução com JRE leve)
-# ==========================================
+# Runtime
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
