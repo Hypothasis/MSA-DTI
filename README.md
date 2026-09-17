@@ -1,6 +1,6 @@
-# MSA - Monitoramento de Servidores e Aplicações 🚀
+# MSA - Monitoramento de Serviços e Aplicações 🚀
 
-O **MSA (Monitoramento de Servidores e Aplicações)** é uma plataforma centralizada de observabilidade e monitoramento de infraestrutura de TI. Desenvolvido durante o estágio na Diretoria de Tecnologia da Informação (DTI) da **UNILAB**, o sistema atua como um *middleware* inteligente que consome dados da API do Zabbix, processa métricas heterogêneas e as exibe em painéis gerenciais em tempo real.
+O **MSA (Monitoramento de Serviços e Aplicações)** é uma plataforma centralizada de observabilidade e monitoramento de infraestrutura de TI. Desenvolvido durante o estágio na Diretoria de Tecnologia da Informação (DTI) da **UNILAB**, o sistema atua como um *middleware* inteligente que consome dados da API do Zabbix, processa métricas heterogêneas e as exibe em painéis gerenciais em tempo real.
 
 O objetivo principal do MSA é reduzir a sobrecarga cognitiva da equipe de operações, traduzindo dados brutos (como JSONs complexos de *Health Checks* ou *Headers* HTTP) em status visuais claros (`ACTIVE`, `ALERT`, `INACTIVE`) para servidores, bancos de dados e aplicações web críticas (como o SIGAA).
 
